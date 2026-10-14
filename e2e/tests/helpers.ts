@@ -1,0 +1,50 @@
+import { APIRequestContext, expect, Page, request as pwRequest } from '@playwright/test';
+
+/** Wipes and re-seeds the simulator (through the UI proxy, which injects the admin token server-side). */
+export async function resetAll(baseURL: string | undefined): Promise<void> {
+  const api = await pwRequest.newContext({ baseURL });
+  await api.post('/test-admin/seed');
+  const prep = await (await api.post('/test-admin/reset/prepare', { data: { scope: 'ALL' } })).json();
+  const res = await api.post('/test-admin/reset', { data: { scope: 'ALL', confirmationToken: prep.confirmationToken } });
+  if (!res.ok()) throw new Error(`reset failed: ${res.status()}`);
+  await api.post('/test-admin/seed');
+  await api.dispose();
+}
+
+/** Signs in by name; a no-op when this tab already holds a session for the role (sessions live in sessionStorage). */
+export async function signInAs(page: Page, name: string): Promise<void> {
+  const signOut = page.getByRole('button', { name: 'Sign out' });
+  const entry = page.getByRole('listitem').filter({ hasText: name }).getByRole('button', { name: 'Sign in' });
+  await expect(signOut.or(entry)).toBeVisible();
+  if (await signOut.isVisible()) return;
+  await entry.click();
+}
+
+export interface DemoSession {
+  token: string;
+  shopId: string;
+  buyerId: string | null;
+}
+
+/** Demo session created over HTTP (setup shortcut; the flows under test are still driven through the UI). */
+export async function demoSession(api: APIRequestContext, role: 'BUYER' | 'SELLER', name: string): Promise<DemoSession> {
+  const ids = await (await api.get('/demo/identities')).json();
+  const body = role === 'BUYER' ? { role, buyerId: ids.buyers.find((b: { name: string }) => b.name === name).id } : { role, sellerId: ids.sellers.find((s: { name: string }) => s.name === name).id };
+  const s = await (await api.post('/demo/sessions', { data: body })).json();
+  return { token: s.sessionToken, shopId: s.shopId, buyerId: s.buyerId };
+}
+
+/** Buyer checkout + fake payment over HTTP. Returns the marketplace order id. */
+export async function placePaidOrder(api: APIRequestContext, buyer: DemoSession, skuId: string, quantity = 1, pay = true): Promise<string> {
+  const headers = { 'x-demo-session': buyer.token };
+  const key = `e2e-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  const c = await api.post(`/demo/shops/${buyer.shopId}/checkout`, { headers, data: { checkoutKey: key, items: [{ skuId, quantity }] } });
+  if (!c.ok()) throw new Error(`checkout failed ${c.status()}: ${await c.text()}`);
+  const id = (await c.json()).order.id as string;
+  if (pay) await api.post(`/demo/shops/${buyer.shopId}/orders/${id}/pay`, { headers, data: {} });
+  return id;
+}
+
+export const SELLER_A = 'Nguyễn Thị Lan';
+export const BUYER_A = 'Trần Văn An';
+export const shot = (page: Page, name: string) => page.screenshot({ path: `test-results/shots/${name}.png`, fullPage: true });
