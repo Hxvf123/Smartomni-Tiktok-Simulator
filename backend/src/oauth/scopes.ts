@@ -6,6 +6,9 @@ export const SCOPE_AUTHORIZED_SHOPS = 'sim.authorized_shops.read';
 export const SCOPE_ORDER_READ = 'sim.order.read';
 /** Placeholder scope for the Events API (webhook subscriptions). Tokens issued before Phase 05 lack it and must re-authorize. */
 export const SCOPE_EVENT_MANAGE = 'sim.event.manage';
-export const DEFAULT_APP_SCOPES = [SCOPE_AUTHORIZED_SHOPS, 'sim.product.read', SCOPE_ORDER_READ, SCOPE_EVENT_MANAGE];
+/** Placeholder scopes for fulfillment reads (tracking, package detail, shipping documents) and the ship-package write. */
+export const SCOPE_FULFILLMENT_READ = 'sim.fulfillment.read';
+export const SCOPE_FULFILLMENT_WRITE = 'sim.fulfillment.write';
+export const DEFAULT_APP_SCOPES = [SCOPE_AUTHORIZED_SHOPS, 'sim.product.read', SCOPE_ORDER_READ, SCOPE_EVENT_MANAGE, SCOPE_FULFILLMENT_READ, SCOPE_FULFILLMENT_WRITE];
 /** Placeholder scope for product reads; the simulator also uses it for the warehouse list (listing needs warehouses). */
 export const SCOPE_PRODUCT_READ = 'sim.product.read';

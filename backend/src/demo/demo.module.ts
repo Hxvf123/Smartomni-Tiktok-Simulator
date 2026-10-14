@@ -23,8 +23,10 @@ import { APP_CONFIG, AppConfig } from '../config/config';
 import { OAuthModule } from '../oauth/oauth.module';
 import { OAuthService } from '../oauth/oauth.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { FulfillmentModule } from '../fulfillment/fulfillment.module';
 import { OrdersModule } from '../orders/orders.module';
 import { CatalogDemoController } from './catalog.controller';
+import { FulfillmentDemoController } from './fulfillment.controller';
 import { OrdersDemoController } from './orders.controller';
 import { DemoPrincipal, DemoRequest, DemoSessionGuard } from './demo-session.guard';
 
@@ -179,5 +181,5 @@ export class DemoController {
   }
 }
 
-@Module({ imports: [OAuthModule, OrdersModule], controllers: [DemoController, CatalogDemoController, OrdersDemoController], providers: [DemoSessionGuard] })
+@Module({ imports: [OAuthModule, OrdersModule, FulfillmentModule], controllers: [DemoController, CatalogDemoController, OrdersDemoController, FulfillmentDemoController], providers: [DemoSessionGuard] })
 export class DemoModule {}

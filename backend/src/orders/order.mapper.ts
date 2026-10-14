@@ -73,6 +73,6 @@ export function orderItem(o: OrderWithLines) {
         display_status: l.displayStatus,
       }),
     ),
-    packages: [] as { id: string }[],
+    packages: [...new Set(o.lines.map((l) => l.packageId).filter((id): id is string => !!id))].map((id) => ({ id })),
   });
 }

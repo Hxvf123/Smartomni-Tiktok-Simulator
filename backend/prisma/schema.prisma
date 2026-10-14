@@ -90,6 +90,7 @@ model Shop {
   webhookJobs      WebhookJob[]
   orders           Order[]
   webhookSubs      WebhookSubscription[]
+  packages         Package[]
   faultRules       FaultRule[]
   demoSessions     DemoSession[]
   createdAt        DateTime              @default(now())
@@ -399,13 +400,13 @@ model CartItem {
 // Statuses are the OAS values: UNPAID ON_HOLD AWAITING_SHIPMENT PARTIALLY_SHIPPING AWAITING_COLLECTION IN_TRANSIT DELIVERED COMPLETED CANCELLED.
 // Money is integer VND per component; totals are computed by the backend and never re-derived from each other.
 model Order {
-  id                    String       @id @default(uuid())
+  id                    String          @id @default(uuid())
   shopId                String
-  shop                  Shop         @relation(fields: [shopId], references: [id])
+  shop                  Shop            @relation(fields: [shopId], references: [id])
   externalId            String
-  seq                   Int          @unique @default(autoincrement())
+  seq                   Int             @unique @default(autoincrement())
   buyerId               String
-  buyer                 Buyer        @relation(fields: [buyerId], references: [id])
+  buyer                 Buyer           @relation(fields: [buyerId], references: [id])
   status                String
   // business-clock timestamps (create_time / update_time / ... in the API are Unix seconds of these)
   createdAt             DateTime
@@ -419,28 +420,30 @@ model Order {
   cancelledAt           DateTime?
   cancelReason          String?
   cancellationInitiator String?
-  buyerRequestedCancel  Boolean      @default(false)
-  isOnHold              Boolean      @default(false)
+  buyerRequestedCancel  Boolean         @default(false)
+  isOnHold              Boolean         @default(false)
   warehouseId           String?
-  stockReleased         Boolean      @default(false)
+  stockReleased         Boolean         @default(false)
   checkoutKey           String
-  paymentMethodName     String       @default("Fake payment (simulator)")
-  buyerMessage          String       @default("")
+  paymentMethodName     String          @default("Fake payment (simulator)")
+  buyerMessage          String          @default("")
   recipientName         String
   recipientPhone        String
   addressLine           String
   district              String
   city                  String
-  postalCode            String       @default("")
-  currency              String       @default("VND")
+  postalCode            String          @default("")
+  currency              String          @default("VND")
   originalProductPrice  Int
-  sellerDiscount        Int          @default(0)
-  platformDiscount      Int          @default(0)
+  sellerDiscount        Int             @default(0)
+  platformDiscount      Int             @default(0)
   originalShippingFee   Int
-  shippingFeeDiscount   Int          @default(0)
-  tax                   Int          @default(0)
+  shippingFeeDiscount   Int             @default(0)
+  tax                   Int             @default(0)
   lines                 OrderLine[]
   audits                OrderAudit[]
+  Package               Package?
+  TrackingEvent         TrackingEvent[]
 
   @@unique([shopId, externalId])
   @@unique([buyerId, checkoutKey])
@@ -497,4 +500,67 @@ model WebhookSubscription {
   updatedAt DateTime
 
   @@unique([shopId, appId, eventType])
+}
+
+// ---- Phase 07a: packages, tracking, shipping documents --------------------------------------------------------
+
+// One package per order in this phase (splitting/combining is out of scope). package_status values follow the OAS:
+// PROCESSING (arranged) FULFILLING (collected, in transit) COMPLETED (delivered) CANCELLED; TO_FULFILL (not yet arranged) is the
+// OAS line-item package_status value, reused here because the package detail enum has no pre-arrangement value (unverified).
+model Package {
+  id                   String             @id @default(uuid())
+  shopId               String
+  shop                 Shop               @relation(fields: [shopId], references: [id])
+  orderId              String             @unique
+  order                Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  externalId           String
+  status               String
+  // Fake tracking number ("SIM" + 11 digits); null until the shipment is arranged.
+  trackingNumber       String?
+  shippingProviderId   String
+  shippingProviderName String
+  handoverMethod       String?
+  createdAt            DateTime
+  updatedAt            DateTime
+  lines                PackageLine[]
+  documents            ShippingDocument[]
+  trackingEvents       TrackingEvent[]
+
+  @@unique([shopId, externalId])
+}
+
+model PackageLine {
+  id          String  @id @default(uuid())
+  packageId   String
+  package     Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  orderLineId String  @unique
+}
+
+model TrackingEvent {
+  id          String   @id @default(uuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  packageId   String
+  package     Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  status      String
+  description String
+  // business clock
+  at          DateTime
+  seq         Int      @default(autoincrement())
+
+  @@index([orderId, at, seq])
+}
+
+// Generated PDF (TEST DATA). `token` is the unguessable public file name; the file lives under PDF_DIR.
+model ShippingDocument {
+  id        String   @id @default(uuid())
+  packageId String
+  package   Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  docType   String
+  token     String   @unique
+  filePath  String
+  sizeBytes Int
+  createdAt DateTime
+
+  @@unique([packageId, docType])
 }

@@ -51,9 +51,20 @@ Fixtures gồm package hợp lệ, order chưa giao được, PDF tải thành c
 
 ## Theo dõi
 
+### 07a (steps 1-4) - phía simulator
+
+- Người phụ trách: (chưa gán) - agent Phase 07a, chưa review bởi người.
+- PR/commit: branch `phase-07a` (xem `git log`).
+- Đã làm: migration `20261040000000_phase07a_fulfillment` (Package, PackageLine, TrackingEvent, ShippingDocument); package tạo khi đơn vào AWAITING_SHIPMENT (TO_FULFILL), sắp xếp giao -> PROCESSING (+ mã vận đơn giả `SIM` + 11 số), lấy hàng -> FULFILLING, giao -> COMPLETED, hủy -> CANCELLED, đi qua `OrdersService.transition` (listener cùng transaction) nên package/tracking/`PACKAGE_UPDATE` luôn khớp đơn; chặn ON_HOLD/UNPAID bằng mã `order_on_hold`; API `GET .../orders/{id}/tracking`, `GET .../packages/{id}`, `GET .../packages/{id}/shipping_documents`, `POST .../packages/{id}/ship`; PDF test (SHIPPING_LABEL, PACKING_SLIP, cả hai) lưu ở `PDF_DIR/shipping`, URL `PUBLIC_API_BASE_URL/demo/files/shipping-documents/<token>.pdf` (route ngoài router TikTok, công khai nhưng token 48 hex khó đoán); UI Seller (Shipping), Buyer (Tracking), Test Console (Fulfillment); `order.packages[]` và `line_items[].package_id` trong API đơn hàng.
+- Bằng chứng: xem commit message / báo cáo (jest toàn bộ + 16 test mới `tiktok-fulfillment.e2e-spec.ts`: ON_HOLD bị chặn, tracking theo chuyển trạng thái (mili giây), PDF tải được, byte giống nhau sau "restart" (app mới đọc lại file), cô lập shop, scope, schema OAS, PACKAGE_UPDATE cùng transaction, ship lặp lại không tạo package thứ hai).
+- BLOCKED: bước 4 (API nghiệp vụ SmartOmni lấy tracking/vận đơn có kiểm tenant) - repo platform chỉ để tham khảo; yêu cầu ở `docs/smartomni-requirements/phase-07.md`. Chưa có e2e trình duyệt cho giao diện này; chưa kiểm trong Docker (PDF qua volume dựa vào volume `tiktok_sim_pdf` đã có từ Phase 02).
+- Quyết định/blocker: `DECISIONS.md` mục "Phase 07a". Hết hạn URL 24 giờ không được thực thi; `package_status` trước khi sắp xếp dùng `TO_FULFILL` (giá trị OAS của line item) vì enum package không có giá trị tương ứng; mọi mã lỗi là test fault của simulator.
+- Ngày hoàn thành: chưa (PARTIAL).
+
+### 07b (steps 5-9)
+
 - Người phụ trách:
 - PR/commit:
 - Bằng chứng kiểm thử:
 - Blocker / quyết định bổ sung:
 - Ngày hoàn thành:
-
