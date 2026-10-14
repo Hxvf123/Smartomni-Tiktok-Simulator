@@ -20,6 +20,7 @@ import { z } from 'zod';
 import { BusinessClock } from '../clock/clock';
 import { ZodPipe } from '../common/zod.pipe';
 import { PrismaService } from '../prisma/prisma.service';
+import { logInventory } from '../inventory/inventory-log';
 import { numericId } from '../seed/seed-data';
 import { DemoPrincipal, DemoRequest, DemoSessionGuard } from './demo-session.guard';
 
@@ -258,6 +259,8 @@ export class CatalogDemoController {
       if (stock) {
         for (const w of warehouses) {
           if (stock[w.externalId] === undefined) continue;
+          const [prev] = await tx.$queryRaw<{ quantity: number }[]>`SELECT quantity FROM "InventoryLevel" WHERE "skuId" = ${sku.id} AND "warehouseId" = ${w.id} FOR UPDATE`;
+          await logInventory(tx, [{ shopId, skuId: sku.id, warehouseId: w.id, before: prev?.quantity ?? 0, after: stock[w.externalId], source: 'SELLER', noop: (prev?.quantity ?? 0) === stock[w.externalId], note: 'seller edit' }]);
           await tx.inventoryLevel.upsert({
             where: { skuId_warehouseId: { skuId: sku.id, warehouseId: w.id } },
             create: { id: randomUUID(), skuId: sku.id, warehouseId: w.id, quantity: stock[w.externalId] },

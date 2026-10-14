@@ -19,7 +19,7 @@ export function prepareEnv(extra: Record<string, string> = {}): void {
 
 export async function cleanDb(prisma: PrismaClient): Promise<void> {
   await prisma.$executeRawUnsafe(
-    `TRUNCATE "WebhookAttempt","WebhookJob","FaultRule","DemoSession","HttpRequestLog","AuthorizationCode","Token","InventoryLevel","Sku","Product","Warehouse","Buyer","Scenario","Shop","Seller","App","ClockState" RESTART IDENTITY CASCADE`,
+    `TRUNCATE "WebhookAttempt","WebhookJob","FaultRule","DemoSession","HttpRequestLog","AuthorizationCode","Token","InventoryLevel","InventoryUpdateAttempt","Sku","Product","Warehouse","Buyer","Scenario","Shop","Seller","App","ClockState" RESTART IDENTITY CASCADE`,
   );
 }
 

@@ -96,7 +96,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean),
-      appScopes: (env.SEED_APP_SCOPES ?? 'sim.authorized_shops.read,sim.product.read,sim.order.read,sim.event.manage')
+      appScopes: (env.SEED_APP_SCOPES ?? 'sim.authorized_shops.read,sim.product.read,sim.order.read,sim.event.manage,sim.inventory.write')
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean),

@@ -54,6 +54,11 @@ enum FaultKind {
   DUPLICATE
   // WEBHOOK only: the matching event is held back at enqueue time so later events overtake it.
   REORDER
+  // API only, inventory update path: the request is dropped (connection closed, no response) BEFORE or AFTER the write is applied.
+  TIMEOUT_BEFORE_WRITE
+  TIMEOUT_AFTER_WRITE
+  // API only, inventory update path: HTTP 200 with a non-zero envelope code; nothing is written.
+  APP_ERROR_200
 }
 
 // Simulator-side identity. Never equal to SmartOmni tenant ids.
@@ -178,19 +183,20 @@ model AuthorizationCode {
 }
 
 model Warehouse {
-  id           String           @id @default(uuid())
-  shopId       String
-  shop         Shop             @relation(fields: [shopId], references: [id])
-  code         String
+  id               String            @id @default(uuid())
+  shopId           String
+  shop             Shop              @relation(fields: [shopId], references: [id])
+  code             String
   // TikTok-style warehouse id (a string) exposed as `id` by Get Warehouse List and as `warehouse_id` in SKU inventory. Unique per shop.
-  externalId   String           @default("")
-  name         String
-  city         String
-  isDefault    Boolean          @default(false)
+  externalId       String            @default("")
+  name             String
+  city             String
+  isDefault        Boolean           @default(false)
   // Get Warehouse List `effect_status` (ENABLED | DISABLED | RESTRICTED per the OAS description).
-  effectStatus String           @default("ENABLED")
-  inventory    InventoryLevel[]
-  createdAt    DateTime         @default(now())
+  effectStatus     String            @default("ENABLED")
+  inventory        InventoryLevel[]
+  inventoryChanges InventoryChange[]
+  createdAt        DateTime          @default(now())
 
   @@unique([shopId, code])
   @@unique([shopId, externalId])
@@ -218,24 +224,25 @@ model Product {
 }
 
 model Sku {
-  id            String           @id @default(uuid())
-  productId     String
-  product       Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
-  shopId        String
+  id               String            @id @default(uuid())
+  productId        String
+  product          Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  shopId           String
   // Marketplace SKU id (string). Unique per shop, like Product.externalId.
-  externalId    String
+  externalId       String
   // Seller SKU is a seller-managed code; the OAS states no uniqueness, so duplicates (also within a shop) are allowed.
-  sellerSku     String
-  name          String
+  sellerSku        String
+  name             String
   // Sales attribute shown for this variant (e.g. name "Màu", value = `name`).
-  attributeName String           @default("Phân loại")
-  priceVnd      Int
+  attributeName    String            @default("Phân loại")
+  priceVnd         Int
   // OAS SKU status_info.status: NORMAL | DEACTIVATED.
-  status        String           @default("NORMAL")
-  inventory     InventoryLevel[]
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  CartItem      CartItem[]
+  status           String            @default("NORMAL")
+  inventory        InventoryLevel[]
+  inventoryChanges InventoryChange[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  CartItem         CartItem[]
 
   @@unique([shopId, externalId])
   @@index([shopId, sellerSku])
@@ -497,4 +504,46 @@ model WebhookSubscription {
   updatedAt DateTime
 
   @@unique([shopId, appId, eventType])
+}
+
+// ---- Phase 06: inventory change log -----------------------------------------------------------------------------
+// Every stock change (API absolute update, Seller edit, order reservation / cancel restore, admin) with before/after.
+// The rows of one (sku, warehouse) form a chain in `seq` order: row[n].before == row[n-1].after. A broken chain would mean a lost update.
+model InventoryChange {
+  id          String    @id @default(uuid())
+  seq         Int       @unique @default(autoincrement())
+  shopId      String
+  skuId       String
+  sku         Sku       @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  before      Int
+  after       Int
+  // API | SELLER | ORDER | ADMIN
+  source      String
+  // true when an absolute update asked for the value already stored (a safe retry)
+  noop        Boolean   @default(false)
+  requestId   String?
+  note        String    @default("")
+  createdAt   DateTime  @default(now())
+
+  @@index([shopId, seq])
+  @@index([skuId, warehouseId, seq])
+}
+
+// One row per call to the inventory update API, including calls that never answered (timeout faults).
+model InventoryUpdateAttempt {
+  id           String   @id @default(uuid())
+  seq          Int      @unique @default(autoincrement())
+  shopId       String
+  productId    String
+  requestId    String?
+  // APPLIED | PARTIAL | REJECTED | TIMEOUT_BEFORE_WRITE | TIMEOUT_AFTER_WRITE | APP_ERROR_200
+  outcome      String
+  itemsTotal   Int      @default(0)
+  itemsApplied Int      @default(0)
+  itemsFailed  Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  @@index([shopId, seq])
 }

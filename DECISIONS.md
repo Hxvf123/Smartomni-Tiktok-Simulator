@@ -10,3 +10,15 @@
 | D6 | New placeholder scope for the Events API. | `sim.event.manage` (added to default seed scopes); tokens issued earlier must re-authorize. | Official scope names are unresolved. |
 | D7 | Webhook delivery to `localhost` addresses from Docker. | `WEBHOOK_REWRITE_LOCALHOST` (true in compose) rewrites loopback hosts to `HOST_CALLBACK_BASE_URL`. | Subscription addresses are given by SmartOmni running on the host. |
 | D8 | Hold period after payment. | ON_HOLD for `ORDER_HOLD_MINUTES` (30, business clock); released by a background timer or `/test-admin/orders/release-due`. | OAS describes ON_HOLD but not its duration. |
+
+## Phase 06
+| # | Issue | Choice | Reason |
+|---|---|---|---|
+| D6.1 | OAS says quantity "Valid range: [1, 99,999]". A client may want to mark a SKU sold out with 0. | Quantity 0 is rejected as a per-warehouse error; follow the OAS text. | The phase says fixtures must check the official validity rules; accepting 0 would be inventing behaviour. Revisit if Partner Center confirms 0 is accepted. |
+| D6.2 | Partial failure semantics are not stated in the OAS. | Each SKU is atomic; valid SKUs in the same request are applied, failing ones are listed in `data.errors[]` inside a code-0 envelope (as in the OAS fixture). | The response schema is a per-SKU error list, not an envelope failure. Unverified. |
+| D6.3 | Error code values are undocumented. | Main error 12052990 and secondary 12052097 (the two example numbers printed in the OAS) for every per-SKU failure; messages describe the reason. | No readable source defines the codes; do not invent new ones. Their meaning is unverified. |
+| D6.4 | How to simulate "timeout". | The connection is closed without a response (before or after the write, optional `delayMs`). | A client then sees the same unknown outcome as a real timeout. |
+| D6.5 | HTTP 200 application error. | Envelope `code` = simulator sentinel -1 plus `simulator_fault.kind=app_error_200`, nothing written. | TikTok error codes are undocumented. |
+| D6.6 | Inventory faults must not leak. | `INVENTORY_FAULT_KINDS` are excluded from the generic fault lookup (API middleware and webhook worker) and consumed only by the inventory handler. | Otherwise a rule meant for inventory would be used up by an unrelated request. |
+| D6.7 | Scope. | New placeholder `sim.inventory.write` in default seed scopes; tokens issued earlier must re-authorize. | Official scope names are unresolved. |
+| D6.8 | Which writers are logged. | API, SELLER edit, ORDER (checkout reservation and cancel restore) write `InventoryChange` rows in the same transaction as the stock change under the row lock, so the per-row log is a verifiable before/after chain. | Lets tests prove that no update is lost under concurrency. |

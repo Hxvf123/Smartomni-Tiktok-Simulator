@@ -2,6 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { FaultKind, FaultRule, FaultTarget } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
+/** Faults that only the inventory update handler consumes; the generic API middleware and the webhook worker must never use them up. */
+export const INVENTORY_FAULT_KINDS: FaultKind[] = ['TIMEOUT_BEFORE_WRITE', 'TIMEOUT_AFTER_WRITE', 'APP_ERROR_200'];
+
 export interface CreateFaultInput {
   shopId?: string | null;
   target: FaultTarget;
@@ -51,7 +54,7 @@ export class FaultService {
       where: {
         target,
         // REORDER is applied when the event is enqueued, never at delivery
-        kind: kinds ? { in: kinds } : { not: 'REORDER' },
+        kind: kinds ? { in: kinds } : { notIn: ['REORDER', ...INVENTORY_FAULT_KINDS] },
         OR: shopId ? [{ shopId }, { shopId: null }] : [{ shopId: null }],
         AND: [{ OR: [{ remaining: null }, { remaining: { gt: 0 } }] }],
       },
