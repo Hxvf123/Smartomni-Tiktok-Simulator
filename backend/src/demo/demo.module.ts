@@ -24,7 +24,9 @@ import { OAuthModule } from '../oauth/oauth.module';
 import { OAuthService } from '../oauth/oauth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { OrdersModule } from '../orders/orders.module';
+import { ChatModule } from '../chat/chat.module';
 import { CatalogDemoController } from './catalog.controller';
+import { ChatDemoController } from './chat.controller';
 import { OrdersDemoController } from './orders.controller';
 import { DemoPrincipal, DemoRequest, DemoSessionGuard } from './demo-session.guard';
 
@@ -179,5 +181,5 @@ export class DemoController {
   }
 }
 
-@Module({ imports: [OAuthModule, OrdersModule], controllers: [DemoController, CatalogDemoController, OrdersDemoController], providers: [DemoSessionGuard] })
+@Module({ imports: [OAuthModule, OrdersModule, ChatModule], controllers: [DemoController, CatalogDemoController, OrdersDemoController, ChatDemoController], providers: [DemoSessionGuard] })
 export class DemoModule {}

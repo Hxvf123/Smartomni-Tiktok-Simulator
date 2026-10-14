@@ -66,9 +66,11 @@ Send Message 202606 dùng content là chuỗi JSON serialize:
 
 ## Theo dõi
 
-- Người phụ trách:
-- PR/commit:
-- Bằng chứng kiểm thử:
-- Blocker / quyết định bổ sung:
-- Ngày hoàn thành:
-
+- Người phụ trách: (chưa gán) - agent Phase 08, chưa review bởi người.
+- PR/commit: nhánh `phase-08` (worktree), commit `phase-08: conversations API + chat UI` - xem `git log phase-08`.
+- Phạm vi đã làm (phía simulator): migration `20261030000000_phase08_conversations` (Conversation/ChatMessage; user_id và im_user_id tách riêng; tin lưu dạng chuỗi JSON); API ký `GET /customer_service/202309/conversations` (cursor, tối đa 20), `GET .../conversations/{id}/messages` (cursor, tối đa 10, sort theo create_time/index, need_data), `GET /customer_service/202601/conversations/{id}`, `POST /customer_service/202309/conversations/{id}/messages` (chỉ TEXT, tối đa 2000 ký tự); scope giả `sim.conversation.read|write`; webhook `NEW_MESSAGE` (mỗi tin) và `NEW_CONVERSATION` (agent vào/ra) qua outbox cùng transaction; Test Console: mất event, event kép, agent vào/ra, chặn gửi, cắt phản hồi gửi (gửi đã lưu nhưng người gửi không nhận kết quả), tạo hội thoại từ TikTok user không khớp buyer; chat Buyer/Seller (chỉ văn bản, hiển thị rõ loại tin chưa hỗ trợ); dữ liệu seed gồm lịch sử cũ, một hội thoại có nhãn `complaint test label` (nhãn dữ liệu test, không phải kết quả AI) và hội thoại danh tính không khớp.
+- Chủ ý KHÔNG hỗ trợ (báo rõ, không giả): Send Message 202606 (không có snapshot schema) -> 501 `unsupported_operation`; Upload Image (multipart, ký chưa xác minh) -> 501; IMAGE/VIDEO/card -> 400 "TEXT only".
+- Bằng chứng (Windows, Node 22, PostgreSQL 16 nhúng): xem commit message cho số test; backend `tiktok-conversations.e2e-spec.ts` 22 test (Buyer gửi -> API đọc -> shop trả lời bằng API ký -> Buyer thấy; phân trang hai chiều không sót/trùng; schema OAS; cô lập shop/buyer; scope; webhook cùng transaction, mất/kép event; lỗi HTTP trước khi ghi; cắt phản hồi; đồng thời cấp index tăng dần; seed idempotent); frontend `Chat.test.tsx` 3 test.
+- BLOCKED / chưa làm: toàn bộ phần SmartOmni (lưu hội thoại, dedupe, inbox, audit, khóa phiên khiếu nại) - ghi tại `docs/smartomni-requirements/phase-08.md`. AI thật: BLOCKED (classifier Python nằm ngoài repo; mọi kiểm thử AI phải dùng test double ghi rõ). Playwright chưa chạy cho chat (để Phase 10). Tiêu chí "Buyer gửi → SmartOmni nhận → Staff trả lời" mới chứng minh được đến phía API simulator.
+- Quyết định: xem `DECISIONS.md` mục Phase 08.
+- Ngày hoàn thành: chưa (PARTIAL).

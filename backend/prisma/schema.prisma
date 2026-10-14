@@ -89,6 +89,7 @@ model Shop {
   authCodes        AuthorizationCode[]
   webhookJobs      WebhookJob[]
   orders           Order[]
+  conversations    Conversation[]
   webhookSubs      WebhookSubscription[]
   faultRules       FaultRule[]
   demoSessions     DemoSession[]
@@ -100,21 +101,22 @@ model Shop {
 
 // Buyers belong to exactly one shop (separate buyer sets per shop).
 model Buyer {
-  id           String        @id @default(uuid())
-  externalId   String        @unique
-  shopId       String
-  shop         Shop          @relation(fields: [shopId], references: [id])
-  name         String
-  email        String
-  phone        String
-  addressLine  String
-  district     String
-  city         String
-  demoSessions DemoSession[]
-  orders       Order[]
-  cartItems    CartItem[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id            String         @id @default(uuid())
+  externalId    String         @unique
+  shopId        String
+  shop          Shop           @relation(fields: [shopId], references: [id])
+  name          String
+  email         String
+  phone         String
+  addressLine   String
+  district      String
+  city          String
+  demoSessions  DemoSession[]
+  orders        Order[]
+  cartItems     CartItem[]
+  conversations Conversation[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   @@index([shopId])
 }
@@ -497,4 +499,59 @@ model WebhookSubscription {
   updatedAt DateTime
 
   @@unique([shopId, appId, eventType])
+}
+
+// ---- Phase 08: customer-service conversations ------------------------------------------------------------------
+
+// One conversation between a TikTok buyer and the shop. `buyerId` is the simulator Buyer when the TikTok identity is KNOWN
+// (orders can be linked through `buyerUserId` = Buyer.externalId); it is null for the identity-mismatch test scenario.
+// `buyerUserId` (order-queryable id) and `buyerImUserId` (IM id, never usable to query orders) are deliberately different.
+model Conversation {
+  id                 String        @id @default(uuid())
+  shopId             String
+  shop               Shop          @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  externalId         String
+  seq                Int           @unique @default(autoincrement())
+  buyerId            String?
+  buyer              Buyer?        @relation(fields: [buyerId], references: [id], onDelete: SetNull)
+  buyerUserId        String
+  buyerImUserId      String
+  buyerNickname      String
+  shopImUserId       String
+  agentJoined        Boolean       @default(false)
+  canSendMessage     Boolean       @default(true)
+  // TEST DATA LABEL only (a seeded complaint-style conversation); never a classifier result and never returned by the TikTok API.
+  complaintTestLabel Boolean       @default(false)
+  // Test fault: the message IS stored but the response to the sender is dropped (an indeterminate send).
+  dropSendResponse   Boolean       @default(false)
+  createdAt          DateTime
+  updatedAt          DateTime
+  nextIndex          Int           @default(1)
+  messages           ChatMessage[]
+
+  @@unique([shopId, externalId])
+  @@index([shopId, seq])
+}
+
+model ChatMessage {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  shopId         String
+  externalId     String
+  seq            Int          @unique @default(autoincrement())
+  // per-conversation increasing index (string in the API)
+  index          Int
+  type           String       @default("TEXT")
+  // JSON-serialized string exactly as the OAS requires, e.g. {"content":"hi"}
+  content        String
+  senderRole     String
+  senderImUserId String
+  senderNickname String
+  isVisible      Boolean      @default(true)
+  createdAt      DateTime
+
+  @@unique([shopId, externalId])
+  @@unique([conversationId, index])
+  @@index([conversationId, seq])
 }

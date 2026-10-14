@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { APP_CONFIG, AppConfig } from '../config/config';
 import { PrismaService } from '../prisma/prisma.service';
+import { seedConversations } from '../chat/conversation-seed';
 import { SEED_SCENARIOS, SEED_SHOPS, SeedShop, detId, numericId } from './seed-data';
 
 /** Simulator-generated shop code (the `code` field of Get Authorized Shops); same rule as the Phase 03 migration backfill. */
@@ -148,6 +149,7 @@ export class SeedService {
         await tx.shop.update({ where: { id: shopId }, data: { activeScenarioId: detId(`scenario:${def.key}:default`) } });
       }
     });
+    await seedConversations(this.prisma, await this.prisma.shop.findUniqueOrThrow({ where: { id: shopId } }), def.key);
     this.logger.log(`seeded shop ${def.tiktokShopId}`);
   }
 

@@ -4,6 +4,8 @@ import { FaultService } from '../faults/fault.service';
 import { classifyRouter } from '../http-log/request-log.middleware';
 import { OAuthModule } from '../oauth/oauth.module';
 import { EventsController } from './events.controller';
+import { ChatModule } from '../chat/chat.module';
+import { ConversationsController } from './conversations.controller';
 import { OrdersController } from './orders.controller';
 import { ProductsController } from './products.controller';
 import { ShopsController } from './shops.controller';
@@ -48,8 +50,8 @@ export class TiktokFaultMiddleware implements NestMiddleware {
 }
 
 @Module({
-  imports: [OAuthModule],
-  controllers: [TokenController, ShopsController, ProductsController, OrdersController, EventsController],
+  imports: [OAuthModule, ChatModule],
+  controllers: [TokenController, ShopsController, ProductsController, OrdersController, EventsController, ConversationsController],
   providers: [TiktokFaultMiddleware, TiktokApiGuard],
   exports: [TiktokFaultMiddleware],
 })
