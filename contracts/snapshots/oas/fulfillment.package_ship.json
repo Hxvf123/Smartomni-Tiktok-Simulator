@@ -1,0 +1,146 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/fulfillment.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "b8fb1837a46c557a1fc3fc639625034aad35e4459e498e5a0f3f3e6f43930113",
+    "candidatesInBundle": [
+      {
+        "method": "POST",
+        "path": "/fulfillment/202309/packages/{package_id}/ship",
+        "version": "202309"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "POST",
+  "path": "/fulfillment/202309/packages/{package_id}/ship",
+  "operation": {
+    "tags": [
+      "fulfillment_v202309"
+    ],
+    "summary": "ShipPackage",
+    "description": "Use this API to ship a package. There are two kinds of shipping options available: `TikTok Shipping` or `Seller Shipping`.\n\n- `TikTok Shipping`: Schedule a package handover time for TikTok Shipping carriers to pickup a package from seller.\n- `Seller Shipping`: Seller arranges their own shipping, and uploads a tracking number and `shipping_provider_id`. Package ID can be obtained from [Get Order Detail](https://partner.tiktokshop.com/docv2/page/650aa8ccc16ffe02b8f167a0?external_id=650aa8ccc16ffe02b8f167a0#Back%20To%20Top).",
+    "parameters": [
+      {
+        "name": "package_id",
+        "in": "path",
+        "description": "TikTok Shop package ID.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "5433567853345"
+      },
+      {
+        "name": "shop_cipher",
+        "in": "query",
+        "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. ",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "properties": {
+              "handover_method": {
+                "description": "Possible values:\n- `PICKUP`: A logistics carrier will pick up the package(s) from the seller's pickup address.\n- `DROP_OFF`: The seller will need to drop off the package(s) to a designated location.",
+                "example": "PICKUP",
+                "type": "string"
+              },
+              "pickup_slot": {
+                "description": "Pickup time slot.\n",
+                "properties": {
+                  "end_time": {
+                    "description": "The end date and time of the package pickup time slot. Unix timestamp.",
+                    "example": 1623812664,
+                    "format": "int64",
+                    "type": "integer"
+                  },
+                  "start_time": {
+                    "description": "The start date and time of the package pickup time slot. Unix timestamp.",
+                    "example": 1623812664,
+                    "format": "int64",
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "self_shipment": {
+                "description": "Only needed for merchant self-shipping packages. Check the `delivery_option` field of [Get Package Detail](https://partner.tiktokshop.com/docv2/page/650aa39fbace3e02b75d8617?external_id=650aa39fbace3e02b75d8617#Back%20To%20Top) to see how to differentiate platform-logistics and self-shipping. Use the `shipping_provider_id` retrieved from [Get Shipping Providers](https://partner.tiktokshop.com/docv2/page/650aa48d4a0bb702c06d85cd?external_id=650aa48d4a0bb702c06d85cd) and upload the corresponding `tracking_number`.",
+                "properties": {
+                  "shipping_provider_id": {
+                    "description": "For package with `SEND_BY_SELLER` as `delivery_option` (merchant self-shipping mode), you must input a `shipping_provider_id` to call this API. Please use [Get Shipping Providers](https://partner.tiktokshop.com/docv2/page/650aa48d4a0bb702c06d85cd?external_id=650aa48d4a0bb702c06d85cd) to obtain the `shipping_provider_id`.",
+                    "example": "6617675021119438849",
+                    "type": "string"
+                  },
+                  "tracking_number": {
+                    "description": "For package with `SEND_BY_SELLER` as `delivery_option` (merchant self-shipping mode), you must input a `tracking_number` to call this API.",
+                    "example": "JX12345",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

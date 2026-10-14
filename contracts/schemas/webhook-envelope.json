@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "webhook-envelope.json",
+  "title": "Inbound webhook body (provisional)",
+  "x-verification": "PROVISIONAL, secondary (Hookdeck guide). The OAS only supplies the topic names (event/202309/webhooks event_type) and docv2 payload page ids; the inbound body envelope, numeric 'type' per topic and data{} per topic are NOT verified. Do not branch on 'type' alone: use shop_id + topic specific fields.",
+  "type": "object",
+  "required": [
+    "type",
+    "tts_notification_id",
+    "shop_id",
+    "timestamp",
+    "data"
+  ],
+  "properties": {
+    "type": {
+      "type": "integer"
+    },
+    "tts_notification_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "shop_id": {
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "timestamp": {
+      "type": "integer"
+    },
+    "data": {
+      "type": "object"
+    }
+  }
+}

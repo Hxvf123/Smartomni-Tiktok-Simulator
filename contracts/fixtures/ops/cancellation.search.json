@@ -1,0 +1,244 @@
+{
+  "operation": "cancellation.search",
+  "schema": "schemas/ops/cancellation.search.response.json",
+  "classification": "synthetic-from-official-oas",
+  "note": "Values are synthetic and generated from the official OAS response shape; they are not captured TikTok traffic. Error cases are TEST FAULTS: no readable official source documents their code/message values.",
+  "cases": [
+    {
+      "case": "success",
+      "response": {
+        "code": 0,
+        "data": {
+          "cancellations": [
+            {
+              "cancel_id": "TEST_cancel_id",
+              "cancel_line_items": [
+                {
+                  "cancel_line_item_id": "TEST_cancel_line_item_id",
+                  "order_line_item_id": "TEST_order_line_item_id",
+                  "product_image": {
+                    "height": 200,
+                    "url": "TEST_url",
+                    "width": 200
+                  },
+                  "product_name": "TEST_product_name",
+                  "refund_amount": {
+                    "buyer_service_fee": "TEST_buyer_service_fee",
+                    "currency": "TEST_currency",
+                    "refund_shipping_fee": "TEST_refund_shipping_fee",
+                    "refund_subtotal": "TEST_refund_subtotal",
+                    "refund_tax": "TEST_refund_tax",
+                    "refund_total": "TEST_refund_total",
+                    "retail_delivery_fee": "TEST_retail_delivery_fee"
+                  },
+                  "seller_sku": "TEST_seller_sku",
+                  "sku_id": "TEST_sku_id",
+                  "sku_name": "TEST_sku_name"
+                }
+              ],
+              "cancel_reason": "TEST_cancel_reason",
+              "cancel_reason_text": "TEST_cancel_reason_text",
+              "cancel_status": "TEST_cancel_status",
+              "cancel_type": "TEST_cancel_type",
+              "create_time": 1690451136,
+              "order_id": "TEST_order_id",
+              "refund_amount": {
+                "buyer_service_fee": "TEST_buyer_service_fee",
+                "currency": "TEST_currency",
+                "refund_shipping_fee": "TEST_refund_shipping_fee",
+                "refund_subtotal": "TEST_refund_subtotal",
+                "refund_tax": "TEST_refund_tax",
+                "refund_total": "TEST_refund_total",
+                "retail_delivery_fee": "TEST_retail_delivery_fee"
+              },
+              "role": "TEST_role",
+              "seller_next_action_response": [
+                {
+                  "action": "TEST_action",
+                  "deadline": 1690554680
+                }
+              ],
+              "update_time": 1690451136
+            }
+          ],
+          "next_page_token": "",
+          "total_count": 100
+        },
+        "message": "Success",
+        "request_id": "TEST-cancellation.search-success"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "empty",
+      "response": {
+        "code": 0,
+        "data": {
+          "cancellations": [],
+          "next_page_token": "",
+          "total_count": 0
+        },
+        "message": "Success",
+        "request_id": "TEST-cancellation.search-empty"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "multi_page_first",
+      "request": {
+        "query": {
+          "page_size": "1"
+        }
+      },
+      "response": {
+        "code": 0,
+        "data": {
+          "cancellations": [
+            {
+              "cancel_id": "TEST_cancel_id",
+              "cancel_line_items": [
+                {
+                  "cancel_line_item_id": "TEST_cancel_line_item_id",
+                  "order_line_item_id": "TEST_order_line_item_id",
+                  "product_image": {
+                    "height": 200,
+                    "url": "TEST_url",
+                    "width": 200
+                  },
+                  "product_name": "TEST_product_name",
+                  "refund_amount": {
+                    "buyer_service_fee": "TEST_buyer_service_fee",
+                    "currency": "TEST_currency",
+                    "refund_shipping_fee": "TEST_refund_shipping_fee",
+                    "refund_subtotal": "TEST_refund_subtotal",
+                    "refund_tax": "TEST_refund_tax",
+                    "refund_total": "TEST_refund_total",
+                    "retail_delivery_fee": "TEST_retail_delivery_fee"
+                  },
+                  "seller_sku": "TEST_seller_sku",
+                  "sku_id": "TEST_sku_id",
+                  "sku_name": "TEST_sku_name"
+                }
+              ],
+              "cancel_reason": "TEST_cancel_reason",
+              "cancel_reason_text": "TEST_cancel_reason_text",
+              "cancel_status": "TEST_cancel_status",
+              "cancel_type": "TEST_cancel_type",
+              "create_time": 1690451136,
+              "order_id": "TEST_order_id",
+              "refund_amount": {
+                "buyer_service_fee": "TEST_buyer_service_fee",
+                "currency": "TEST_currency",
+                "refund_shipping_fee": "TEST_refund_shipping_fee",
+                "refund_subtotal": "TEST_refund_subtotal",
+                "refund_tax": "TEST_refund_tax",
+                "refund_total": "TEST_refund_total",
+                "retail_delivery_fee": "TEST_retail_delivery_fee"
+              },
+              "role": "TEST_role",
+              "seller_next_action_response": [
+                {
+                  "action": "TEST_action",
+                  "deadline": 1690554680
+                }
+              ],
+              "update_time": 1690451136
+            }
+          ],
+          "next_page_token": "TEST_PAGE_TOKEN_2",
+          "total_count": 2
+        },
+        "message": "Success",
+        "request_id": "TEST-cancellation.search-multi_first"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "multi_page_last",
+      "request": {
+        "query": {
+          "page_size": "1",
+          "page_token": "TEST_PAGE_TOKEN_2"
+        }
+      },
+      "response": {
+        "code": 0,
+        "data": {
+          "cancellations": [
+            {
+              "cancel_id": "TEST_cancel_id",
+              "cancel_line_items": [
+                {
+                  "cancel_line_item_id": "TEST_cancel_line_item_id",
+                  "order_line_item_id": "TEST_order_line_item_id",
+                  "product_image": {
+                    "height": 200,
+                    "url": "TEST_url",
+                    "width": 200
+                  },
+                  "product_name": "TEST_product_name",
+                  "refund_amount": {
+                    "buyer_service_fee": "TEST_buyer_service_fee",
+                    "currency": "TEST_currency",
+                    "refund_shipping_fee": "TEST_refund_shipping_fee",
+                    "refund_subtotal": "TEST_refund_subtotal",
+                    "refund_tax": "TEST_refund_tax",
+                    "refund_total": "TEST_refund_total",
+                    "retail_delivery_fee": "TEST_retail_delivery_fee"
+                  },
+                  "seller_sku": "TEST_seller_sku",
+                  "sku_id": "TEST_sku_id",
+                  "sku_name": "TEST_sku_name"
+                }
+              ],
+              "cancel_reason": "TEST_cancel_reason",
+              "cancel_reason_text": "TEST_cancel_reason_text",
+              "cancel_status": "TEST_cancel_status",
+              "cancel_type": "TEST_cancel_type",
+              "create_time": 1690451136,
+              "order_id": "TEST_order_id",
+              "refund_amount": {
+                "buyer_service_fee": "TEST_buyer_service_fee",
+                "currency": "TEST_currency",
+                "refund_shipping_fee": "TEST_refund_shipping_fee",
+                "refund_subtotal": "TEST_refund_subtotal",
+                "refund_tax": "TEST_refund_tax",
+                "refund_total": "TEST_refund_total",
+                "retail_delivery_fee": "TEST_retail_delivery_fee"
+              },
+              "role": "TEST_role",
+              "seller_next_action_response": [
+                {
+                  "action": "TEST_action",
+                  "deadline": 1690554680
+                }
+              ],
+              "update_time": 1690451136
+            }
+          ],
+          "next_page_token": "",
+          "total_count": 2
+        },
+        "message": "Success",
+        "request_id": "TEST-cancellation.search-multi_last"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "invalid_input",
+      "classification": "test_fault_undocumented",
+      "trigger": "send a body that is not valid JSON or has a wrongly typed field",
+      "requestMustFailValidation": false
+    },
+    {
+      "case": "token_expired",
+      "classification": "test_fault_undocumented",
+      "trigger": "x-tts-access-token is past its expiry"
+    },
+    {
+      "case": "missing_scope",
+      "classification": "test_fault_undocumented",
+      "trigger": "app lacks the (unverified) scope of this operation"
+    }
+  ]
+}

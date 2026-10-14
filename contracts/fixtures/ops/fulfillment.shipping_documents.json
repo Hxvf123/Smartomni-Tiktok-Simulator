@@ -1,0 +1,37 @@
+{
+  "operation": "fulfillment.shipping_documents",
+  "schema": "schemas/ops/fulfillment.shipping_documents.response.json",
+  "classification": "synthetic-from-official-oas",
+  "note": "Values are synthetic and generated from the official OAS response shape; they are not captured TikTok traffic. Error cases are TEST FAULTS: no readable official source documents their code/message values.",
+  "cases": [
+    {
+      "case": "success",
+      "response": {
+        "code": 0,
+        "data": {
+          "doc_url": "TEST_doc_url",
+          "tracking_number": "TEST_tracking_number"
+        },
+        "message": "Success",
+        "request_id": "TEST-fulfillment.shipping_documents-success"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "invalid_input",
+      "classification": "test_fault_undocumented",
+      "trigger": "omit required query parameter 'document_type'",
+      "requestMustFailValidation": true
+    },
+    {
+      "case": "token_expired",
+      "classification": "test_fault_undocumented",
+      "trigger": "x-tts-access-token is past its expiry"
+    },
+    {
+      "case": "missing_scope",
+      "classification": "test_fault_undocumented",
+      "trigger": "app lacks the (unverified) scope of this operation"
+    }
+  ]
+}

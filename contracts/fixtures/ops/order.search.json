@@ -1,0 +1,640 @@
+{
+  "operation": "order.search",
+  "schema": "schemas/ops/order.search.response.json",
+  "classification": "synthetic-from-official-oas",
+  "note": "Values are synthetic and generated from the official OAS response shape; they are not captured TikTok traffic. Error cases are TEST FAULTS: no readable official source documents their code/message values.",
+  "cases": [
+    {
+      "case": "success",
+      "response": {
+        "code": 0,
+        "data": {
+          "next_page_token": "",
+          "orders": [
+            {
+              "auto_combine_group_id": "TEST_auto_combine_group_id",
+              "buyer_avatar": "TEST_buyer_avatar",
+              "buyer_email": "TEST_buyer_email",
+              "buyer_message": "TEST_buyer_message",
+              "buyer_nickname": "TEST_buyer_nickname",
+              "cancel_order_sla_time": 1619621355,
+              "cancel_reason": "TEST_cancel_reason",
+              "cancel_time": 1678389618,
+              "cancellation_initiator": "TEST_cancellation_initiator",
+              "collection_due_time": 1678389618,
+              "collection_time": 1678389618,
+              "commerce_platform": "TEST_commerce_platform",
+              "consultation_id": "TEST_consultation_id",
+              "cpf": "TEST_cpf",
+              "cpf_name": "TEST_cpf_name",
+              "create_time": 1619611561,
+              "delivery_due_time": 1678389618,
+              "delivery_option_id": "TEST_delivery_option_id",
+              "delivery_option_name": "TEST_delivery_option_name",
+              "delivery_option_required_delivery_time": 1678389618,
+              "delivery_sla_time": 1678389618,
+              "delivery_time": 1678389618,
+              "delivery_type": "TEST_delivery_type",
+              "exchange_source_order_id": "TEST_exchange_source_order_id",
+              "fast_delivery_program": "TEST_fast_delivery_program",
+              "fast_dispatch_sla_time": 1678389618,
+              "fulfillment_priority_level": 100,
+              "fulfillment_type": "TEST_fulfillment_type",
+              "handling_duration": {
+                "days": "TEST_days",
+                "type": "TEST_type"
+              },
+              "has_updated_recipient_address": false,
+              "id": "TEST_id",
+              "is_buyer_request_cancel": false,
+              "is_cod": false,
+              "is_exchange_order": false,
+              "is_on_hold_order": false,
+              "is_replacement_order": false,
+              "is_sample_order": false,
+              "line_items": [
+                {
+                  "buyer_service_fee": "TEST_buyer_service_fee",
+                  "cancel_reason": "TEST_cancel_reason",
+                  "cancel_user": "TEST_cancel_user",
+                  "combined_listing_skus": [
+                    {
+                      "product_id": "TEST_product_id",
+                      "seller_sku": "TEST_seller_sku",
+                      "sku_count": 1,
+                      "sku_id": "TEST_sku_id"
+                    }
+                  ],
+                  "currency": "TEST_currency",
+                  "display_status": "TEST_display_status",
+                  "distance_fee": "TEST_distance_fee",
+                  "distance_shipping_fee": "TEST_distance_shipping_fee",
+                  "gift_retail_price": "TEST_gift_retail_price",
+                  "handling_duration_days": "TEST_handling_duration_days",
+                  "id": "TEST_id",
+                  "is_dangerous_good": false,
+                  "is_gift": false,
+                  "is_unboxing_item": false,
+                  "item_tax": [
+                    {
+                      "tax_amount": "TEST_tax_amount",
+                      "tax_rate": "TEST_tax_rate",
+                      "tax_type": "TEST_tax_type"
+                    }
+                  ],
+                  "needs_prescription": false,
+                  "original_price": "TEST_original_price",
+                  "package_id": "TEST_package_id",
+                  "package_status": "TEST_package_status",
+                  "pfand_fee": "TEST_pfand_fee",
+                  "platform_discount": "TEST_platform_discount",
+                  "product_id": "TEST_product_id",
+                  "product_name": "TEST_product_name",
+                  "retail_delivery_fee": "TEST_retail_delivery_fee",
+                  "rts_time": 1678389618,
+                  "sale_price": "TEST_sale_price",
+                  "seller_discount": "TEST_seller_discount",
+                  "seller_sku": "TEST_seller_sku",
+                  "shipping_provider_id": "TEST_shipping_provider_id",
+                  "shipping_provider_name": "TEST_shipping_provider_name",
+                  "sku_id": "TEST_sku_id",
+                  "sku_image": "TEST_sku_image",
+                  "sku_name": "TEST_sku_name",
+                  "sku_type": "TEST_sku_type",
+                  "small_order_fee": "TEST_small_order_fee",
+                  "tracking_number": "TEST_tracking_number",
+                  "unboxing_sku_code": "TEST_unboxing_sku_code"
+                }
+              ],
+              "need_upload_invoice": "TEST_need_upload_invoice",
+              "order_rights": [
+                1
+              ],
+              "order_type": "TEST_order_type",
+              "packages": [
+                {
+                  "id": "TEST_id"
+                }
+              ],
+              "paid_time": 1619611563,
+              "payment": {
+                "buyer_service_fee": "TEST_buyer_service_fee",
+                "currency": "TEST_currency",
+                "distance_fee": "TEST_distance_fee",
+                "distance_shipping_fee": "TEST_distance_shipping_fee",
+                "handling_fee": "TEST_handling_fee",
+                "item_insurance_fee": "TEST_item_insurance_fee",
+                "item_insurance_tax": "TEST_item_insurance_tax",
+                "original_shipping_fee": "TEST_original_shipping_fee",
+                "original_total_product_price": "TEST_original_total_product_price",
+                "payment_discount_service_fee": "TEST_payment_discount_service_fee",
+                "payment_platform_discount": "TEST_payment_platform_discount",
+                "platform_discount": "TEST_platform_discount",
+                "product_tax": "TEST_product_tax",
+                "retail_delivery_fee": "TEST_retail_delivery_fee",
+                "seller_discount": "TEST_seller_discount",
+                "shipping_fee": "TEST_shipping_fee",
+                "shipping_fee_cofunded_discount": "TEST_shipping_fee_cofunded_discount",
+                "shipping_fee_platform_discount": "TEST_shipping_fee_platform_discount",
+                "shipping_fee_seller_discount": "TEST_shipping_fee_seller_discount",
+                "shipping_fee_tax": "TEST_shipping_fee_tax",
+                "shipping_insurance_fee": "TEST_shipping_insurance_fee",
+                "small_order_fee": "TEST_small_order_fee",
+                "sub_total": "TEST_sub_total",
+                "tax": "TEST_tax",
+                "total_amount": "TEST_total_amount"
+              },
+              "payment_method_name": "TEST_payment_method_name",
+              "pick_up_cut_off_time": 1678389618,
+              "recipient_address": {
+                "address_detail": "TEST_address_detail",
+                "address_line1": "TEST_address_line1",
+                "address_line2": "TEST_address_line2",
+                "address_line3": "TEST_address_line3",
+                "address_line4": "TEST_address_line4",
+                "delivery_preferences": {
+                  "drop_off_location": "TEST_drop_off_location"
+                },
+                "district_info": [
+                  {
+                    "address_level": "TEST_address_level",
+                    "address_level_name": "TEST_address_level_name",
+                    "address_name": "TEST_address_name",
+                    "iso_code": "TEST_iso_code"
+                  }
+                ],
+                "first_name": "TEST_first_name",
+                "first_name_local_script": "TEST_first_name_local_script",
+                "full_address": "TEST_full_address",
+                "last_name": "TEST_last_name",
+                "last_name_local_script": "TEST_last_name_local_script",
+                "name": "TEST_name",
+                "phone_number": "TEST_phone_number",
+                "post_town": "TEST_post_town",
+                "postal_code": "TEST_postal_code",
+                "region_code": "TEST_region_code"
+              },
+              "recommended_shipping_time": 1619611561,
+              "release_date": 1619611762,
+              "replaced_order_id": "TEST_replaced_order_id",
+              "request_cancel_time": 1678389618,
+              "rts_sla_time": 1619611688,
+              "rts_time": 1619611563,
+              "seller_note": "TEST_seller_note",
+              "shipping_due_time": 1678389618,
+              "shipping_provider": "TEST_shipping_provider",
+              "shipping_provider_id": "TEST_shipping_provider_id",
+              "shipping_type": "TEST_shipping_type",
+              "split_or_combine_tag": "TEST_split_or_combine_tag",
+              "status": "TEST_status",
+              "tracking_number": "TEST_tracking_number",
+              "tts_sla_time": 1619611761,
+              "update_time": 1619621355,
+              "user_id": "TEST_user_id",
+              "warehouse_id": "TEST_warehouse_id"
+            }
+          ],
+          "total_count": 22113
+        },
+        "message": "Success",
+        "request_id": "TEST-order.search-success"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "empty",
+      "response": {
+        "code": 0,
+        "data": {
+          "next_page_token": "",
+          "orders": [],
+          "total_count": 0
+        },
+        "message": "Success",
+        "request_id": "TEST-order.search-empty"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "multi_page_first",
+      "request": {
+        "query": {
+          "page_size": "1"
+        }
+      },
+      "response": {
+        "code": 0,
+        "data": {
+          "next_page_token": "TEST_PAGE_TOKEN_2",
+          "orders": [
+            {
+              "auto_combine_group_id": "TEST_auto_combine_group_id",
+              "buyer_avatar": "TEST_buyer_avatar",
+              "buyer_email": "TEST_buyer_email",
+              "buyer_message": "TEST_buyer_message",
+              "buyer_nickname": "TEST_buyer_nickname",
+              "cancel_order_sla_time": 1619621355,
+              "cancel_reason": "TEST_cancel_reason",
+              "cancel_time": 1678389618,
+              "cancellation_initiator": "TEST_cancellation_initiator",
+              "collection_due_time": 1678389618,
+              "collection_time": 1678389618,
+              "commerce_platform": "TEST_commerce_platform",
+              "consultation_id": "TEST_consultation_id",
+              "cpf": "TEST_cpf",
+              "cpf_name": "TEST_cpf_name",
+              "create_time": 1619611561,
+              "delivery_due_time": 1678389618,
+              "delivery_option_id": "TEST_delivery_option_id",
+              "delivery_option_name": "TEST_delivery_option_name",
+              "delivery_option_required_delivery_time": 1678389618,
+              "delivery_sla_time": 1678389618,
+              "delivery_time": 1678389618,
+              "delivery_type": "TEST_delivery_type",
+              "exchange_source_order_id": "TEST_exchange_source_order_id",
+              "fast_delivery_program": "TEST_fast_delivery_program",
+              "fast_dispatch_sla_time": 1678389618,
+              "fulfillment_priority_level": 100,
+              "fulfillment_type": "TEST_fulfillment_type",
+              "handling_duration": {
+                "days": "TEST_days",
+                "type": "TEST_type"
+              },
+              "has_updated_recipient_address": false,
+              "id": "TEST_id",
+              "is_buyer_request_cancel": false,
+              "is_cod": false,
+              "is_exchange_order": false,
+              "is_on_hold_order": false,
+              "is_replacement_order": false,
+              "is_sample_order": false,
+              "line_items": [
+                {
+                  "buyer_service_fee": "TEST_buyer_service_fee",
+                  "cancel_reason": "TEST_cancel_reason",
+                  "cancel_user": "TEST_cancel_user",
+                  "combined_listing_skus": [
+                    {
+                      "product_id": "TEST_product_id",
+                      "seller_sku": "TEST_seller_sku",
+                      "sku_count": 1,
+                      "sku_id": "TEST_sku_id"
+                    }
+                  ],
+                  "currency": "TEST_currency",
+                  "display_status": "TEST_display_status",
+                  "distance_fee": "TEST_distance_fee",
+                  "distance_shipping_fee": "TEST_distance_shipping_fee",
+                  "gift_retail_price": "TEST_gift_retail_price",
+                  "handling_duration_days": "TEST_handling_duration_days",
+                  "id": "TEST_id",
+                  "is_dangerous_good": false,
+                  "is_gift": false,
+                  "is_unboxing_item": false,
+                  "item_tax": [
+                    {
+                      "tax_amount": "TEST_tax_amount",
+                      "tax_rate": "TEST_tax_rate",
+                      "tax_type": "TEST_tax_type"
+                    }
+                  ],
+                  "needs_prescription": false,
+                  "original_price": "TEST_original_price",
+                  "package_id": "TEST_package_id",
+                  "package_status": "TEST_package_status",
+                  "pfand_fee": "TEST_pfand_fee",
+                  "platform_discount": "TEST_platform_discount",
+                  "product_id": "TEST_product_id",
+                  "product_name": "TEST_product_name",
+                  "retail_delivery_fee": "TEST_retail_delivery_fee",
+                  "rts_time": 1678389618,
+                  "sale_price": "TEST_sale_price",
+                  "seller_discount": "TEST_seller_discount",
+                  "seller_sku": "TEST_seller_sku",
+                  "shipping_provider_id": "TEST_shipping_provider_id",
+                  "shipping_provider_name": "TEST_shipping_provider_name",
+                  "sku_id": "TEST_sku_id",
+                  "sku_image": "TEST_sku_image",
+                  "sku_name": "TEST_sku_name",
+                  "sku_type": "TEST_sku_type",
+                  "small_order_fee": "TEST_small_order_fee",
+                  "tracking_number": "TEST_tracking_number",
+                  "unboxing_sku_code": "TEST_unboxing_sku_code"
+                }
+              ],
+              "need_upload_invoice": "TEST_need_upload_invoice",
+              "order_rights": [
+                1
+              ],
+              "order_type": "TEST_order_type",
+              "packages": [
+                {
+                  "id": "TEST_id"
+                }
+              ],
+              "paid_time": 1619611563,
+              "payment": {
+                "buyer_service_fee": "TEST_buyer_service_fee",
+                "currency": "TEST_currency",
+                "distance_fee": "TEST_distance_fee",
+                "distance_shipping_fee": "TEST_distance_shipping_fee",
+                "handling_fee": "TEST_handling_fee",
+                "item_insurance_fee": "TEST_item_insurance_fee",
+                "item_insurance_tax": "TEST_item_insurance_tax",
+                "original_shipping_fee": "TEST_original_shipping_fee",
+                "original_total_product_price": "TEST_original_total_product_price",
+                "payment_discount_service_fee": "TEST_payment_discount_service_fee",
+                "payment_platform_discount": "TEST_payment_platform_discount",
+                "platform_discount": "TEST_platform_discount",
+                "product_tax": "TEST_product_tax",
+                "retail_delivery_fee": "TEST_retail_delivery_fee",
+                "seller_discount": "TEST_seller_discount",
+                "shipping_fee": "TEST_shipping_fee",
+                "shipping_fee_cofunded_discount": "TEST_shipping_fee_cofunded_discount",
+                "shipping_fee_platform_discount": "TEST_shipping_fee_platform_discount",
+                "shipping_fee_seller_discount": "TEST_shipping_fee_seller_discount",
+                "shipping_fee_tax": "TEST_shipping_fee_tax",
+                "shipping_insurance_fee": "TEST_shipping_insurance_fee",
+                "small_order_fee": "TEST_small_order_fee",
+                "sub_total": "TEST_sub_total",
+                "tax": "TEST_tax",
+                "total_amount": "TEST_total_amount"
+              },
+              "payment_method_name": "TEST_payment_method_name",
+              "pick_up_cut_off_time": 1678389618,
+              "recipient_address": {
+                "address_detail": "TEST_address_detail",
+                "address_line1": "TEST_address_line1",
+                "address_line2": "TEST_address_line2",
+                "address_line3": "TEST_address_line3",
+                "address_line4": "TEST_address_line4",
+                "delivery_preferences": {
+                  "drop_off_location": "TEST_drop_off_location"
+                },
+                "district_info": [
+                  {
+                    "address_level": "TEST_address_level",
+                    "address_level_name": "TEST_address_level_name",
+                    "address_name": "TEST_address_name",
+                    "iso_code": "TEST_iso_code"
+                  }
+                ],
+                "first_name": "TEST_first_name",
+                "first_name_local_script": "TEST_first_name_local_script",
+                "full_address": "TEST_full_address",
+                "last_name": "TEST_last_name",
+                "last_name_local_script": "TEST_last_name_local_script",
+                "name": "TEST_name",
+                "phone_number": "TEST_phone_number",
+                "post_town": "TEST_post_town",
+                "postal_code": "TEST_postal_code",
+                "region_code": "TEST_region_code"
+              },
+              "recommended_shipping_time": 1619611561,
+              "release_date": 1619611762,
+              "replaced_order_id": "TEST_replaced_order_id",
+              "request_cancel_time": 1678389618,
+              "rts_sla_time": 1619611688,
+              "rts_time": 1619611563,
+              "seller_note": "TEST_seller_note",
+              "shipping_due_time": 1678389618,
+              "shipping_provider": "TEST_shipping_provider",
+              "shipping_provider_id": "TEST_shipping_provider_id",
+              "shipping_type": "TEST_shipping_type",
+              "split_or_combine_tag": "TEST_split_or_combine_tag",
+              "status": "TEST_status",
+              "tracking_number": "TEST_tracking_number",
+              "tts_sla_time": 1619611761,
+              "update_time": 1619621355,
+              "user_id": "TEST_user_id",
+              "warehouse_id": "TEST_warehouse_id"
+            }
+          ],
+          "total_count": 2
+        },
+        "message": "Success",
+        "request_id": "TEST-order.search-multi_first"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "multi_page_last",
+      "request": {
+        "query": {
+          "page_size": "1",
+          "page_token": "TEST_PAGE_TOKEN_2"
+        }
+      },
+      "response": {
+        "code": 0,
+        "data": {
+          "next_page_token": "",
+          "orders": [
+            {
+              "auto_combine_group_id": "TEST_auto_combine_group_id",
+              "buyer_avatar": "TEST_buyer_avatar",
+              "buyer_email": "TEST_buyer_email",
+              "buyer_message": "TEST_buyer_message",
+              "buyer_nickname": "TEST_buyer_nickname",
+              "cancel_order_sla_time": 1619621355,
+              "cancel_reason": "TEST_cancel_reason",
+              "cancel_time": 1678389618,
+              "cancellation_initiator": "TEST_cancellation_initiator",
+              "collection_due_time": 1678389618,
+              "collection_time": 1678389618,
+              "commerce_platform": "TEST_commerce_platform",
+              "consultation_id": "TEST_consultation_id",
+              "cpf": "TEST_cpf",
+              "cpf_name": "TEST_cpf_name",
+              "create_time": 1619611561,
+              "delivery_due_time": 1678389618,
+              "delivery_option_id": "TEST_delivery_option_id",
+              "delivery_option_name": "TEST_delivery_option_name",
+              "delivery_option_required_delivery_time": 1678389618,
+              "delivery_sla_time": 1678389618,
+              "delivery_time": 1678389618,
+              "delivery_type": "TEST_delivery_type",
+              "exchange_source_order_id": "TEST_exchange_source_order_id",
+              "fast_delivery_program": "TEST_fast_delivery_program",
+              "fast_dispatch_sla_time": 1678389618,
+              "fulfillment_priority_level": 100,
+              "fulfillment_type": "TEST_fulfillment_type",
+              "handling_duration": {
+                "days": "TEST_days",
+                "type": "TEST_type"
+              },
+              "has_updated_recipient_address": false,
+              "id": "TEST_id",
+              "is_buyer_request_cancel": false,
+              "is_cod": false,
+              "is_exchange_order": false,
+              "is_on_hold_order": false,
+              "is_replacement_order": false,
+              "is_sample_order": false,
+              "line_items": [
+                {
+                  "buyer_service_fee": "TEST_buyer_service_fee",
+                  "cancel_reason": "TEST_cancel_reason",
+                  "cancel_user": "TEST_cancel_user",
+                  "combined_listing_skus": [
+                    {
+                      "product_id": "TEST_product_id",
+                      "seller_sku": "TEST_seller_sku",
+                      "sku_count": 1,
+                      "sku_id": "TEST_sku_id"
+                    }
+                  ],
+                  "currency": "TEST_currency",
+                  "display_status": "TEST_display_status",
+                  "distance_fee": "TEST_distance_fee",
+                  "distance_shipping_fee": "TEST_distance_shipping_fee",
+                  "gift_retail_price": "TEST_gift_retail_price",
+                  "handling_duration_days": "TEST_handling_duration_days",
+                  "id": "TEST_id",
+                  "is_dangerous_good": false,
+                  "is_gift": false,
+                  "is_unboxing_item": false,
+                  "item_tax": [
+                    {
+                      "tax_amount": "TEST_tax_amount",
+                      "tax_rate": "TEST_tax_rate",
+                      "tax_type": "TEST_tax_type"
+                    }
+                  ],
+                  "needs_prescription": false,
+                  "original_price": "TEST_original_price",
+                  "package_id": "TEST_package_id",
+                  "package_status": "TEST_package_status",
+                  "pfand_fee": "TEST_pfand_fee",
+                  "platform_discount": "TEST_platform_discount",
+                  "product_id": "TEST_product_id",
+                  "product_name": "TEST_product_name",
+                  "retail_delivery_fee": "TEST_retail_delivery_fee",
+                  "rts_time": 1678389618,
+                  "sale_price": "TEST_sale_price",
+                  "seller_discount": "TEST_seller_discount",
+                  "seller_sku": "TEST_seller_sku",
+                  "shipping_provider_id": "TEST_shipping_provider_id",
+                  "shipping_provider_name": "TEST_shipping_provider_name",
+                  "sku_id": "TEST_sku_id",
+                  "sku_image": "TEST_sku_image",
+                  "sku_name": "TEST_sku_name",
+                  "sku_type": "TEST_sku_type",
+                  "small_order_fee": "TEST_small_order_fee",
+                  "tracking_number": "TEST_tracking_number",
+                  "unboxing_sku_code": "TEST_unboxing_sku_code"
+                }
+              ],
+              "need_upload_invoice": "TEST_need_upload_invoice",
+              "order_rights": [
+                1
+              ],
+              "order_type": "TEST_order_type",
+              "packages": [
+                {
+                  "id": "TEST_id"
+                }
+              ],
+              "paid_time": 1619611563,
+              "payment": {
+                "buyer_service_fee": "TEST_buyer_service_fee",
+                "currency": "TEST_currency",
+                "distance_fee": "TEST_distance_fee",
+                "distance_shipping_fee": "TEST_distance_shipping_fee",
+                "handling_fee": "TEST_handling_fee",
+                "item_insurance_fee": "TEST_item_insurance_fee",
+                "item_insurance_tax": "TEST_item_insurance_tax",
+                "original_shipping_fee": "TEST_original_shipping_fee",
+                "original_total_product_price": "TEST_original_total_product_price",
+                "payment_discount_service_fee": "TEST_payment_discount_service_fee",
+                "payment_platform_discount": "TEST_payment_platform_discount",
+                "platform_discount": "TEST_platform_discount",
+                "product_tax": "TEST_product_tax",
+                "retail_delivery_fee": "TEST_retail_delivery_fee",
+                "seller_discount": "TEST_seller_discount",
+                "shipping_fee": "TEST_shipping_fee",
+                "shipping_fee_cofunded_discount": "TEST_shipping_fee_cofunded_discount",
+                "shipping_fee_platform_discount": "TEST_shipping_fee_platform_discount",
+                "shipping_fee_seller_discount": "TEST_shipping_fee_seller_discount",
+                "shipping_fee_tax": "TEST_shipping_fee_tax",
+                "shipping_insurance_fee": "TEST_shipping_insurance_fee",
+                "small_order_fee": "TEST_small_order_fee",
+                "sub_total": "TEST_sub_total",
+                "tax": "TEST_tax",
+                "total_amount": "TEST_total_amount"
+              },
+              "payment_method_name": "TEST_payment_method_name",
+              "pick_up_cut_off_time": 1678389618,
+              "recipient_address": {
+                "address_detail": "TEST_address_detail",
+                "address_line1": "TEST_address_line1",
+                "address_line2": "TEST_address_line2",
+                "address_line3": "TEST_address_line3",
+                "address_line4": "TEST_address_line4",
+                "delivery_preferences": {
+                  "drop_off_location": "TEST_drop_off_location"
+                },
+                "district_info": [
+                  {
+                    "address_level": "TEST_address_level",
+                    "address_level_name": "TEST_address_level_name",
+                    "address_name": "TEST_address_name",
+                    "iso_code": "TEST_iso_code"
+                  }
+                ],
+                "first_name": "TEST_first_name",
+                "first_name_local_script": "TEST_first_name_local_script",
+                "full_address": "TEST_full_address",
+                "last_name": "TEST_last_name",
+                "last_name_local_script": "TEST_last_name_local_script",
+                "name": "TEST_name",
+                "phone_number": "TEST_phone_number",
+                "post_town": "TEST_post_town",
+                "postal_code": "TEST_postal_code",
+                "region_code": "TEST_region_code"
+              },
+              "recommended_shipping_time": 1619611561,
+              "release_date": 1619611762,
+              "replaced_order_id": "TEST_replaced_order_id",
+              "request_cancel_time": 1678389618,
+              "rts_sla_time": 1619611688,
+              "rts_time": 1619611563,
+              "seller_note": "TEST_seller_note",
+              "shipping_due_time": 1678389618,
+              "shipping_provider": "TEST_shipping_provider",
+              "shipping_provider_id": "TEST_shipping_provider_id",
+              "shipping_type": "TEST_shipping_type",
+              "split_or_combine_tag": "TEST_split_or_combine_tag",
+              "status": "TEST_status",
+              "tracking_number": "TEST_tracking_number",
+              "tts_sla_time": 1619611761,
+              "update_time": 1619621355,
+              "user_id": "TEST_user_id",
+              "warehouse_id": "TEST_warehouse_id"
+            }
+          ],
+          "total_count": 2
+        },
+        "message": "Success",
+        "request_id": "TEST-order.search-multi_last"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "invalid_input",
+      "classification": "test_fault_undocumented",
+      "trigger": "omit required query parameter 'page_size'",
+      "requestMustFailValidation": true
+    },
+    {
+      "case": "token_expired",
+      "classification": "test_fault_undocumented",
+      "trigger": "x-tts-access-token is past its expiry"
+    },
+    {
+      "case": "missing_scope",
+      "classification": "test_fault_undocumented",
+      "trigger": "app lacks the (unverified) scope of this operation"
+    }
+  ]
+}

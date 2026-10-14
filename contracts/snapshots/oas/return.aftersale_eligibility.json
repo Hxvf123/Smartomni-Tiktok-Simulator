@@ -1,0 +1,186 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/return_refund.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "b4882c087601c2cc23c78352aa66e8f6ecc208eb6e8caa357d4e93b3e2517c2a",
+    "candidatesInBundle": [
+      {
+        "method": "GET",
+        "path": "/return_refund/202309/orders/{order_id}/aftersale_eligibility",
+        "version": "202309"
+      },
+      {
+        "method": "GET",
+        "path": "/return_refund/202512/orders/{order_id}/aftersale_eligibility",
+        "version": "202512"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "GET",
+  "path": "/return_refund/202512/orders/{order_id}/aftersale_eligibility",
+  "operation": {
+    "tags": [
+      "return_refund_v202512"
+    ],
+    "summary": "GetAftersaleEligibility",
+    "description": "Use this API to check eligible aftersale solutions for an order, including whether the seller or buyer can initiate a refund, return, or cancel a specific order.",
+    "parameters": [
+      {
+        "name": "order_id",
+        "in": "path",
+        "description": "The unique identifier for a TikTok Shop order.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "577087614418520388"
+      },
+      {
+        "name": "initiate_aftersale_user",
+        "in": "query",
+        "description": "The type of user you would like to check aftersale options for.\nDefault: SELLER\nPossible values:\n- SELLER\n- BUYER",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "BUYER"
+      },
+      {
+        "name": "request_types",
+        "in": "query",
+        "description": "Which request types you want to query.\n-CANCEL\n-REFUND\n-RETURN_AND_REFUND",
+        "required": false,
+        "schema": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      {
+        "name": "shop_cipher",
+        "in": "query",
+        "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. ",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "sku_eligibility": {
+                      "description": "The eligible aftersale options for a given SKU.",
+                      "items": {
+                        "properties": {
+                          "line_item_eligibility": {
+                            "description": "The eligible aftersale options based on order line item.",
+                            "items": {
+                              "properties": {
+                                "available_reason_names": {
+                                  "description": "The reason used to initiate a reqeust.",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "type": "array"
+                                },
+                                "eligible": {
+                                  "description": "Use this field to recognize whether an item is eligible for an aftersale request:\n- TRUE\n- FALSE",
+                                  "example": true,
+                                  "type": "boolean"
+                                },
+                                "ineligible_code": {
+                                  "description": "The reason code for an ineligible aftersale request.",
+                                  "example": 25001001,
+                                  "format": "int32",
+                                  "type": "integer"
+                                },
+                                "ineligible_reason": {
+                                  "description": "The reason for an ineligible aftersale request.",
+                                  "example": "invalid order status",
+                                  "type": "string"
+                                },
+                                "order_line_items_ids": {
+                                  "description": "IDs of order line items.",
+                                  "example": [
+                                    "576469648086306000"
+                                  ],
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "type": "array"
+                                },
+                                "request_type": {
+                                  "description": "Aftersale request type.\nPossible values:\n- CANCEL\n- RETURN\n- RETURN_AND_REFUND",
+                                  "example": "REFUND",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "sku_id": {
+                            "description": "SKU ID.",
+                            "example": "1729385144994206632",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

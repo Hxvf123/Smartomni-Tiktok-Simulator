@@ -1,0 +1,127 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/return_refund.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "6a205f8502d19744cb06dadbbb3806b79b9647826a69ac2bc5cd4fce29213b32",
+    "candidatesInBundle": [
+      {
+        "method": "GET",
+        "path": "/return_refund/202309/reject_reasons",
+        "version": "202309"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "GET",
+  "path": "/return_refund/202309/reject_reasons",
+  "operation": {
+    "tags": [
+      "return_refund_v202309"
+    ],
+    "summary": "GetRejectReasons",
+    "description": "Use this API to obtain order return or cancellation rejection reasons. The seller is required to provide a reason when they reject a cancel, refund, or return request.",
+    "parameters": [
+      {
+        "name": "locale",
+        "in": "query",
+        "description": "The BCP-47 locale codes for displaying the rejection reason, delimited by commas. Default: en-US\nRefer to [Locale codes](678e3a47bae28f030a8c7523) for the list of supported locale codes.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "en-US"
+      },
+      {
+        "name": "return_or_cancel_id",
+        "in": "query",
+        "description": "The unique identifier for an order return or cancellation.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "4035319218955782461"
+      },
+      {
+        "name": "shop_cipher",
+        "in": "query",
+        "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. ",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "reasons": {
+                      "description": "The list of rejection reasons the seller has provided.",
+                      "items": {
+                        "properties": {
+                          "name": {
+                            "description": "The reason name of a seller rejection.",
+                            "example": "seller_reject_apply_you_have_reached_an_agreement_with_the_buyer",
+                            "type": "string"
+                          },
+                          "text": {
+                            "description": "The corresponding text to the reason name, localized based on the locale input parameter.",
+                            "example": "You have reached an agreement with the buyer",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

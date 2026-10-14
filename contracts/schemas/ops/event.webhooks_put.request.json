@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ops/event.webhooks_put.request.json",
+  "title": "PUT /event/202309/webhooks request body",
+  "x-verification": "official OAS 0.1.7; OAS declares no required body fields (unknown which are mandatory)",
+  "type": "object",
+  "properties": {
+    "address": {
+      "type": "string"
+    },
+    "event_type": {
+      "type": "string"
+    }
+  }
+}

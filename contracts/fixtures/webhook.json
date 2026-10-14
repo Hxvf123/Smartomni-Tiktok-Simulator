@@ -1,0 +1,32 @@
+{
+  "operation": "webhook.ORDER_STATUS_CHANGE",
+  "schema": "schemas/webhook-envelope.json",
+  "classification": "provisional-secondary",
+  "note": "Synthetic. order_status AWAITING_SHIPMENT is from the secondary sample and is not a verified enum.",
+  "cases": [
+    {
+      "case": "success",
+      "response": {
+        "type": 1,
+        "tts_notification_id": "test-notification-0001",
+        "shop_id": "7000000000000000001",
+        "timestamp": 1700000000,
+        "data": {
+          "order_id": "576000000000000001",
+          "order_status": "AWAITING_SHIPMENT"
+        }
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "schema_violation_missing_notification_id",
+      "response": {
+        "type": 1,
+        "shop_id": "7000000000000000001",
+        "timestamp": 1700000000,
+        "data": {}
+      },
+      "expect": "invalid"
+    }
+  ]
+}

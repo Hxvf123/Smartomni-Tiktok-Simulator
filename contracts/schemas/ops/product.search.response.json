@@ -1,0 +1,265 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ops/product.search.response.json",
+  "title": "POST /product/202502/products/search response",
+  "x-verification": "official OAS 0.1.7 (2026-10-14); OAS declares no per-field required flags, so only the envelope trio code/message/request_id is required here (envelope trio taken from every OAS response schema)",
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "integer"
+    },
+    "data": {
+      "type": "object",
+      "properties": {
+        "next_page_token": {
+          "type": "string"
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "audit": {
+                "type": "object",
+                "properties": {
+                  "pre_approved_reasons": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "status": {
+                    "type": "string"
+                  }
+                }
+              },
+              "create_time": {
+                "type": "integer"
+              },
+              "has_draft": {
+                "type": "boolean"
+              },
+              "id": {
+                "type": "string"
+              },
+              "integrated_platform_statuses": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "platform": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "is_not_for_sale": {
+                "type": "boolean"
+              },
+              "listing_quality_tier": {
+                "type": "string"
+              },
+              "product_families": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "products": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "product_sync_fail_reasons": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "recommended_categories": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "local_name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "sales_regions": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "skus": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "external_list_prices": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "amount": {
+                            "type": "string"
+                          },
+                          "currency": {
+                            "type": "string"
+                          },
+                          "source": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "fees": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "additional_attribute": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "id": {
+                      "type": "string"
+                    },
+                    "inventory": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "backorder_quantity": {
+                            "type": "integer"
+                          },
+                          "handling_time": {
+                            "type": "integer"
+                          },
+                          "quantity": {
+                            "type": "integer"
+                          },
+                          "warehouse_id": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "list_price": {
+                      "type": "object",
+                      "properties": {
+                        "amount": {
+                          "type": "string"
+                        },
+                        "currency": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "pre_sale": {
+                      "type": "object",
+                      "properties": {
+                        "fulfillment_type": {
+                          "type": "object",
+                          "properties": {
+                            "handling_duration_days": {
+                              "type": "integer"
+                            },
+                            "release_date": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "price": {
+                      "type": "object",
+                      "properties": {
+                        "currency": {
+                          "type": "string"
+                        },
+                        "sale_price": {
+                          "type": "string"
+                        },
+                        "tax_exclusive_price": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "seller_sku": {
+                      "type": "string"
+                    },
+                    "status_info": {
+                      "type": "object",
+                      "properties": {
+                        "deactivation_source": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "status": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "update_time": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "total_count": {
+          "type": "integer"
+        }
+      }
+    },
+    "message": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "code",
+    "message",
+    "request_id"
+  ]
+}

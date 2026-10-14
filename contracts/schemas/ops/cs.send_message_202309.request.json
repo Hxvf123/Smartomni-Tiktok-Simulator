@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ops/cs.send_message_202309.request.json",
+  "title": "POST /customer_service/202309/conversations/{conversation_id}/messages request body",
+  "x-verification": "official OAS 0.1.7; OAS declares no required body fields (unknown which are mandatory)",
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,244 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/logistics.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "dc47e4bc4e7ea0e89469fe62fe0868d214290c08d71a8577c141e2531930d8c0",
+    "candidatesInBundle": [
+      {
+        "method": "GET",
+        "path": "/logistics/202309/warehouses",
+        "version": "202309"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "GET",
+  "path": "/logistics/202309/warehouses",
+  "operation": {
+    "tags": [
+      "logistics_v202309"
+    ],
+    "summary": "GetWarehouseList",
+    "description": "This API retrieves all warehouse information associated with the seller. Warehouse information includes name, status, address, and other details.",
+    "parameters": [
+      {
+        "name": "shop_cipher",
+        "in": "query",
+        "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. ",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "warehouses": {
+                      "description": "All the warehouses associated with the seller.",
+                      "items": {
+                        "properties": {
+                          "address": {
+                            "description": "Warehouse address.",
+                            "properties": {
+                              "address_line1": {
+                                "description": "The first line of the warehouse address, like street name and street number.\nNote: \n- For Brazilian market, this represents the neighborhood or district.\n- For the JP market, this represents the district (Chome), block (Banchi), building number (Go).",
+                                "example": "Bairro/Distrito",
+                                "type": "string"
+                              },
+                              "address_line2": {
+                                "description": "The second line of the warehouse address, like flat, apartment, or suit.\nNote: For the Brazilian market, this represents the street name.",
+                                "example": "Caminho Trinta e Três",
+                                "type": "string"
+                              },
+                              "address_line3": {
+                                "description": "This represents the street number. If it's `s/n`, it means null.\nNote: Available only in the Brazilian market.",
+                                "example": "3",
+                                "type": "string"
+                              },
+                              "address_line4": {
+                                "description": "This represents supplement information, like flat, apartment, or suit (optional).\nNote: Available only in the Brazilian market.",
+                                "example": "11 floor",
+                                "type": "string"
+                              },
+                              "city": {
+                                "description": "Warehouse city.",
+                                "example": "GuanZhou",
+                                "type": "string"
+                              },
+                              "contact_person": {
+                                "description": "Warehouse contact person name.",
+                                "example": "Lee",
+                                "type": "string"
+                              },
+                              "distict": {
+                                "description": "Warehouse district.",
+                                "example": "HuaDu",
+                                "type": "string"
+                              },
+                              "first_name": {
+                                "description": "Kanji first name\nApplicable only for the JP market.",
+                                "example": "新一",
+                                "type": "string"
+                              },
+                              "first_name_local_script": {
+                                "description": "Hiragana or Katakana first name\nApplicable only for the JP market.",
+                                "example": "くどう",
+                                "type": "string"
+                              },
+                              "full_address": {
+                                "description": "The combined warehouse address, including the street address and other address information such as apartment number, building, floor..etc (optional)",
+                                "example": "South Sea 11 floor",
+                                "type": "string"
+                              },
+                              "geolocation": {
+                                "description": "The geographical location of the address.",
+                                "properties": {
+                                  "latitude": {
+                                    "description": "The latitude of the address.",
+                                    "example": "45.41634",
+                                    "type": "string"
+                                  },
+                                  "longitude": {
+                                    "description": "The longitude of the address.",
+                                    "example": "-75.6868",
+                                    "type": "string"
+                                  }
+                                },
+                                "type": "object"
+                              },
+                              "last_name": {
+                                "description": "Kanji last name\nApplicable only for the JP market.",
+                                "example": "工藤",
+                                "type": "string"
+                              },
+                              "last_name_local_script": {
+                                "description": "Hiragana or Katakana last name\nApplicable only for the JP market.",
+                                "example": "しんいち",
+                                "type": "string"
+                              },
+                              "phone_number": {
+                                "description": "Warehouse phone number.",
+                                "example": "188****2234",
+                                "type": "string"
+                              },
+                              "postal_code": {
+                                "description": "Warehouse address postal code (also known as zip code)",
+                                "example": "510000",
+                                "type": "string"
+                              },
+                              "region": {
+                                "description": "Warehouse region.",
+                                "example": "China",
+                                "type": "string"
+                              },
+                              "region_code": {
+                                "description": "Warehouse region code.",
+                                "example": "CN",
+                                "type": "string"
+                              },
+                              "state": {
+                                "description": "Warehouse state or province.",
+                                "example": "GuangDong",
+                                "type": "string"
+                              },
+                              "town": {
+                                "description": "Warehouse town.",
+                                "example": "town",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "effect_status": {
+                            "description": "Possible values:\n- ENABLED: All products in stock are available for sale.\n- DISABLED: All products in stock are unavailable for sale. \n- RESTRICTED: The warehouse is either on \"holiday mode\" or \"order limit mode.\" All products in stock are unavailable for sale.\n-Holiday mode: When the seller cannot fulfill an order from a warehouse, the seller can turn on holiday mode for the warehouse in seller center. \n- Order limit mode: When the seller violates TikTok Shop policies, TikTok Shop will limit the order volume that can be fulfilled by a warehouse.",
+                            "example": "ENABLED",
+                            "type": "string"
+                          },
+                          "entity_id": {
+                            "description": "The warehouse entity ID, used to associate physical information of a warehouse, different warehouses may be associated with the same entity.",
+                            "example": "7395366865142499073",
+                            "type": "string"
+                          },
+                          "id": {
+                            "description": "The warehouse ID, a unique and immutable primary key, used for all warehouse logistics.",
+                            "example": "7000714532876273410",
+                            "type": "string"
+                          },
+                          "is_default": {
+                            "description": "The default warehouse.  If a product is listed with no designated warehouse, the default warehouse will be used.",
+                            "example": true,
+                            "type": "boolean"
+                          },
+                          "name": {
+                            "description": "Warehouse name. This name is not unique across the TikTok Shop system.",
+                            "example": "Guangzhou",
+                            "type": "string"
+                          },
+                          "sub_type": {
+                            "description": "Possible values:\n- DOMESTIC_WAREHOUSE: The warehouse is in the same country as the target market and the seller.\n- CB_OVERSEA_WAREHOUSE: For cross-border sellers, a local warehouse in the target market. \n- CB_DIRECT_SHIPPING_WAREHOUSE: For cross-border sellers, a warehouse in the seller's base country, e.g., Mainland China or Hong Kong.",
+                            "example": "DOMESTIC_WAREHOUSE",
+                            "type": "string"
+                          },
+                          "type": {
+                            "description": "Possible values:\n- SALES_WAREHOUSE: Warehouse for shipping products.  \n- RETURN_WAREHOUSE: Warehouse for receiving returned products. \nYou can have the same warehouse for both shipping and receiving returns, but they will have different warehouse IDs with the same address.",
+                            "example": "SALES_WAREHOUSE",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ops/cancellation.reject.request.json",
+  "title": "POST /return_refund/202309/cancellations/{cancel_id}/reject request body",
+  "x-verification": "official OAS 0.1.7; OAS declares no required body fields (unknown which are mandatory)",
+  "type": "object",
+  "properties": {
+    "comment": {
+      "type": "string"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "height": {
+            "type": "integer"
+          },
+          "image_id": {
+            "type": "string"
+          },
+          "mime_type": {
+            "type": "string"
+          },
+          "width": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "reject_reason": {
+      "type": "string"
+    }
+  }
+}

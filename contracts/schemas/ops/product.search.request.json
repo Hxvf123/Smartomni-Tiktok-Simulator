@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ops/product.search.request.json",
+  "title": "POST /product/202502/products/search request body",
+  "x-verification": "official OAS 0.1.7; OAS declares no required body fields (unknown which are mandatory)",
+  "type": "object",
+  "properties": {
+    "audit_status": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "category_version": {
+      "type": "string"
+    },
+    "create_time_ge": {
+      "type": "integer"
+    },
+    "create_time_le": {
+      "type": "integer"
+    },
+    "listing_platforms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "listing_quality_tiers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "return_draft_version": {
+      "type": "boolean"
+    },
+    "seller_skus": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sku_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sns_filter": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "update_time_ge": {
+      "type": "integer"
+    },
+    "update_time_le": {
+      "type": "integer"
+    }
+  }
+}

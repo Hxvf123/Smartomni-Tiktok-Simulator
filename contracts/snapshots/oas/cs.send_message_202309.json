@@ -1,0 +1,124 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/customer_service.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "6c8acc60420d547e3d49ee5d9477b7d93e3a410d48dd696a36b570bc1e2d95f5",
+    "candidatesInBundle": [
+      {
+        "method": "POST",
+        "path": "/customer_service/202309/conversations/{conversation_id}/messages",
+        "version": "202309"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "POST",
+  "path": "/customer_service/202309/conversations/{conversation_id}/messages",
+  "operation": {
+    "tags": [
+      "customer_service_v202309"
+    ],
+    "summary": "SendMessage",
+    "description": "Use this API to send a message to the buyer in a conversation.",
+    "parameters": [
+      {
+        "name": "conversation_id",
+        "in": "path",
+        "description": "Conversation ID",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "7494560109732334262"
+      },
+      {
+        "name": "shop_cipher",
+        "in": "query",
+        "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. ",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "properties": {
+              "content": {
+                "description": "Message content, in JSON serialized string.\n\nExamples of content for each type of message are listed below:\n​\n- TEXT:\n{\n    \"content\": \"hi, I want to get refunded.\"\n}\n(Note: Max 2000 characters. Do not use sensitive words that violate TikTok Shop terms & policies.)\n\n- VIDEO\n{\n    \"vid\": \"v10394g5000cd499vc7og65mqn3r3dg0\"\n}\n\n- LOGISTICS_CARD\n{\n    \"order_id\": \"580874485811283206\",\n    \"package_id\": \"123456\"  // Optional  (recommended for one order with multiple packages; not required for one order with one package)\n}\n​\n- PRODUCT_CARD\n{\n    \"product_id\": \"7494560109732334265\"\n}\n​\n- ORDER_CARD:\n{\n    \"order_id\": \"7494560109732334267\"\n}\n\n- RETURN_REFUND_CARD:\n{\n    \"order_id\": \"7494560109732334267\",\n    \"sku_id\": \"7494560109732363423\"\n}\nNote: The order of the RETURN_REFUND_CARD to send must meet after-sale conditions. To check the eligibility, use [Get Aftersale Eligibility](650ab645c16ffe02b8f2e1c1).\n​\n- IMAGE:\n{\n    \"url\":\"https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/2ca53c34ad8443e6b39f4e0153d3aed4~tplv-o3syd03w52-origin-image.image?from=1320446476\",\n    \"width\": 1280,\n    \"height\": 720\n}\n\nNote: You can get the value of `url` by calling [Upload Buyer Messages Image](650a599d0fcef602bf2a1dc8).\n\n- COUPON_CARD:\n{\n    \"coupon_id\": \"7262992004278206762\"\n}\nNote: Coupons that can be sent in  a message must meet all the following conditions:\n1. `display_type==CHAT` or `display_type==REGULAR`\n2. `status==ONGOING`\n3. `creation_source==SELLER_CENTER`\n4. `target_buyer_segment!=REPEAT_CUSTOMERS`",
+                "example": "{\"content\": \"test\"}",
+                "type": "string"
+              },
+              "type": {
+                "description": "Message type. Possible enumerations:\n- `TEXT`\n- `IMAGE`\n- `VIDEO`\n- `PRODUCT_CARD`\n- `ORDER_CARD`\n- `RETURN_REFUND_CARD`\n- `COUPON_CARD`\n- `LOGISTICS_CARD`",
+                "example": "TEXT",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "message_id": {
+                      "description": "Message ID",
+                      "example": "7494560109732334261",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "error-envelope.json",
+  "title": "Error response envelope (shape only)",
+  "x-verification": "Shape only: same envelope as success, per the OAS ('code', 'message' describing the failure reason, 'request_id'). Error code VALUES are not documented in any readable official source and are deliberately not enumerated. Codes seen only in the official FAQ index: 105004, 36004001 ('rt has expired', legacy refresh path), 36009003 - meanings not documented.",
+  "type": "object",
+  "required": [
+    "code",
+    "message",
+    "request_id"
+  ],
+  "properties": {
+    "code": {
+      "type": "integer"
+    },
+    "message": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

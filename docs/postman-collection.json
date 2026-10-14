@@ -1,0 +1,593 @@
+{
+  "info": {
+    "name": "SmartOmni TikTok Simulator - contract samples (unverified)",
+    "description": "Samples for operations whose schema comes from the official bundled OAS (status unverified: docv2, scopes and error codes unread). Set variables in a Postman environment; never commit real secrets. The pre-request script signs GET and JSON-body requests (body appended to the string to sign; evidence is indirect: the toolkit's local-broker signer, not the Common Parameters page). Uploads (multipart) are not signable: rule unverified. Fixtures per operation: contracts/fixtures/ops/.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8090"
+    },
+    {
+      "key": "app_key",
+      "value": ""
+    },
+    {
+      "key": "app_secret",
+      "value": ""
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "shop_cipher",
+      "value": ""
+    },
+    {
+      "key": "order_id",
+      "value": "576000000000000001"
+    },
+    {
+      "key": "package_id",
+      "value": "1153000000000000001"
+    },
+    {
+      "key": "return_id",
+      "value": ""
+    },
+    {
+      "key": "conversation_id",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Signs per contracts/signing/README.md: secret + path + sorted(name+value excluding sign/access_token) + raw body + secret, HMAC-SHA256 hex.",
+          "// Algorithm evidence: indirect (TTS Open Toolkit local-broker signer); the Common Parameters page was not readable. multipart uploads are NOT signable (rule unverified).",
+          "const secret = pm.variables.get('app_secret');",
+          "if (!secret) { throw new Error('app_secret variable is empty'); }",
+          "const ts = String(Math.floor(Date.now() / 1000));",
+          "pm.variables.set('timestamp', ts);",
+          "const url = pm.request.url;",
+          "const q = {};",
+          "url.query.each(p => {",
+          "  if (!p.key || p.disabled || p.key === 'sign' || p.key === 'access_token') return;",
+          "  q[p.key] = pm.variables.replaceIn(p.value || '');",
+          "});",
+          "const path = '/' + url.path.map(s => pm.variables.replaceIn(s)).join('/');",
+          "let body = '';",
+          "if (pm.request.body && pm.request.body.mode === 'raw') { body = pm.variables.replaceIn(pm.request.body.raw || ''); }",
+          "if (pm.request.body && pm.request.body.mode === 'formdata') { throw new Error('multipart signing is unverified; do not use this collection for uploads'); }",
+          "let s = secret + path;",
+          "Object.keys(q).sort().forEach(k => { s += k + q[k]; });",
+          "s += body + secret;",
+          "pm.variables.set('sign', CryptoJS.HmacSHA256(s, secret).toString(CryptoJS.enc.Hex));"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "auth.shops - GET /authorization/202309/shops",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/authorization/202309/shops?app_key={{app_key}}&timestamp={{timestamp}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "authorization",
+            "202309",
+            "shops"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "order.search - POST /order/202309/orders/search",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"order_status\":\"AWAITING_SHIPMENT\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/order/202309/orders/search?app_key={{app_key}}&timestamp={{timestamp}}&page_size=20&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "order",
+            "202309",
+            "orders",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "page_size",
+              "value": "20"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "order.detail - GET /order/202507/orders",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/order/202507/orders?app_key={{app_key}}&timestamp={{timestamp}}&ids={{order_id}}&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "order",
+            "202507",
+            "orders"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "ids",
+              "value": "{{order_id}}"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "product.search - POST /product/202502/products/search",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"status\":\"ACTIVATE\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/product/202502/products/search?app_key={{app_key}}&timestamp={{timestamp}}&page_size=10&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "product",
+            "202502",
+            "products",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "page_size",
+              "value": "10"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "fulfillment.shipping_documents - GET",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/fulfillment/202309/packages/{{package_id}}/shipping_documents?app_key={{app_key}}&timestamp={{timestamp}}&document_type=SHIPPING_LABEL&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "fulfillment",
+            "202309",
+            "packages",
+            "{{package_id}}",
+            "shipping_documents"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "document_type",
+              "value": "SHIPPING_LABEL"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "return.search - POST /return_refund/202309/returns/search",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/return_refund/202309/returns/search?app_key={{app_key}}&timestamp={{timestamp}}&page_size=10&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "return_refund",
+            "202309",
+            "returns",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "page_size",
+              "value": "10"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "cs.conversations - GET /customer_service/202309/conversations",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/customer_service/202309/conversations?app_key={{app_key}}&timestamp={{timestamp}}&page_size=20&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "customer_service",
+            "202309",
+            "conversations"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "page_size",
+              "value": "20"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "promotion.coupon_search - POST /promotion/202406/coupons/search",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"status\":[\"ONGOING\"]}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/promotion/202406/coupons/search?app_key={{app_key}}&timestamp={{timestamp}}&page_size=50&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "promotion",
+            "202406",
+            "coupons",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "page_size",
+              "value": "50"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "event.webhooks_put - PUT /event/202309/webhooks",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"address\":\"https://example.test/hook\",\"event_type\":\"ORDER_STATUS_CHANGE\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/event/202309/webhooks?app_key={{app_key}}&timestamp={{timestamp}}&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "event",
+            "202309",
+            "webhooks"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

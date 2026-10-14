@@ -1,0 +1,361 @@
+{
+  "operation": "return.search",
+  "schema": "schemas/ops/return.search.response.json",
+  "classification": "synthetic-from-official-oas",
+  "note": "Values are synthetic and generated from the official OAS response shape; they are not captured TikTok traffic. Error cases are TEST FAULTS: no readable official source documents their code/message values.",
+  "cases": [
+    {
+      "case": "success",
+      "response": {
+        "code": 0,
+        "data": {
+          "next_page_token": "",
+          "return_orders": [
+            {
+              "arbitration_status": "TEST_arbitration_status",
+              "buyer_rejected_partial_refund": false,
+              "can_buyer_keep_item": false,
+              "combined_return_id": "TEST_combined_return_id",
+              "create_time": 1690451136,
+              "discount_amount": [
+                {
+                  "currency": "TEST_currency",
+                  "product_platform_discount": "TEST_product_platform_discount",
+                  "product_seller_discount": "TEST_product_seller_discount",
+                  "shipping_fee_platform_discount": "TEST_shipping_fee_platform_discount",
+                  "shipping_fee_seller_discount": "TEST_shipping_fee_seller_discount"
+                }
+              ],
+              "handover_method": "TEST_handover_method",
+              "is_combined_return": false,
+              "next_return_id": "TEST_next_return_id",
+              "order_id": "TEST_order_id",
+              "partial_refund": {
+                "amount": "TEST_amount",
+                "currency": "TEST_currency"
+              },
+              "pre_return_id": "TEST_pre_return_id",
+              "refund_amount": {
+                "buyer_service_fee": "TEST_buyer_service_fee",
+                "currency": "TEST_currency",
+                "refund_shipping_fee": "TEST_refund_shipping_fee",
+                "refund_subtotal": "TEST_refund_subtotal",
+                "refund_tax": "TEST_refund_tax",
+                "refund_total": "TEST_refund_total",
+                "retail_delivery_fee": "TEST_retail_delivery_fee"
+              },
+              "return_id": "TEST_return_id",
+              "return_line_items": [
+                {
+                  "order_line_item_id": "TEST_order_line_item_id",
+                  "product_image": {
+                    "height": 200,
+                    "url": "TEST_url",
+                    "width": 200
+                  },
+                  "product_name": "TEST_product_name",
+                  "refund_amount": {
+                    "buyer_service_fee": "TEST_buyer_service_fee",
+                    "currency": "TEST_currency",
+                    "refund_shipping_fee": "TEST_refund_shipping_fee",
+                    "refund_subtotal": "TEST_refund_subtotal",
+                    "refund_tax": "TEST_refund_tax",
+                    "refund_total": "TEST_refund_total",
+                    "retail_delivery_fee": "TEST_retail_delivery_fee"
+                  },
+                  "return_line_item_id": "TEST_return_line_item_id",
+                  "seller_sku": "TEST_seller_sku",
+                  "sku_id": "TEST_sku_id",
+                  "sku_name": "TEST_sku_name"
+                }
+              ],
+              "return_method": "TEST_return_method",
+              "return_provider_id": "TEST_return_provider_id",
+              "return_provider_name": "TEST_return_provider_name",
+              "return_reason": "TEST_return_reason",
+              "return_reason_text": "TEST_return_reason_text",
+              "return_shipping_document_type": "TEST_return_shipping_document_type",
+              "return_status": "TEST_return_status",
+              "return_tracking_number": "TEST_return_tracking_number",
+              "return_type": "TEST_return_type",
+              "return_warehouse_address": {
+                "full_address": "TEST_full_address"
+              },
+              "role": "TEST_role",
+              "seller_next_action_response": [
+                {
+                  "action": "TEST_action",
+                  "deadline": 1690554680
+                }
+              ],
+              "seller_proposed_return_type": "TEST_seller_proposed_return_type",
+              "shipment_type": "TEST_shipment_type",
+              "shipping_fee_amount": [
+                {
+                  "buyer_paid_return_shipping_fee": "TEST_buyer_paid_return_shipping_fee",
+                  "currency": "TEST_currency",
+                  "platform_paid_return_shipping_fee": "TEST_platform_paid_return_shipping_fee",
+                  "seller_paid_return_shipping_fee": "TEST_seller_paid_return_shipping_fee"
+                }
+              ],
+              "update_time": 1690453136
+            }
+          ],
+          "total_count": 100
+        },
+        "message": "Success",
+        "request_id": "TEST-return.search-success"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "empty",
+      "response": {
+        "code": 0,
+        "data": {
+          "next_page_token": "",
+          "return_orders": [],
+          "total_count": 0
+        },
+        "message": "Success",
+        "request_id": "TEST-return.search-empty"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "multi_page_first",
+      "request": {
+        "query": {
+          "page_size": "1"
+        }
+      },
+      "response": {
+        "code": 0,
+        "data": {
+          "next_page_token": "TEST_PAGE_TOKEN_2",
+          "return_orders": [
+            {
+              "arbitration_status": "TEST_arbitration_status",
+              "buyer_rejected_partial_refund": false,
+              "can_buyer_keep_item": false,
+              "combined_return_id": "TEST_combined_return_id",
+              "create_time": 1690451136,
+              "discount_amount": [
+                {
+                  "currency": "TEST_currency",
+                  "product_platform_discount": "TEST_product_platform_discount",
+                  "product_seller_discount": "TEST_product_seller_discount",
+                  "shipping_fee_platform_discount": "TEST_shipping_fee_platform_discount",
+                  "shipping_fee_seller_discount": "TEST_shipping_fee_seller_discount"
+                }
+              ],
+              "handover_method": "TEST_handover_method",
+              "is_combined_return": false,
+              "next_return_id": "TEST_next_return_id",
+              "order_id": "TEST_order_id",
+              "partial_refund": {
+                "amount": "TEST_amount",
+                "currency": "TEST_currency"
+              },
+              "pre_return_id": "TEST_pre_return_id",
+              "refund_amount": {
+                "buyer_service_fee": "TEST_buyer_service_fee",
+                "currency": "TEST_currency",
+                "refund_shipping_fee": "TEST_refund_shipping_fee",
+                "refund_subtotal": "TEST_refund_subtotal",
+                "refund_tax": "TEST_refund_tax",
+                "refund_total": "TEST_refund_total",
+                "retail_delivery_fee": "TEST_retail_delivery_fee"
+              },
+              "return_id": "TEST_return_id",
+              "return_line_items": [
+                {
+                  "order_line_item_id": "TEST_order_line_item_id",
+                  "product_image": {
+                    "height": 200,
+                    "url": "TEST_url",
+                    "width": 200
+                  },
+                  "product_name": "TEST_product_name",
+                  "refund_amount": {
+                    "buyer_service_fee": "TEST_buyer_service_fee",
+                    "currency": "TEST_currency",
+                    "refund_shipping_fee": "TEST_refund_shipping_fee",
+                    "refund_subtotal": "TEST_refund_subtotal",
+                    "refund_tax": "TEST_refund_tax",
+                    "refund_total": "TEST_refund_total",
+                    "retail_delivery_fee": "TEST_retail_delivery_fee"
+                  },
+                  "return_line_item_id": "TEST_return_line_item_id",
+                  "seller_sku": "TEST_seller_sku",
+                  "sku_id": "TEST_sku_id",
+                  "sku_name": "TEST_sku_name"
+                }
+              ],
+              "return_method": "TEST_return_method",
+              "return_provider_id": "TEST_return_provider_id",
+              "return_provider_name": "TEST_return_provider_name",
+              "return_reason": "TEST_return_reason",
+              "return_reason_text": "TEST_return_reason_text",
+              "return_shipping_document_type": "TEST_return_shipping_document_type",
+              "return_status": "TEST_return_status",
+              "return_tracking_number": "TEST_return_tracking_number",
+              "return_type": "TEST_return_type",
+              "return_warehouse_address": {
+                "full_address": "TEST_full_address"
+              },
+              "role": "TEST_role",
+              "seller_next_action_response": [
+                {
+                  "action": "TEST_action",
+                  "deadline": 1690554680
+                }
+              ],
+              "seller_proposed_return_type": "TEST_seller_proposed_return_type",
+              "shipment_type": "TEST_shipment_type",
+              "shipping_fee_amount": [
+                {
+                  "buyer_paid_return_shipping_fee": "TEST_buyer_paid_return_shipping_fee",
+                  "currency": "TEST_currency",
+                  "platform_paid_return_shipping_fee": "TEST_platform_paid_return_shipping_fee",
+                  "seller_paid_return_shipping_fee": "TEST_seller_paid_return_shipping_fee"
+                }
+              ],
+              "update_time": 1690453136
+            }
+          ],
+          "total_count": 2
+        },
+        "message": "Success",
+        "request_id": "TEST-return.search-multi_first"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "multi_page_last",
+      "request": {
+        "query": {
+          "page_size": "1",
+          "page_token": "TEST_PAGE_TOKEN_2"
+        }
+      },
+      "response": {
+        "code": 0,
+        "data": {
+          "next_page_token": "",
+          "return_orders": [
+            {
+              "arbitration_status": "TEST_arbitration_status",
+              "buyer_rejected_partial_refund": false,
+              "can_buyer_keep_item": false,
+              "combined_return_id": "TEST_combined_return_id",
+              "create_time": 1690451136,
+              "discount_amount": [
+                {
+                  "currency": "TEST_currency",
+                  "product_platform_discount": "TEST_product_platform_discount",
+                  "product_seller_discount": "TEST_product_seller_discount",
+                  "shipping_fee_platform_discount": "TEST_shipping_fee_platform_discount",
+                  "shipping_fee_seller_discount": "TEST_shipping_fee_seller_discount"
+                }
+              ],
+              "handover_method": "TEST_handover_method",
+              "is_combined_return": false,
+              "next_return_id": "TEST_next_return_id",
+              "order_id": "TEST_order_id",
+              "partial_refund": {
+                "amount": "TEST_amount",
+                "currency": "TEST_currency"
+              },
+              "pre_return_id": "TEST_pre_return_id",
+              "refund_amount": {
+                "buyer_service_fee": "TEST_buyer_service_fee",
+                "currency": "TEST_currency",
+                "refund_shipping_fee": "TEST_refund_shipping_fee",
+                "refund_subtotal": "TEST_refund_subtotal",
+                "refund_tax": "TEST_refund_tax",
+                "refund_total": "TEST_refund_total",
+                "retail_delivery_fee": "TEST_retail_delivery_fee"
+              },
+              "return_id": "TEST_return_id",
+              "return_line_items": [
+                {
+                  "order_line_item_id": "TEST_order_line_item_id",
+                  "product_image": {
+                    "height": 200,
+                    "url": "TEST_url",
+                    "width": 200
+                  },
+                  "product_name": "TEST_product_name",
+                  "refund_amount": {
+                    "buyer_service_fee": "TEST_buyer_service_fee",
+                    "currency": "TEST_currency",
+                    "refund_shipping_fee": "TEST_refund_shipping_fee",
+                    "refund_subtotal": "TEST_refund_subtotal",
+                    "refund_tax": "TEST_refund_tax",
+                    "refund_total": "TEST_refund_total",
+                    "retail_delivery_fee": "TEST_retail_delivery_fee"
+                  },
+                  "return_line_item_id": "TEST_return_line_item_id",
+                  "seller_sku": "TEST_seller_sku",
+                  "sku_id": "TEST_sku_id",
+                  "sku_name": "TEST_sku_name"
+                }
+              ],
+              "return_method": "TEST_return_method",
+              "return_provider_id": "TEST_return_provider_id",
+              "return_provider_name": "TEST_return_provider_name",
+              "return_reason": "TEST_return_reason",
+              "return_reason_text": "TEST_return_reason_text",
+              "return_shipping_document_type": "TEST_return_shipping_document_type",
+              "return_status": "TEST_return_status",
+              "return_tracking_number": "TEST_return_tracking_number",
+              "return_type": "TEST_return_type",
+              "return_warehouse_address": {
+                "full_address": "TEST_full_address"
+              },
+              "role": "TEST_role",
+              "seller_next_action_response": [
+                {
+                  "action": "TEST_action",
+                  "deadline": 1690554680
+                }
+              ],
+              "seller_proposed_return_type": "TEST_seller_proposed_return_type",
+              "shipment_type": "TEST_shipment_type",
+              "shipping_fee_amount": [
+                {
+                  "buyer_paid_return_shipping_fee": "TEST_buyer_paid_return_shipping_fee",
+                  "currency": "TEST_currency",
+                  "platform_paid_return_shipping_fee": "TEST_platform_paid_return_shipping_fee",
+                  "seller_paid_return_shipping_fee": "TEST_seller_paid_return_shipping_fee"
+                }
+              ],
+              "update_time": 1690453136
+            }
+          ],
+          "total_count": 2
+        },
+        "message": "Success",
+        "request_id": "TEST-return.search-multi_last"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "invalid_input",
+      "classification": "test_fault_undocumented",
+      "trigger": "send a body that is not valid JSON or has a wrongly typed field",
+      "requestMustFailValidation": false
+    },
+    {
+      "case": "token_expired",
+      "classification": "test_fault_undocumented",
+      "trigger": "x-tts-access-token is past its expiry"
+    },
+    {
+      "case": "missing_scope",
+      "classification": "test_fault_undocumented",
+      "trigger": "app lacks the (unverified) scope of this operation"
+    }
+  ]
+}

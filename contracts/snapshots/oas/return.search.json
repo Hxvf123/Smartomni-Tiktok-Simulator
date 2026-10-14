@@ -1,0 +1,633 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/return_refund.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "222bd0ce6b48ccdd1ab24e5f048f3a244f2538f711da7420b253b90821ff952d",
+    "candidatesInBundle": [
+      {
+        "method": "POST",
+        "path": "/return_refund/202309/returns/search",
+        "version": "202309"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "POST",
+  "path": "/return_refund/202309/returns/search",
+  "operation": {
+    "tags": [
+      "return_refund_v202309"
+    ],
+    "summary": "SearchReturns",
+    "description": "Use this API to retrieve one or more returns. This API supports filtering returns using query parameters. You can filter returns by create time, update time, return status, or return types. ",
+    "parameters": [
+      {
+        "name": "sort_field",
+        "in": "query",
+        "description": "The returned results will be sorted by the specified field. \nDefault: `create_time`\nPossible values:\n- `create_time`\n- `update_time`\n\nSpecify the order for sorting the returned results by using the `sort_order` parameter.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "create_time"
+      },
+      {
+        "name": "sort_order",
+        "in": "query",
+        "description": "The sort order for the `sort_field` parameter. Default: ASC\nPossible values:\n- `ASC`: Ascending order\n- `DESC`: Descending order",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "ASC"
+      },
+      {
+        "name": "page_size",
+        "in": "query",
+        "description": "The number of results to be returned per page. Default: 10. Valid range: [10-50].",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "10"
+      },
+      {
+        "name": "page_token",
+        "in": "query",
+        "description": "An opaque token used to retrieve the next page of a paginated result set. Retrieve this value from the result of the `next_page_token` from a previous response. It is not needed for the first page.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "aDU2dHIzMlFhME5CUzJKUDhDdVJhTDM1WmJkeFVTVW9LTkRaSnNaZCtuWjJXVU5CSDhlaA=="
+      },
+      {
+        "name": "shop_cipher",
+        "in": "query",
+        "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. ",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "properties": {
+              "arbitration_status": {
+                "description": "List of arbitration statuses. \nAvailable values:\n- `IN_PROGRESS`: The TikTok Shop platform operator is processing arbitration. Platform may request additional information from the seller.  \n- `SUPPORT_BUYER`: The platform operator supports buyer.\n- `SUPPORT_SELLER`: The platform operator supports seller.\n- `CLOSED`: Arbitration is closed.",
+                "example": [
+                  "IN_PROGRESS"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "buyer_user_ids": {
+                "description": "List of TikTok Shop buyer user IDs.",
+                "example": [
+                  "7493996903972308733"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "create_time_ge": {
+                "description": "Filter returns to show only those that are created on or after the specified date and time. Unix timestamp.\n\nNote:\n`create_time_ge` and `create_time_le` together constitute the creation time filter condition.\n- If `create_time_ge` is filled but `create_time_le` is empty, `create_time_le` will default to the current time.\n- If `create_time_lt` is filled but `create_time_ge` is empty, `create_time_ge` will default to the earliest shop time.",
+                "example": 1690340825,
+                "format": "int64",
+                "type": "integer"
+              },
+              "create_time_lt": {
+                "description": "Filter returns to show only those that are created before the specified date and time. Unix timestamp.\nRefer to notes in `create_time_ge` for more usage information.",
+                "example": 1690340825,
+                "format": "int64",
+                "type": "integer"
+              },
+              "locale": {
+                "description": "The BCP-47 locale codes for displaying the returns, delimited by commas. Default: `en`\nRefer to [Locale codes](678e3a47bae28f030a8c7523) for the list of supported locale codes.",
+                "example": "en-US",
+                "type": "string"
+              },
+              "order_ids": {
+                "description": "List of TikTok Shop order IDs.",
+                "example": [
+                  "577686530908261117"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "return_ids": {
+                "description": "List of return IDs.",
+                "example": [
+                  "4035318504086604100"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "return_status": {
+                "description": "List of return status.\nAvailable values:\n- `RETURN_OR_REFUND_REQUEST_PENDING`: Buyer has initiated a return or refund request. The request is pending review by seller or system. \n- `REFUND_OR_RETURN_REQUEST_REJECT`: The return or refund request was rejected. \n- `AWAITING_BUYER_SHIP`: The return request was approved. The seller is waiting for the buyer to ship the approved items to the seller. If the buyer doesn't ship the items to the seller before the deadline, the platform will close the request.\n- `BUYER_SHIPPED_ITEM`: Buyer has shipped the approved items to seller.\n- `REJECT_RECEIVE_PACKAGE`: Seller inspected the returned items and rejected the return request. \n- `RETURN_OR_REFUND_REQUEST_SUCCESS`: The return/refund request was successful. The buyer will be refunded.\n- `RETURN_OR_REFUND_REQUEST_CANCEL`: The request has been cancelled by the buyer or system.\n- `RETURN_OR_REFUND_REQUEST_COMPLETE`: The return/refund was processed successfully. The buyer has been refunded.\n- `AWAITING_BUYER_RESPONSE`: Seller offer another return type to the buyer, and waiting buyer response. Seller proposed return type can check the `seller_proposed_return_type`.",
+                "example": [
+                  "RETURN_OR_REFUND_REQUEST_PENDING"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "return_types": {
+                "description": "List of return types.\nAvailable values:\n- `REFUND`\n- `RETURN_AND_REFUND`\n- `REPLACEMENT`",
+                "example": [
+                  "REFUND"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "seller_proposed_return_type": {
+                "description": "List of seller proposed return types.\nAvailable values:\n- `PARTIAL_REFUND`",
+                "example": [
+                  "PARTIAL_REFUND"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "update_time_ge": {
+                "description": "Filter returns to show only those that are updated on or after the specified date and time. Unix timestamp.\n\nNote:\n`update_time_ge` and `update_time_le` together define the update time filter condition.\n- If `update_time_ge` is filled but `update_time_le` is empty, `update_time_le` will default to the current time.\n- If `update_time_lt` is filled but `update_time_ge` is empty, `update_time_ge` will default to the earliest shop time.",
+                "example": 1690340825,
+                "format": "int64",
+                "type": "integer"
+              },
+              "update_time_lt": {
+                "description": "Filter returns to show only those that are created before the specified date and time. Unix timestamp.\nRefer to notes in `create_time_ge` for more usage information.",
+                "example": 1690340825,
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "next_page_token": {
+                      "description": "An opaque token used to retrieve the next page of a paginated result set. Provide this value in the `page_token` parameter of your request if the current response does not return all the results.",
+                      "example": "aDU2dHIzMlFhME5CUzJKUDhDdVJhTDM1WmJkeFVTVW9LTkRaSnNaZCtuWjJXVU5CSDhlaA==",
+                      "type": "string"
+                    },
+                    "return_orders": {
+                      "description": "List of returns.",
+                      "items": {
+                        "properties": {
+                          "arbitration_status": {
+                            "description": "List of arbitration statuses. \nAvailable values:\n- `IN_PROGRESS`: The TikTok Shop platform operator is processing arbitration. Platform may request additional information from the seller.  \n- `SUPPORT_BUYER`: The platform operator supports buyer.\n- `SUPPORT_SELLER`: The platform operator supports seller.\n- `CLOSED`: Arbitration is closed",
+                            "example": "IN_PROGRESS",
+                            "type": "string"
+                          },
+                          "buyer_rejected_partial_refund": {
+                            "description": "Only return this field when seller initiated the partial refund.\nAvailable values:\n- `TRUE`: Buyer reject the seller partial refund offer.\n- `FALSE`: Buyer accept the seller partial refund offer or awaiting buyer response.",
+                            "example": true,
+                            "type": "boolean"
+                          },
+                          "can_buyer_keep_item": {
+                            "description": "Whether buyer can keep the item(s) in a return or replacement process.",
+                            "example": true,
+                            "type": "boolean"
+                          },
+                          "combined_return_id": {
+                            "description": "If `is_combined_return` is `true`, this field will return the `combined_return_id` associated with the combined return.",
+                            "example": "4035309948547073951",
+                            "type": "string"
+                          },
+                          "create_time": {
+                            "description": "Return create time. Unix timestamp.",
+                            "example": 1690451136,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "discount_amount": {
+                            "description": "Discount refund details.",
+                            "items": {
+                              "properties": {
+                                "currency": {
+                                  "description": "The discount currency.",
+                                  "example": "USD",
+                                  "type": "string"
+                                },
+                                "product_platform_discount": {
+                                  "description": "The refund amount of platform discount.",
+                                  "example": "0.1",
+                                  "type": "string"
+                                },
+                                "product_seller_discount": {
+                                  "description": "The refund amount of product seller discount.",
+                                  "example": "0.1",
+                                  "type": "string"
+                                },
+                                "shipping_fee_platform_discount": {
+                                  "description": "The refund amount of shipping fee platform discount.",
+                                  "example": "0.1",
+                                  "type": "string"
+                                },
+                                "shipping_fee_seller_discount": {
+                                  "description": "The refund amount of shipping fee seller discount.",
+                                  "example": "0.1",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "handover_method": {
+                            "description": "The handover method buyer chooses to use when returning item(s) to seller using platform's shipping service. \n- `DROP_OFF`: buyer will drop off the item(s) at courier \n- `PICKUP`: buyer is scheduling a pick up service offered by the courier.",
+                            "example": "DROP_OFF",
+                            "type": "string"
+                          },
+                          "is_combined_return": {
+                            "description": "This field will return true if the buyer is asking to combine multiple returns into one return package.",
+                            "type": "boolean"
+                          },
+                          "next_return_id": {
+                            "description": "The next return ID the current return order is edited to.",
+                            "example": "4035310341095393463",
+                            "type": "string"
+                          },
+                          "order_id": {
+                            "description": "TikTok Shop order ID. Contains multiple order line item IDs.",
+                            "example": "577686530908261117",
+                            "type": "string"
+                          },
+                          "partial_refund": {
+                            "description": "Partial refund details.",
+                            "properties": {
+                              "amount": {
+                                "description": "The partial refund amount offered by seller.\nNote: only seller proposed partial refund will return this field.",
+                                "example": "10",
+                                "type": "string"
+                              },
+                              "currency": {
+                                "description": "Partial refund currency",
+                                "example": "IDR",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "pre_return_id": {
+                            "description": "The previous return ID the current return order is edited from.",
+                            "example": "4035310341095393452",
+                            "type": "string"
+                          },
+                          "refund_amount": {
+                            "description": "Total refund amount to buyer.",
+                            "properties": {
+                              "buyer_service_fee": {
+                                "description": "Buyer service fee.",
+                                "example": "0.1",
+                                "type": "string"
+                              },
+                              "currency": {
+                                "description": "Refund currency.",
+                                "example": "USD",
+                                "type": "string"
+                              },
+                              "refund_shipping_fee": {
+                                "description": "Shipping fee refund.",
+                                "example": "0.2",
+                                "type": "string"
+                              },
+                              "refund_subtotal": {
+                                "description": "Subtotal refund amount. This is the total price of all items returned. ",
+                                "example": "1",
+                                "type": "string"
+                              },
+                              "refund_tax": {
+                                "description": "Tax fee refund.",
+                                "example": "0.03",
+                                "type": "string"
+                              },
+                              "refund_total": {
+                                "description": "Total refund amount.",
+                                "example": "1.23",
+                                "type": "string"
+                              },
+                              "retail_delivery_fee": {
+                                "description": "Retail delivery fee takes effect once platform GMV exceeds 500,000 USD, according to US Colorado states' compliance rules.\n",
+                                "example": "0.1",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "return_id": {
+                            "description": "The identifier of a specific return.",
+                            "example": "4035318504086604100",
+                            "type": "string"
+                          },
+                          "return_line_items": {
+                            "description": "Return order lines items.",
+                            "items": {
+                              "properties": {
+                                "order_line_item_id": {
+                                  "description": "Order line ID.",
+                                  "example": "576473917261451851",
+                                  "type": "string"
+                                },
+                                "product_image": {
+                                  "description": "Product image information.",
+                                  "properties": {
+                                    "height": {
+                                      "description": "Product image height. Units: pixels (px).",
+                                      "example": 200,
+                                      "format": "int32",
+                                      "type": "integer"
+                                    },
+                                    "url": {
+                                      "description": "Product image URL.",
+                                      "example": "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/004797ebfd8c4d3da2df1cc4bfdb0614~tplv-o3syd03w52-origin-jpeg.jpeg?from=4246405447",
+                                      "type": "string"
+                                    },
+                                    "width": {
+                                      "description": "Product image width. Units: pixels (px).",
+                                      "example": 200,
+                                      "format": "int32",
+                                      "type": "integer"
+                                    }
+                                  },
+                                  "type": "object"
+                                },
+                                "product_name": {
+                                  "description": "Product name.",
+                                  "example": "(SP) [PROMO BUNDLING] NICE Tissue Facial 180s x 5 pcs",
+                                  "type": "string"
+                                },
+                                "refund_amount": {
+                                  "description": "Refund amount details.",
+                                  "properties": {
+                                    "buyer_service_fee": {
+                                      "description": "Buyer service fee.",
+                                      "example": "0.1",
+                                      "type": "string"
+                                    },
+                                    "currency": {
+                                      "description": "Payment currency.",
+                                      "example": "USD",
+                                      "type": "string"
+                                    },
+                                    "refund_shipping_fee": {
+                                      "description": "Shipping fee refund amount to buyer.",
+                                      "example": "0.2",
+                                      "type": "string"
+                                    },
+                                    "refund_subtotal": {
+                                      "description": "Subtotal refund amount to buyer.",
+                                      "example": "1",
+                                      "type": "string"
+                                    },
+                                    "refund_tax": {
+                                      "description": "Tax refund amount to buyer.",
+                                      "example": "0.03",
+                                      "type": "string"
+                                    },
+                                    "refund_total": {
+                                      "description": "Total refund amount to buyer.",
+                                      "example": "1.23",
+                                      "type": "string"
+                                    },
+                                    "retail_delivery_fee": {
+                                      "description": "Retail delivery fee takes effect once platform GMV exceeds 500,000 USD, according to US Colorado states' compliance rules.\n",
+                                      "example": "0.1",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "type": "object"
+                                },
+                                "return_line_item_id": {
+                                  "description": "Return order line ID.",
+                                  "example": "4035227657962164811",
+                                  "type": "string"
+                                },
+                                "seller_sku": {
+                                  "description": "SKU name defined by seller.",
+                                  "example": "PUTIH 1 TALI",
+                                  "type": "string"
+                                },
+                                "sku_id": {
+                                  "description": "SKU ID.",
+                                  "example": "2729382476852921560",
+                                  "type": "string"
+                                },
+                                "sku_name": {
+                                  "description": "SKU name.",
+                                  "example": "1#, Standard",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "return_method": {
+                            "description": "Return method:\n- `SELLER_SHIPPED`: Seller offers the return shipping service.\n- `BUYER_SHIPPED`: Buyer offers the return shipping service.\n- `PLATFORM_SHIPPED`: TikTok Shop offers the return shipping service.",
+                            "example": "SELLER_ARRANGE",
+                            "type": "string"
+                          },
+                          "return_provider_id": {
+                            "description": "The provider ID of parcel when buyer returns the items.",
+                            "example": "TH27014E9R5Q4G",
+                            "type": "string"
+                          },
+                          "return_provider_name": {
+                            "description": "The provider name of parcel when buyer returns the item(s).",
+                            "example": "J&T Express",
+                            "type": "string"
+                          },
+                          "return_reason": {
+                            "description": "Reason for return.",
+                            "example": "ecom_order_to_ship_canceled_reason_created_by_mistakes",
+                            "type": "string"
+                          },
+                          "return_reason_text": {
+                            "description": "Reason for return, in localized text.\nYou can change language using the locale request parameter. ",
+                            "example": "Order created by mistake",
+                            "type": "string"
+                          },
+                          "return_shipping_document_type": {
+                            "description": "The type of return shipping document selected by the buyer. \nAvailable values:\n- `SHIPPING_LABE`L\n- `QR_CODE`",
+                            "example": "SHIPPING_LABEL",
+                            "type": "string"
+                          },
+                          "return_status": {
+                            "description": "Return status.\nAvailable values:\n- `RETURN_OR_REFUND_REQUEST_PENDING`: Buyer has initiated a return or refund request. The request is pending review by seller or platform. \n- `REFUND_OR_RETURN_REQUEST_REJECT`: The return or refund request was rejected. \n- `AWAITING_BUYER_SHIP`: The return request was approved. The seller is waiting for the buyer to ship the approved items to the seller. If the buyer doesn't ship the items to the seller before the deadline, the platform will close the request.\n- `BUYER_SHIPPED_ITEM`: Buyer has shipped the approved items to seller.\n- `REJECT_RECEIVE_PACKAGE`: Seller inspected the returned items and rejected the return package. \n- `RETURN_OR_REFUND_REQUEST_SUCCESS`: The return/refund request was approved. The buyer will be refunded.\n- `RETURN_OR_REFUND_REQUEST_CANCEL`: The request has been cancelled by the buyer or system. \n- `RETURN_OR_REFUND_REQUEST_COMPLETE`: The return/refund was processed successfully. The buyer has been refunded.\n- `REPLACEMENT_REQUEST_PENDING`: Buyer has initiated a replacement request. The request is pending review by seller.\n- `REPLACEMENT_REQUEST_REJECT`: Seller reject the buyer replacement request.\n- `REPLACEMENT_REQUEST_REFUND_SUCCESS`: Buyer's replacement request was resolved by refund due to insufficient inventory.\n- `REPLACEMENT_REQUEST_CANCEL`: Buyer canceled the replacement request.\n- `REPLACEMENT_REQUEST_COMPLETE`: Seller has approved the buyer's replacement request, platform will generate a new order for seller to fulfill.\n- `AWAITING_BUYER_RESPONSE`: Seller offer another return type to the buyer, and waiting buyer response. Seller proposed return type can check the `seller_proposed_return_type`.\n",
+                            "example": "RETURN_OR_REFUND_REQUEST_PENDING",
+                            "type": "string"
+                          },
+                          "return_tracking_number": {
+                            "description": "The tracking number of parcels when buyer returns the item(s).",
+                            "example": "213456789098765433456",
+                            "type": "string"
+                          },
+                          "return_type": {
+                            "description": "Return type.\nAvailable values:\n- `REFUND`: Seller will issue a refund without return. The buyer is not required to send the item(s) back to the seller.\n- `RETURN_AND_REFUND`: Buyer is required to send the item(s) back to the seller. The seller will need to review the condition of the returned item(s) before a refund can be issued to the buyer. \n- `REPLACEMENT`: The buyer requires the seller to replace the item(s).",
+                            "example": "REFUND",
+                            "type": "string"
+                          },
+                          "return_warehouse_address": {
+                            "description": "The return warehouse address details provided by the seller.",
+                            "properties": {
+                              "full_address": {
+                                "description": "The full return warehouse address.",
+                                "example": "1199 Coleman Ave San Jose, CA 95110",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "role": {
+                            "description": "Return initiation role.\nAvailable values:\n- `BUYER`\n- `SELLER`\n- `OPERATOR` : TikTok Shop platform operator.\n- `SYSTEM`:  TikTok Shop system.\nPlease see \"API overview\" to learn more about roles. ",
+                            "example": "BUYER",
+                            "type": "string"
+                          },
+                          "seller_next_action_response": {
+                            "description": "Seller's next action and deadline.",
+                            "items": {
+                              "properties": {
+                                "action": {
+                                  "description": "Seller's next action.\nAvailable values:\n- `SELLER_RESPOND_REFUND`\n- `SELLER_RESPOND_RETURN`\n- `SELLER_RESPOND_RECEIVE_PACKAGE`\n- `SELLER_RESPOND_REPLACEMENT`",
+                                  "example": "SELLER_RESPOND_REFUND",
+                                  "type": "string"
+                                },
+                                "deadline": {
+                                  "description": "Indicates the deadline for when seller must perform the next action.",
+                                  "example": 1690554680,
+                                  "format": "int64",
+                                  "type": "integer"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "seller_proposed_return_type": {
+                            "description": "Seller proposed return type:\n- `PARTIAL_REFUND`",
+                            "example": "PARTIAL_REFUND",
+                            "type": "string"
+                          },
+                          "shipment_type": {
+                            "description": "The shipment method the buyer selected to send the item(s) back to seller\nAvailable values:\n- `PLATFORM`: Buyer will use TikTok Shop's shipping service to send the items back to seller. Use the `handover_method` field to see which handover method the buyer is using, `drop_off` or `pickup`. \n- `BUYER_ARRANGE`: Buyer will arrange shipment to send the item(s) back to seller. ",
+                            "example": "PLATFORM",
+                            "type": "string"
+                          },
+                          "shipping_fee_amount": {
+                            "description": "The return shipping fee details.",
+                            "items": {
+                              "properties": {
+                                "buyer_paid_return_shipping_fee": {
+                                  "description": "The amount of return shipping fee buyer paid.",
+                                  "example": "0.1",
+                                  "type": "string"
+                                },
+                                "currency": {
+                                  "description": "Return shipping fee currency.",
+                                  "example": "USD",
+                                  "type": "string"
+                                },
+                                "platform_paid_return_shipping_fee": {
+                                  "description": "The amount of return shipping fee platform paid.",
+                                  "example": "0.1",
+                                  "type": "string"
+                                },
+                                "seller_paid_return_shipping_fee": {
+                                  "description": "The amount of return shipping fee seller paid.",
+                                  "example": "0.1",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "update_time": {
+                            "description": "Return update time. Unix timestamp.",
+                            "example": 1690453136,
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "total_count": {
+                      "description": "The number of returns that meet the query conditions.",
+                      "example": 100,
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

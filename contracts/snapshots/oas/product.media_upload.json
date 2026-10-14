@@ -1,0 +1,128 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/product.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "ce90de4f587d2d9cd27e5b149484ed59cfd1bd617078b4553c64538fd07dbab5",
+    "candidatesInBundle": [
+      {
+        "method": "POST",
+        "path": "/product/202309/images/upload",
+        "version": "202309"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "POST",
+  "path": "/product/202309/images/upload",
+  "operation": {
+    "tags": [
+      "product_v202309"
+    ],
+    "summary": "UploadProductImage",
+    "description": "Upload local images to TikTok Shop for use as product images, variant images, size charts, certification images and so on.\n\n**Note**: \n- All images used in TikTok Shop products must be uploaded through this API. You will not be able to use any image URLs that are not hosted by TikTok Shop.\n- You must store the response body to retrieve the ID or URL required to associate the image with a product during product creation or editing.",
+    "parameters": [
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: multipart/form-data",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "multipart/form-data": {
+          "schema": {
+            "properties": {
+              "data": {
+                "description": "The local image file to be uploaded.\n\n**Note**:\n- Supported formats: JPG, JPEG, PNG, WEBP, HEIC, BMP\n- Max size: 10MB\n- Dimensions: [100x100 px, 20000x20000 px]\n- For `use_case=MAIN_IMAGE`, the dimensions must be between 300x300 px and 4000x4000 px.\n- For `use_case=SIZE_CHART_IMAGE`, the dimension must be at least 1024 px on the shorter side.",
+                "example": " ",
+                "format": "binary",
+                "type": "string"
+              },
+              "use_case": {
+                "description": "The usage scenario of the image.\nPossible values:\n- MAIN_IMAGE: An image displayed in the product image gallery.\n- ATTRIBUTE_IMAGE: An image that represents a product variant (e.g. color).\n- DESCRIPTION_IMAGE: An image used within the product description.\n- CERTIFICATION_IMAGE: An image to provide supporting information to meet TikTok Shop requirements for listing restricted products (e.g., images of certifications, product packaging, labeling).\n- SIZE_CHART_IMAGE: An image that displays the product's measurement details.\n\n**Note**: Images for use cases `MAIN_IMAGE` and `ATTRIBUTE_IMAGE` that do not fit within the 3:4 to 4:3 aspect ratio range will be automatically converted to 1:1.",
+                "example": "MAIN_IMAGE",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "height": {
+                      "description": "The height of the image after aspect ratio adjustment.\n",
+                      "example": 720,
+                      "format": "int32",
+                      "type": "integer"
+                    },
+                    "uri": {
+                      "description": "The URI to identify the image in API requests and responses.\nPass this value when creating or editing a product to associate the image with the product.",
+                      "example": "tos-maliva-i-o3syd03w52-us/c668cdf70b7f483c94dbe",
+                      "type": "string"
+                    },
+                    "url": {
+                      "description": "The URL to access and view the image.\nUse this URL in product descriptions by embedding it within an HTML `<img>` tag.",
+                      "example": "https://p-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/c668cdf70b7f483c94dbe\n",
+                      "type": "string"
+                    },
+                    "use_case": {
+                      "description": "The usage scenario specified during upload.\nPossible values:\n- MAIN_IMAGE\n- ATTRIBUTE_IMAGE\n- DESCRIPTION_IMAGE\n- CERTIFICATION_IMAGE\n- SIZE_CHART_IMAGE",
+                      "example": "MAIN_IMAGE",
+                      "type": "string"
+                    },
+                    "width": {
+                      "description": "The width of the image after aspect ratio adjustment.\n",
+                      "example": 720,
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/authorization.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "0ad322855451ab32f4d00cf03746370c4f57e4a729b39e0e99212ba94be566e3",
+    "candidatesInBundle": [
+      {
+        "method": "GET",
+        "path": "/authorization/202309/shops",
+        "version": "202309"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "GET",
+  "path": "/authorization/202309/shops",
+  "operation": {
+    "tags": [
+      "authorization_v202309"
+    ],
+    "summary": "GetAuthorizedShops",
+    "description": "Retrieves the list of shops that a seller has authorized for an app.\nSeller authorization is required before an app can access the data of a shop. Use this API to check which shops are currently authorized for an app and obtain the corresponding shop cipher for use as an input parameter in shop related APIs. \nFor more information about seller authorization, refer to [Seller authorization guide](https://partner.tiktokshop.com/docv2/page/678e3a344ddec3030b238fa0).\nTarget seller: All",
+    "parameters": [
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "shops": {
+                      "description": "The list of shops that a seller has authorized for the app.",
+                      "items": {
+                        "properties": {
+                          "cipher": {
+                            "description": "An encrypted token used to securely identify a shop in API requests. There is no need for decryption on the receiving end.",
+                            "example": "GCP_XF90igAAAABh00qsWgtvOiGFNqyubMt3",
+                            "type": "string"
+                          },
+                          "code": {
+                            "description": "The TikTok Shop code, which is also displayed on Seller Center.",
+                            "example": "CNGBCBA4LLU8",
+                            "type": "string"
+                          },
+                          "id": {
+                            "description": "An internal identifier for the TikTok Shop.",
+                            "example": "7000714532876273420",
+                            "type": "string"
+                          },
+                          "name": {
+                            "description": "The TikTok Shop name.",
+                            "example": "Maomao beauty shop",
+                            "type": "string"
+                          },
+                          "region": {
+                            "description": "The region of the shop.",
+                            "example": "GB",
+                            "type": "string"
+                          },
+                          "seller_type": {
+                            "description": "The type of seller.\nPossible values:\n- CROSS_BORDER: Cross border sellers with multiple shops in different countries.\n- LOCAL: Local sellers with only 1 shop.",
+                            "example": "CROSS_BORDER",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

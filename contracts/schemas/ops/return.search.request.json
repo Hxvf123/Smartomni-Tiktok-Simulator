@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ops/return.search.request.json",
+  "title": "POST /return_refund/202309/returns/search request body",
+  "x-verification": "official OAS 0.1.7; OAS declares no required body fields (unknown which are mandatory)",
+  "type": "object",
+  "properties": {
+    "arbitration_status": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "buyer_user_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "create_time_ge": {
+      "type": "integer"
+    },
+    "create_time_lt": {
+      "type": "integer"
+    },
+    "locale": {
+      "type": "string"
+    },
+    "order_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "return_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "return_status": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "return_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "seller_proposed_return_type": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "update_time_ge": {
+      "type": "integer"
+    },
+    "update_time_lt": {
+      "type": "integer"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "envelope.json",
+  "title": "Common OpenAPI response envelope",
+  "x-verification": "Envelope fields code/message/request_id/data appear in every response schema of the official OAS (bundle 0.1.7). The OAS carries no required flags; requiring code/message/request_id is a project decision (every OAS response declares them). data shape is per operation (schemas/ops/).",
+  "type": "object",
+  "required": [
+    "code",
+    "message",
+    "request_id"
+  ],
+  "properties": {
+    "code": {
+      "type": "integer",
+      "description": "0 = success is the common convention; the OAS only says 'success or failure status code'."
+    },
+    "message": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "data": {}
+  }
+}

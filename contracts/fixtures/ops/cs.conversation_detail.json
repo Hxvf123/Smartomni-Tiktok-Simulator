@@ -1,0 +1,69 @@
+{
+  "operation": "cs.conversation_detail",
+  "schema": "schemas/ops/cs.conversation_detail.response.json",
+  "classification": "synthetic-from-official-oas",
+  "note": "Values are synthetic and generated from the official OAS response shape; they are not captured TikTok traffic. Error cases are TEST FAULTS: no readable official source documents their code/message values.",
+  "cases": [
+    {
+      "case": "success",
+      "response": {
+        "code": 0,
+        "data": {
+          "conversation": {
+            "create_time": 1691411573,
+            "id": "TEST_id",
+            "participant_count": 3,
+            "participants": [
+              {
+                "avatar": "TEST_avatar",
+                "im_user_id": "TEST_im_user_id",
+                "nickname": "TEST_nickname",
+                "platform": "TEST_platform",
+                "role": "TEST_role",
+                "user_id": "TEST_user_id"
+              }
+            ],
+            "unread_count": 0
+          }
+        },
+        "message": "Success",
+        "request_id": "TEST-cs.conversation_detail-success"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "empty",
+      "response": {
+        "code": 0,
+        "data": {
+          "conversation": {
+            "create_time": 1691411573,
+            "id": "TEST_id",
+            "participant_count": 0,
+            "participants": [],
+            "unread_count": 0
+          }
+        },
+        "message": "Success",
+        "request_id": "TEST-cs.conversation_detail-empty"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "invalid_input",
+      "classification": "test_fault_undocumented",
+      "trigger": "send a malformed path parameter",
+      "requestMustFailValidation": false
+    },
+    {
+      "case": "token_expired",
+      "classification": "test_fault_undocumented",
+      "trigger": "x-tts-access-token is past its expiry"
+    },
+    {
+      "case": "missing_scope",
+      "classification": "test_fault_undocumented",
+      "trigger": "app lacks the (unverified) scope of this operation"
+    }
+  ]
+}

@@ -1,0 +1,211 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/return_refund.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "356abd1f51f6aab1888e61fcb27809b288980e2c438162f0d5434d7b790c6830",
+    "candidatesInBundle": [
+      {
+        "method": "GET",
+        "path": "/return_refund/202309/returns/{return_id}/records",
+        "version": "202309"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "GET",
+  "path": "/return_refund/202309/returns/{return_id}/records",
+  "operation": {
+    "tags": [
+      "return_refund_v202309"
+    ],
+    "summary": "GetReturnRecords",
+    "description": "Use this API to get a list of return records.",
+    "parameters": [
+      {
+        "name": "return_id",
+        "in": "path",
+        "description": "A unique identifier for a TikTok Shop return request.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "4035318504086604100"
+      },
+      {
+        "name": "locale",
+        "in": "query",
+        "description": "The BCP-47 locale codes for displaying the return reason, delimited by commas. Default: en-US\nRefer to [Locale codes](678e3a47bae28f030a8c7523) for the list of supported locale codes.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "en-US"
+      },
+      {
+        "name": "shop_cipher",
+        "in": "query",
+        "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. ",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "records": {
+                      "description": "A list of return records.",
+                      "items": {
+                        "properties": {
+                          "create_time": {
+                            "description": "The creation time for the return. Unix timestamp.",
+                            "example": 1690532213,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "description": {
+                            "description": "Description of the return record.",
+                            "example": "Customer submitted a return request",
+                            "type": "string"
+                          },
+                          "event": {
+                            "description": "The type of order event. In this case, it will always be ORDER_RETURN.",
+                            "example": "ORDER_RETURN",
+                            "type": "string"
+                          },
+                          "images": {
+                            "description": "Images provided by the seller or buyer. You can use the role field to differentiate whether the images are from the seller or buyer.",
+                            "items": {
+                              "properties": {
+                                "height": {
+                                  "description": "The height of image.\nUnit: px",
+                                  "example": 200,
+                                  "format": "int32",
+                                  "type": "integer"
+                                },
+                                "url": {
+                                  "description": "URL of the image.",
+                                  "example": "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/004797ebfd8c4d3da2df1cc4bfdb0614~tplv-o3syd03w52-origin-jpeg.jpeg?from=4246405447",
+                                  "type": "string"
+                                },
+                                "width": {
+                                  "description": "The width of image. \nUnit: px",
+                                  "example": 200,
+                                  "format": "int32",
+                                  "type": "integer"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "note": {
+                            "description": "A note provided by the seller or buyer. You can use the role field to differentiate whether the note is from the seller or buyer.",
+                            "example": "Reach an agreement with the buyer",
+                            "type": "string"
+                          },
+                          "reason_text": {
+                            "description": "The corresponding text for a return reason, localized based on the locale input parameter. ",
+                            "example": "Wrong product was sent",
+                            "type": "string"
+                          },
+                          "role": {
+                            "description": "The role that initiated the order return request.\nPossible values:\n- BUYER\n- SELLER\n- OPERATOR: If the order is canceled by the customer service agent manually, then the cancel initiator will be 'OPERATOR'.\n- SYSTEM: If the order is automatically canceled due to a policy reason, then the cancel initiator will be 'SYSTEM'.",
+                            "example": "Buyer",
+                            "type": "string"
+                          },
+                          "videos": {
+                            "description": "Videos uploaded by the buyer. Only buyers are allowed to upload videos.",
+                            "items": {
+                              "properties": {
+                                "cover": {
+                                  "description": "Video thumbnail image.",
+                                  "example": "https://p16-oec-va.ibyteimg.com/musically-maliva-obj/998d0381960bda1ef272f4a7724cf5ed~tplv-o3syd03w52-origin-jpeg.jpeg?from=4246405489",
+                                  "type": "string"
+                                },
+                                "duration_millis": {
+                                  "description": "Video duration. \nUnit: milliseconds",
+                                  "example": 3000,
+                                  "format": "int32",
+                                  "type": "integer"
+                                },
+                                "height": {
+                                  "description": "Video image height.\nUnit: px",
+                                  "example": 200,
+                                  "format": "int32",
+                                  "type": "integer"
+                                },
+                                "url": {
+                                  "description": "Video URL.",
+                                  "example": "https://v16m-default.akamaized.net/1e26046c3df91cd008d2ababba9445e2/65005d33/video/tos/maliva/tos-maliva-v-d8ca36-us/oQVCbIQemDpQxI9lHsg9IXQAb7mwgBabababab",
+                                  "type": "string"
+                                },
+                                "width": {
+                                  "description": "Video image width.\nUnit: px",
+                                  "example": 200,
+                                  "format": "int32",
+                                  "type": "integer"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

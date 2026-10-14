@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ops/promotion.coupon_search.request.json",
+  "title": "POST /promotion/202406/coupons/search request body",
+  "x-verification": "official OAS 0.1.7; OAS declares no required body fields (unknown which are mandatory)",
+  "type": "object",
+  "properties": {
+    "display_type": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "title_keyword": {
+      "type": "string"
+    }
+  }
+}

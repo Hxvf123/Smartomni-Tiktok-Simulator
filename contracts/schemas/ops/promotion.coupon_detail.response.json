@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ops/promotion.coupon_detail.response.json",
+  "title": "GET /promotion/202406/coupons/{coupon_id} response",
+  "x-verification": "official OAS 0.1.7 (2026-10-14); OAS declares no per-field required flags, so only the envelope trio code/message/request_id is required here (envelope trio taken from every OAS response schema)",
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "integer"
+    },
+    "data": {
+      "type": "object",
+      "properties": {
+        "coupon": {
+          "type": "object",
+          "properties": {
+            "claim_duration": {
+              "type": "object",
+              "properties": {
+                "end_time": {
+                  "type": "integer"
+                },
+                "start_time": {
+                  "type": "integer"
+                }
+              }
+            },
+            "create_time": {
+              "type": "integer"
+            },
+            "creation_source": {
+              "type": "string"
+            },
+            "discount": {
+              "type": "object",
+              "properties": {
+                "max_discount": {
+                  "type": "object",
+                  "properties": {
+                    "amount": {
+                      "type": "string"
+                    },
+                    "currency": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "percentage": {
+                  "type": "string"
+                },
+                "reduction_amount": {
+                  "type": "object",
+                  "properties": {
+                    "amount": {
+                      "type": "string"
+                    },
+                    "currency": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            },
+            "display_channels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "display_type": {
+              "type": "string"
+            },
+            "id": {
+              "type": "string"
+            },
+            "live_tasks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "min_watch_time": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "product_ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "product_scope": {
+              "type": "string"
+            },
+            "promo_code": {
+              "type": "string"
+            },
+            "redemption_duration": {
+              "type": "object",
+              "properties": {
+                "end_time": {
+                  "type": "integer"
+                },
+                "relative_time": {
+                  "type": "integer"
+                },
+                "start_time": {
+                  "type": "integer"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            },
+            "seller_tnc": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "target_buyer_segment": {
+              "type": "string"
+            },
+            "threshold": {
+              "type": "object",
+              "properties": {
+                "min_spend": {
+                  "type": "object",
+                  "properties": {
+                    "amount": {
+                      "type": "string"
+                    },
+                    "currency": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            },
+            "title": {
+              "type": "string"
+            },
+            "update_time": {
+              "type": "integer"
+            },
+            "usage_limits": {
+              "type": "object",
+              "properties": {
+                "redemption_limit": {
+                  "type": "integer"
+                },
+                "single_buyer_claim_limit": {
+                  "type": "integer"
+                },
+                "total_claim_limit": {
+                  "type": "integer"
+                }
+              }
+            },
+            "usage_stats": {
+              "type": "object",
+              "properties": {
+                "claimed_count": {
+                  "type": "integer"
+                },
+                "redeemed_count": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "message": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "code",
+    "message",
+    "request_id"
+  ]
+}

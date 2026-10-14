@@ -1,0 +1,364 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/promotion.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "996218783ed21049d856f5129813625c0b1d315fa196d447cabbcd69d651c930",
+    "candidatesInBundle": [
+      {
+        "method": "GET",
+        "path": "/promotion/202406/coupons/{coupon_id}",
+        "version": "202406"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "GET",
+  "path": "/promotion/202406/coupons/{coupon_id}",
+  "operation": {
+    "tags": [
+      "promotion_v202406"
+    ],
+    "summary": "GetCoupon",
+    "description": "Use this API to get the full details of a coupon matching the {coupon_id}.",
+    "parameters": [
+      {
+        "name": "coupon_id",
+        "in": "path",
+        "description": "Coupon id.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "7136104329798256386"
+      },
+      {
+        "name": "shop_cipher",
+        "in": "query",
+        "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. ",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "coupon": {
+                      "description": "Coupon.",
+                      "properties": {
+                        "claim_duration": {
+                          "description": "Claimable period of the coupon.",
+                          "properties": {
+                            "end_time": {
+                              "description": "The UNIX timestamp after which a shopper can no longer claim the coupon.",
+                              "example": 1709654340,
+                              "format": "int32",
+                              "type": "integer"
+                            },
+                            "start_time": {
+                              "description": "The UNIX timestamp from which a shopper can claim the coupon.",
+                              "example": 1709568000,
+                              "format": "int32",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "create_time": {
+                          "description": "The UNIX timestamp of when the coupon was created.",
+                          "example": 1661756811000,
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "creation_source": {
+                          "description": "The system where the coupon is created:\n- `SELLER_CENTER`: Created via the Promotions section of TikTok Seller Center.\n- `SELLER_APP`: Created via the TikTok Seller Mobile App.\n- `TTS_CRM`: Created via the TikTok Shop CRM.",
+                          "example": "SELLER_CENTER",
+                          "type": "string"
+                        },
+                        "discount": {
+                          "description": "Discount",
+                          "properties": {
+                            "max_discount": {
+                              "description": "Optional monetary upper limit of the total discount amount when `type == \"\"PERCENT_OFF\"\"`.",
+                              "properties": {
+                                "amount": {
+                                  "description": "Monetary value of the `max_discount`.",
+                                  "example": "40",
+                                  "type": "string"
+                                },
+                                "currency": {
+                                  "description": "Currency of the `max_discount`.",
+                                  "example": "USD",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "percentage": {
+                              "description": "The discount offered by the coupon, in percentage points. Will appear when `type == PERCENT_OFF'`.",
+                              "example": "30",
+                              "type": "string"
+                            },
+                            "reduction_amount": {
+                              "description": "Will appear when `type == 'AMOUNT_OFF'`.",
+                              "properties": {
+                                "amount": {
+                                  "description": "Monetary value of an `AMOUNT_OFF` discount.",
+                                  "example": "30.5",
+                                  "type": "string"
+                                },
+                                "currency": {
+                                  "description": "Currency of the discount amount.",
+                                  "example": "USD",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": {
+                              "description": "The type of discount offered by the coupon. Possible enumerations are:\n- `AMOUNT_OFF`: Reduces the final price of the item by the specified `reduction_amount`\n- `PERCENT_OFF`: Reduces the final price by the specified `percentage`.",
+                              "example": "AMOUNT_OFF",
+                              "type": "string"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "display_channels": {
+                          "description": "The channels in which the coupons can be displayed or distributed:\n- `ALL`: All channels.\n- `SHOPPING_CENTER`: Only in TikTok Shop shopping center.\n- `CHAT`: Only in TT chat.\n- `LIVE`: Only in TT live.\n- `PRIVATE`: For promotion code. TikTok users won't know the codes until you show them.\n- `VIDEO`: Only in short videos.\n- `SHOWCASE`: Only in showcases.",
+                          "example": [
+                            "SHOPPING_CENTER"
+                          ],
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "display_type": {
+                          "description": "The display type of coupons.\nValues:\n- `REGULAR`: Regular coupons which are displayed to TikTok users across all display locations available in TTS, including PLPs, PDPs, TikTok Videos, LIVE Rooms, Creator Showcases, and may be shared via TTS Customer Support instant messages. Includes coupons which target select customer segments.\n- `LIVE`: Coupons which are only displayed to TikTok users in LIVE Rooms.\n- `CREATOR_EXCLUSIVE`: Coupons that can be claimed through the display channels of the specified creator, such as their LIVE Rooms, and their Creator Showcase.\n- `CHAT`: Exclusive coupons that may be sent to customers via TTS customer support chat messages, but are not displayed in other display locations.\n- `PROMO_CODE`: Promo codes do not have dedicated display locations on TikTok, but may be shared with customers in LIVEs, in TikTok videos, or other social media platforms. They can be claimed by customers entering a claim code at checkout or by customers that use a custom promo code landing page URL.\n\n\n",
+                          "example": "CHAT\n\n\n",
+                          "type": "string"
+                        },
+                        "id": {
+                          "description": "A unique ID that identifies different coupons.",
+                          "example": "7342461823095965461",
+                          "type": "string"
+                        },
+                        "live_tasks": {
+                          "description": "The tasks which the shopper must fulfill before claiming the coupon distributed in TikTok live. Only exists for LIVE coupons in the US and the UK.",
+                          "items": {
+                            "properties": {
+                              "min_watch_time": {
+                                "description": "Number of seconds for which the shopper must watch the LIVE in order to claim the coupon.",
+                                "example": "60",
+                                "type": "string"
+                              },
+                              "type": {
+                                "description": "Possible enumerations:\n- `NONE`: Any shopper in the LIVE room may claim the coupon.\n- `FOLLOW_HOST`: Shoppers must follow the LIVE host before being able to claim the coupon.\n- `WATCH_FOR_MIN_TIME`: Shoppers must watch the LIVE for the time specified by `min_watch_time` before being able to claim the coupon.",
+                                "example": "FOLLOW_HOST",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "product_ids": {
+                          "description": "The IDs of the eligible products when `product_scope == 'SPECIFIC_PRODUCTS'`.",
+                          "example": [
+                            "1729581162206365900"
+                          ],
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "product_scope": {
+                          "description": "The range of the products which the coupon applies to. The possible enumerations are:\n- `FULL_SHOP`: All products sold in the shop are eligible for the coupon.\n- `SPECIFIC_PRODUCTS`: Only specified products are eligible for the coupon. The list of specified products are returned in the response of the `get_coupon` API.",
+                          "example": "FULL_SHOP",
+                          "type": "string"
+                        },
+                        "promo_code": {
+                          "description": "Promotion code. The string contains only Unicode letters or digits. The length of the string is in the range of `[6, 12]`.",
+                          "example": "TTS12345",
+                          "type": "string"
+                        },
+                        "redemption_duration": {
+                          "description": "Period during which the coupon can be redeemed (i.e. applied to an order).",
+                          "properties": {
+                            "end_time": {
+                              "description": "The UNIX timestamp at which the redemption period ends, if `type == 'ABSOLUTE'`.",
+                              "example": 1709754340,
+                              "format": "int32",
+                              "type": "integer"
+                            },
+                            "relative_time": {
+                              "description": "The number of days after coupon claim time for which a coupon is valid to be redeemed, `type = 'RELATIVE'`.",
+                              "example": 4,
+                              "format": "int32",
+                              "type": "integer"
+                            },
+                            "start_time": {
+                              "description": "The UNIX timestamp at which the redemption period starts, if `type == 'ABSOLUTE'`.",
+                              "example": 1709768000,
+                              "format": "int32",
+                              "type": "integer"
+                            },
+                            "type": {
+                              "description": "Values:\n- `ABSOLUTE`: the redemption period starts from `start_time` and ends at `end_time`.\n- `RELATIVE`: the redemption period starts from the time the coupon is claimed and lasts for `relative_time`.",
+                              "example": "ABSOLUTE",
+                              "type": "string"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "seller_tnc": {
+                          "description": "Custom terms & conditions optionally uploaded by the seller when configuring the coupon.",
+                          "example": "terms & conditions: xxx",
+                          "type": "string"
+                        },
+                        "status": {
+                          "description": "Coupon's promotion status.\nValues:\n- `NOT_START`: Not available to TikTok users until the coupon's configured start time.\n- `ONGOING`: Available to TikTok users.\n- `EXPIRED`: Not available to TikTok users because it has expired.\n- `DEACTIVATED`: Deactivated by the seller and is not available to TikTok users.\n\n\n\n",
+                          "example": "NOT_START\n\n\n\n",
+                          "type": "string"
+                        },
+                        "target_buyer_segment": {
+                          "description": "The target buyer segment of the coupon. Possible enumerations are:\n- `ALL`: May be discovered and claimed by all TTS buyers.\n- `NEW`:Customers who have never purchased from your shop.\n- `REPEAT_CUSTOMERS`: People who have previously placed orders in your shop and made another purchase within certain days(30 days for non-US and 90 days for US).\n- `RECENT_CUSTOMERS`: People who have made their first purchase in your shop in the past certain days(30 days for non-US and 90 days for US).\n- `FREQUENT_CUSTOMERS`: Customers with more than 1 purchase within the last 90 days.\n- `LAPSED_CUSTOMERS`: Customers with at least 1 purchase in the past 365 days but no purchases within the last certain days(90 days for non-US and 30 days for US).\n- `NEW_FOLLOWERS`: People who started following the TikTok account of your shop in the past 30 days.\n- `EXISTING_ACTIVE_FOLLOWERS`: People who followed the TikTok account of your shop and engaged with your shop through LIVE, short videos or product cards in the past 30 days.\n",
+                          "example": "NEW\n",
+                          "type": "string"
+                        },
+                        "threshold": {
+                          "description": "Optional minimum purchase criteria that must be met in order to receive the coupon's discount.",
+                          "properties": {
+                            "min_spend": {
+                              "description": "When `threshold.type == 'MIN_SPEND'`, a customer must purchase products from the range defined by `product_scope` with a monetary amount greater than or equal to this value, or the customer cannot use the coupon.",
+                              "properties": {
+                                "amount": {
+                                  "description": "Monetary value of the `min_spend`.",
+                                  "example": "30",
+                                  "type": "string"
+                                },
+                                "currency": {
+                                  "description": "Currency of the `min_spend` threshold.",
+                                  "example": "USD",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": {
+                              "description": "The type of purchase criteria. Possible enumerations are:\n- `NONE`: No minimum purchase criteria.\n- `MIN_SPEND`: Buyer must meet or exceed the minimum spend criteria with eligible products.",
+                              "example": "MIN_SPEND",
+                              "type": "string"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "title": {
+                          "description": "Seller-specified title of the coupon.",
+                          "example": "test coupon",
+                          "type": "string"
+                        },
+                        "update_time": {
+                          "description": "The UNIX timestamp of when the coupon was updated.",
+                          "example": 1661756811000,
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "usage_limits": {
+                          "description": "Limitations for the use of the coupons.",
+                          "properties": {
+                            "redemption_limit": {
+                              "description": "The number of times that a claimed coupon can be redeemed across all buyers. (Only available in ID, MY, PH, TH, SG, VN regions.) ",
+                              "example": 1000,
+                              "format": "int32",
+                              "type": "integer"
+                            },
+                            "single_buyer_claim_limit": {
+                              "description": "The number of times a single buyer can claim the coupon.",
+                              "example": 30,
+                              "format": "int32",
+                              "type": "integer"
+                            },
+                            "total_claim_limit": {
+                              "description": "The total number of claims allowed for the coupon across all buyers.",
+                              "example": 1000,
+                              "format": "int32",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "usage_stats": {
+                          "description": "Usage statistics",
+                          "properties": {
+                            "claimed_count": {
+                              "description": "The number of times that the coupon has been claimed.",
+                              "example": 5,
+                              "format": "int32",
+                              "type": "integer"
+                            },
+                            "redeemed_count": {
+                              "description": "The number of times that a coupon has been redeemed (i.e. applied to an order).",
+                              "example": 0,
+                              "format": "int32",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

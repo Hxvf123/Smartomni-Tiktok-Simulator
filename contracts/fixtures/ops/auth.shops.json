@@ -1,0 +1,79 @@
+{
+  "operation": "auth.shops",
+  "schema": "schemas/ops/auth.shops.response.json",
+  "classification": "synthetic-from-official-oas",
+  "note": "Values are synthetic and generated from the official OAS response shape; they are not captured TikTok traffic. Error cases are TEST FAULTS: no readable official source documents their code/message values.",
+  "cases": [
+    {
+      "case": "success",
+      "response": {
+        "code": 0,
+        "data": {
+          "shops": [
+            {
+              "cipher": "TEST_cipher",
+              "code": "TEST_code",
+              "id": "7000000000000000001",
+              "name": "TEST_name",
+              "region": "TEST_region",
+              "seller_type": "CROSS_BORDER"
+            }
+          ]
+        },
+        "message": "Success",
+        "request_id": "TEST-auth.shops-success"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "empty",
+      "response": {
+        "code": 0,
+        "data": {
+          "shops": []
+        },
+        "message": "Success",
+        "request_id": "TEST-auth.shops-empty"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "local_shop_region_vn_unverified",
+      "note": "Synthetic. 'VN' as a shop region code is NOT documented in the OAS (region is a free string with example GB); no claim that a real VN shop is granted access.",
+      "response": {
+        "code": 0,
+        "message": "Success",
+        "request_id": "TEST-auth.shops-vn",
+        "data": {
+          "shops": [
+            {
+              "cipher": "TEST_CIPHER_VN",
+              "code": "TESTVN000001",
+              "id": "7000000000000000002",
+              "name": "Test VN Shop",
+              "region": "VN",
+              "seller_type": "LOCAL"
+            }
+          ]
+        }
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "invalid_input",
+      "classification": "test_fault_undocumented",
+      "trigger": "send a malformed path parameter",
+      "requestMustFailValidation": false
+    },
+    {
+      "case": "token_expired",
+      "classification": "test_fault_undocumented",
+      "trigger": "x-tts-access-token is past its expiry"
+    },
+    {
+      "case": "missing_scope",
+      "classification": "test_fault_undocumented",
+      "trigger": "app lacks the (unverified) scope of this operation"
+    }
+  ]
+}

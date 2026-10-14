@@ -1,0 +1,182 @@
+{
+  "operation": "fulfillment.package_detail",
+  "schema": "schemas/ops/fulfillment.package_detail.response.json",
+  "classification": "synthetic-from-official-oas",
+  "note": "Values are synthetic and generated from the official OAS response shape; they are not captured TikTok traffic. Error cases are TEST FAULTS: no readable official source documents their code/message values.",
+  "cases": [
+    {
+      "case": "success",
+      "response": {
+        "code": 0,
+        "data": {
+          "create_time": 1635338186,
+          "delivery_option_id": "TEST_delivery_option_id",
+          "delivery_option_name": "TEST_delivery_option_name",
+          "dimension": {
+            "height": "TEST_height",
+            "length": "TEST_length",
+            "unit": "TEST_unit",
+            "width": "TEST_width"
+          },
+          "handover_method": "TEST_handover_method",
+          "has_multi_skus": false,
+          "insurance": {
+            "claim_status": "TEST_claim_status",
+            "coverage_amount": "TEST_coverage_amount",
+            "is_claim_eligible": false,
+            "is_purchased": false
+          },
+          "last_mile_tracking_number": "TEST_last_mile_tracking_number",
+          "note_tag": "TEST_note_tag",
+          "order_line_item_ids": [
+            "TEST_order_line_item_ids"
+          ],
+          "orders": [
+            {
+              "id": "TEST_id",
+              "skus": [
+                {
+                  "id": "TEST_id",
+                  "image_url": "TEST_image_url",
+                  "name": "TEST_name",
+                  "quantity": 5
+                }
+              ]
+            }
+          ],
+          "package_id": "TEST_package_id",
+          "package_status": "TEST_package_status",
+          "pickup_slot": {
+            "end_time": 1635338186,
+            "start_time": 1635338186
+          },
+          "recipient_address": {
+            "address_detail": "TEST_address_detail",
+            "address_line1": "TEST_address_line1",
+            "address_line2": "TEST_address_line2",
+            "address_line3": "TEST_address_line3",
+            "address_line4": "TEST_address_line4",
+            "full_address": "TEST_full_address",
+            "name": "TEST_name",
+            "phone_number": "TEST_phone_number",
+            "postal_code": "TEST_postal_code",
+            "region_code": "TEST_region_code"
+          },
+          "sender_address": {
+            "address_detail": "TEST_address_detail",
+            "address_line1": "TEST_address_line1",
+            "address_line2": "TEST_address_line2",
+            "address_line3": "TEST_address_line3",
+            "address_line4": "TEST_address_line4",
+            "full_address": "TEST_full_address",
+            "name": "TEST_name",
+            "phone_number": "TEST_phone_number",
+            "postal_code": "TEST_postal_code",
+            "region_code": "TEST_region_code"
+          },
+          "shipping_provider_id": "TEST_shipping_provider_id",
+          "shipping_provider_name": "TEST_shipping_provider_name",
+          "shipping_type": "TEST_shipping_type",
+          "split_and_combine_tag": "TEST_split_and_combine_tag",
+          "tracking_number": "TEST_tracking_number",
+          "update_time": 1635338186,
+          "weight": {
+            "unit": "TEST_unit",
+            "value": "TEST_value"
+          }
+        },
+        "message": "Success",
+        "request_id": "TEST-fulfillment.package_detail-success"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "empty",
+      "response": {
+        "code": 0,
+        "data": {
+          "create_time": 1635338186,
+          "delivery_option_id": "TEST_delivery_option_id",
+          "delivery_option_name": "TEST_delivery_option_name",
+          "dimension": {
+            "height": "TEST_height",
+            "length": "TEST_length",
+            "unit": "TEST_unit",
+            "width": "TEST_width"
+          },
+          "handover_method": "TEST_handover_method",
+          "has_multi_skus": false,
+          "insurance": {
+            "claim_status": "TEST_claim_status",
+            "coverage_amount": "TEST_coverage_amount",
+            "is_claim_eligible": false,
+            "is_purchased": false
+          },
+          "last_mile_tracking_number": "TEST_last_mile_tracking_number",
+          "note_tag": "TEST_note_tag",
+          "order_line_item_ids": [],
+          "orders": [],
+          "package_id": "TEST_package_id",
+          "package_status": "TEST_package_status",
+          "pickup_slot": {
+            "end_time": 1635338186,
+            "start_time": 1635338186
+          },
+          "recipient_address": {
+            "address_detail": "TEST_address_detail",
+            "address_line1": "TEST_address_line1",
+            "address_line2": "TEST_address_line2",
+            "address_line3": "TEST_address_line3",
+            "address_line4": "TEST_address_line4",
+            "full_address": "TEST_full_address",
+            "name": "TEST_name",
+            "phone_number": "TEST_phone_number",
+            "postal_code": "TEST_postal_code",
+            "region_code": "TEST_region_code"
+          },
+          "sender_address": {
+            "address_detail": "TEST_address_detail",
+            "address_line1": "TEST_address_line1",
+            "address_line2": "TEST_address_line2",
+            "address_line3": "TEST_address_line3",
+            "address_line4": "TEST_address_line4",
+            "full_address": "TEST_full_address",
+            "name": "TEST_name",
+            "phone_number": "TEST_phone_number",
+            "postal_code": "TEST_postal_code",
+            "region_code": "TEST_region_code"
+          },
+          "shipping_provider_id": "TEST_shipping_provider_id",
+          "shipping_provider_name": "TEST_shipping_provider_name",
+          "shipping_type": "TEST_shipping_type",
+          "split_and_combine_tag": "TEST_split_and_combine_tag",
+          "tracking_number": "TEST_tracking_number",
+          "update_time": 1635338186,
+          "weight": {
+            "unit": "TEST_unit",
+            "value": "TEST_value"
+          }
+        },
+        "message": "Success",
+        "request_id": "TEST-fulfillment.package_detail-empty"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "invalid_input",
+      "classification": "test_fault_undocumented",
+      "trigger": "send a malformed path parameter",
+      "requestMustFailValidation": false
+    },
+    {
+      "case": "token_expired",
+      "classification": "test_fault_undocumented",
+      "trigger": "x-tts-access-token is past its expiry"
+    },
+    {
+      "case": "missing_scope",
+      "classification": "test_fault_undocumented",
+      "trigger": "app lacks the (unverified) scope of this operation"
+    }
+  ]
+}

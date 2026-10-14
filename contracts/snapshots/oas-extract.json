@@ -1,0 +1,1778 @@
+{
+  "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+  "accessDate": "2026-10-14",
+  "operations": [
+    {
+      "id": "auth.shops",
+      "method": "GET",
+      "path": "/authorization/202309/shops",
+      "sha": "0ad322855451ab32f4d00cf03746370c4f57e4a729b39e0e99212ba94be566e3",
+      "pagination": null,
+      "params": [
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "GET 202309"
+      ]
+    },
+    {
+      "id": "product.search",
+      "method": "POST",
+      "path": "/product/202502/products/search",
+      "sha": "ce6064e2865ae7fe40e7c48381f4bc6442eeab9181f02dde06c6fd1f0c04ea69",
+      "pagination": {
+        "requestParams": [
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": true,
+            "description": "The number of results to be returned per page. Valid range: [1-100]"
+          },
+          {
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "description": "An opaque token used to retrieve the next page of a paginated result set. Retrieve this value from the result of the `next_page_token` from a previous response. It is not needed for the first page."
+          }
+        ],
+        "responseFields": [
+          "next_page_token",
+          "total_count"
+        ]
+      },
+      "multipart": false,
+      "params": [
+        {
+          "in": "query",
+          "name": "page_size",
+          "required": true,
+          "type": "integer",
+          "format": "int32",
+          "description": "The number of results to be returned per page. Valid range: [1-100]"
+        },
+        {
+          "in": "query",
+          "name": "page_token",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "An opaque token used to retrieve the next page of a paginated result set. Retrieve this value from the result of the `next_page_token` from a previous response. It is not needed for the first page."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": true,
+      "candidates": [
+        "POST 202309",
+        "POST 202312",
+        "POST 202502"
+      ]
+    },
+    {
+      "id": "product.detail",
+      "method": "GET",
+      "path": "/product/202309/products/{product_id}",
+      "sha": "318d5427a99d53beec84cc5358a114b87f5482bbe7b3d020cf9ab0cd26898f04",
+      "pagination": null,
+      "params": [
+        {
+          "in": "path",
+          "name": "product_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "The product ID in TikTok Shop."
+        },
+        {
+          "in": "query",
+          "name": "return_under_review_version",
+          "required": false,
+          "type": "boolean",
+          "format": null,
+          "description": "A flag to indicate what product information to retrieve if a live product (`ACTIVATE` status) is edited and resent for TikTok Shop review. - True: Retrieves the latest version of the product information that is currently under review. - False: Retrieves a snapshot of the product information that is live and online (before the edit). Default: False"
+        },
+        {
+          "in": "query",
+          "name": "return_draft_version",
+          "required": false,
+          "type": "boolean",
+          "format": null,
+          "description": "A flag to indicate what product information to retrieve if a product has a draft in TikTok Shop. - True: Retrieves the draft version of the product information. - False: Retrieves the latest product information. Default: False **Note**: - Applicable only if the product is in the `DRAFT`, `ACTIVATE`, `SELLER_DEACTIVATED`, or `PLATFORM_DEACTIVATED` status. - This field and `return_under_review_version` are mutually exclusive. Specify only one to receive results."
+        },
+        {
+          "in": "query",
+          "name": "locale",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The locale or language."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "GET 202309"
+      ]
+    },
+    {
+      "id": "product.media_upload",
+      "method": "POST",
+      "path": "/product/202309/images/upload",
+      "sha": "ce90de4f587d2d9cd27e5b149484ed59cfd1bd617078b4553c64538fd07dbab5",
+      "pagination": null,
+      "multipart": true,
+      "params": [
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: multipart/form-data"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "POST 202309"
+      ]
+    },
+    {
+      "id": "product.file_upload",
+      "method": "POST",
+      "path": "/product/202309/files/upload",
+      "sha": "df584e79db8c794d3830c34439696755709422b1fb583d80b668ab89ec441209",
+      "pagination": null,
+      "multipart": true,
+      "params": [
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: multipart/form-data"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "POST 202309"
+      ]
+    },
+    {
+      "id": "logistics.warehouses",
+      "method": "GET",
+      "path": "/logistics/202309/warehouses",
+      "sha": "dc47e4bc4e7ea0e89469fe62fe0868d214290c08d71a8577c141e2531930d8c0",
+      "pagination": null,
+      "params": [
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "GET 202309"
+      ]
+    },
+    {
+      "id": "product.inventory_update",
+      "method": "POST",
+      "path": "/product/202309/products/{product_id}/inventory/update",
+      "sha": "23db9406233c8e301b9393b6daf334a20d90b086b5162c82b3ccceddc76b9a69",
+      "pagination": null,
+      "multipart": false,
+      "params": [
+        {
+          "in": "path",
+          "name": "product_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "The product ID generated by TikTok Shop."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": true,
+      "candidates": [
+        "POST 202309"
+      ]
+    },
+    {
+      "id": "order.search",
+      "method": "POST",
+      "path": "/order/202309/orders/search",
+      "sha": "e01bc2cf6a550b00272f88b389e519f9c6d6b80bb458d09cb0e7b635cd53d085",
+      "pagination": {
+        "requestParams": [
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": true,
+            "description": "The number of results to be returned per page. Default: 20. Valid range: [1-100]."
+          },
+          {
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "description": "An opaque token used to retrieve the next page of a paginated result set. Retrieve this value from the result of the `next_page_token` from a previous response. It is not needed for the first page."
+          }
+        ],
+        "responseFields": [
+          "next_page_token",
+          "total_count"
+        ]
+      },
+      "multipart": false,
+      "params": [
+        {
+          "in": "query",
+          "name": "page_size",
+          "required": true,
+          "type": "integer",
+          "format": "int32",
+          "description": "The number of results to be returned per page. Default: 20. Valid range: [1-100]."
+        },
+        {
+          "in": "query",
+          "name": "sort_order",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The sort order for the `sort_field` parameter. Default: DESC Possible values: - ASC: Ascending order - DESC: Descending order"
+        },
+        {
+          "in": "query",
+          "name": "page_token",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "An opaque token used to retrieve the next page of a paginated result set. Retrieve this value from the result of the `next_page_token` from a previous response. It is not needed for the first page."
+        },
+        {
+          "in": "query",
+          "name": "sort_field",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The returned results will be sorted by the specified field. Default: `create_time` Possible values: - `create_time` - `update_time` Specify the order for sorting the returned results by using the `sort_order` parameter."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": true,
+      "candidates": [
+        "POST 202309"
+      ]
+    },
+    {
+      "id": "order.detail",
+      "method": "GET",
+      "path": "/order/202507/orders",
+      "sha": "c9b20771d16e234f9af05ea54f84be6dd2b77a18d613a39dc5fbaa74c68395fa",
+      "pagination": null,
+      "params": [
+        {
+          "in": "query",
+          "name": "ids",
+          "required": true,
+          "type": "array",
+          "format": null,
+          "description": "A list of TikTok Shop order ID values. Max count: 50"
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "GET 202309",
+        "GET 202507"
+      ]
+    },
+    {
+      "id": "fulfillment.tracking",
+      "method": "GET",
+      "path": "/fulfillment/202309/orders/{order_id}/tracking",
+      "sha": "6f82d61c924a606a71b698f70c08dea07f5107efecaa0a61e57d86079f426d9c",
+      "pagination": null,
+      "params": [
+        {
+          "in": "path",
+          "name": "order_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "TikTok Shop order ID."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "GET 202309"
+      ]
+    },
+    {
+      "id": "fulfillment.shipping_documents",
+      "method": "GET",
+      "path": "/fulfillment/202309/packages/{package_id}/shipping_documents",
+      "sha": "a068d427b0c14e3e5aea1a9f03256f91d10e9ee58f9b85113703998ffedb154e",
+      "pagination": null,
+      "params": [
+        {
+          "in": "path",
+          "name": "package_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "TikTok Shop package ID."
+        },
+        {
+          "in": "query",
+          "name": "document_type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Available document types: - `SHIPPING_LABEL`: Returns the shipping label in PDF format by default. - `PACKING_SLIP`: Returns the packing slip in PDF format by default. - `SHIPPING_LABEL_AND_PACKING_SLIP`: Returns both the shipping label and the packing slip for the package, both in PDF format by default. - `SHIPPING_LABEL_PICTURE`: Returns the shipping label in PNG format. - `HAZMAT_LABEL`: Returns the hazmat label in PDF format by default. You must only use this value when there are hazmat items in the package. When you use the value, `document_size` is fixed to A4, and you don't need to specify `document_size`. - `INVOICE_LABEL`: For Brazil market only, document_size is fixed to A6, and you don't need to specify `document_size`. Returns the invoice label in PDF format by default"
+        },
+        {
+          "in": "query",
+          "name": "document_size",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this field to specify the size of the document to obtain. This parameter is only applicable to shipping labels, picking slips, and packing slips that are in the PDF format. It is not applicable for hazmat labels as these are fixed to A4. If you specify `SHIPPING_LABEL_PICTURE` for the `document_type`, any value specified in the `document_size` will be ignored. Possible values: - `A6` (Default) - `A5`"
+        },
+        {
+          "in": "query",
+          "name": "document_format",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The format of the shipping document. Possible values: - PDF (Default) - ZPL (Only for BR and MX market) **Note**: Not applicable for `SHIPPING_LABEL_PICTURE` document type."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "GET 202309"
+      ]
+    },
+    {
+      "id": "fulfillment.package_detail",
+      "method": "GET",
+      "path": "/fulfillment/202309/packages/{package_id}",
+      "sha": "f2f8f85aed0dfa94ede094721c3779e01a7798e293450c405d4b4745f89bc7b3",
+      "pagination": null,
+      "params": [
+        {
+          "in": "path",
+          "name": "package_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "TikTok Shop package ID."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. Get by API [Get Authorization Shop](https://partner.tiktokshop.com/docv2/page/6507ead7b99d5302be949ba9?external_id=6507ead7b99d5302be949ba9)"
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "GET 202309"
+      ]
+    },
+    {
+      "id": "fulfillment.package_ship",
+      "method": "POST",
+      "path": "/fulfillment/202309/packages/{package_id}/ship",
+      "sha": "b8fb1837a46c557a1fc3fc639625034aad35e4459e498e5a0f3f3e6f43930113",
+      "pagination": null,
+      "multipart": false,
+      "params": [
+        {
+          "in": "path",
+          "name": "package_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "TikTok Shop package ID."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": true,
+      "candidates": [
+        "POST 202309"
+      ]
+    },
+    {
+      "id": "return.search",
+      "method": "POST",
+      "path": "/return_refund/202309/returns/search",
+      "sha": "222bd0ce6b48ccdd1ab24e5f048f3a244f2538f711da7420b253b90821ff952d",
+      "pagination": {
+        "requestParams": [
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "description": "The number of results to be returned per page. Default: 10. Valid range: [10-50]."
+          },
+          {
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "description": "An opaque token used to retrieve the next page of a paginated result set. Retrieve this value from the result of the `next_page_token` from a previous response. It is not needed for the first page."
+          }
+        ],
+        "responseFields": [
+          "next_page_token",
+          "total_count"
+        ]
+      },
+      "multipart": false,
+      "params": [
+        {
+          "in": "query",
+          "name": "sort_field",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The returned results will be sorted by the specified field. Default: `create_time` Possible values: - `create_time` - `update_time` Specify the order for sorting the returned results by using the `sort_order` parameter."
+        },
+        {
+          "in": "query",
+          "name": "sort_order",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The sort order for the `sort_field` parameter. Default: ASC Possible values: - `ASC`: Ascending order - `DESC`: Descending order"
+        },
+        {
+          "in": "query",
+          "name": "page_size",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The number of results to be returned per page. Default: 10. Valid range: [10-50]."
+        },
+        {
+          "in": "query",
+          "name": "page_token",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "An opaque token used to retrieve the next page of a paginated result set. Retrieve this value from the result of the `next_page_token` from a previous response. It is not needed for the first page."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": true,
+      "candidates": [
+        "POST 202309"
+      ]
+    },
+    {
+      "id": "return.approve",
+      "method": "POST",
+      "path": "/return_refund/202309/returns/{return_id}/approve",
+      "sha": "5864a3060bd271709773ff951e4a76d4fc70f4540908526029c42a7c408c07ac",
+      "pagination": null,
+      "multipart": false,
+      "params": [
+        {
+          "in": "path",
+          "name": "return_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "The identifier of a specific return request."
+        },
+        {
+          "in": "query",
+          "name": "idempotency_key",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The idempotency key is a unique value generated by the client which the server uses to recognize the same request. How you create unique keys is up to you, but we suggest using UUIDs, or another random string with enough entropy to avoid collisions. Idempotency keys can be up to 255 characters long."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": true,
+      "candidates": [
+        "POST 202309"
+      ]
+    },
+    {
+      "id": "return.reject",
+      "method": "POST",
+      "path": "/return_refund/202309/returns/{return_id}/reject",
+      "sha": "1c671164e72c46890265a12b696c2bb7640f485d2ece44e81b72d757447fc8fe",
+      "pagination": null,
+      "multipart": false,
+      "params": [
+        {
+          "in": "path",
+          "name": "return_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "The identifier of a specific return request."
+        },
+        {
+          "in": "query",
+          "name": "idempotency_key",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The idempotency key is a unique value generated by the client which the server uses to recognize the same request. How you create unique keys is up to you, but we suggest using UUIDs, or another random string with enough entropy to avoid collisions. Idempotency keys can be up to 255 characters long."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": true,
+      "candidates": [
+        "POST 202309"
+      ]
+    },
+    {
+      "id": "return.records",
+      "method": "GET",
+      "path": "/return_refund/202309/returns/{return_id}/records",
+      "sha": "356abd1f51f6aab1888e61fcb27809b288980e2c438162f0d5434d7b790c6830",
+      "pagination": null,
+      "params": [
+        {
+          "in": "path",
+          "name": "return_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "A unique identifier for a TikTok Shop return request."
+        },
+        {
+          "in": "query",
+          "name": "locale",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The BCP-47 locale codes for displaying the return reason, delimited by commas. Default: en-US Refer to [Locale codes](678e3a47bae28f030a8c7523) for the list of supported locale codes."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "GET 202309"
+      ]
+    },
+    {
+      "id": "return.reject_reasons",
+      "method": "GET",
+      "path": "/return_refund/202309/reject_reasons",
+      "sha": "6a205f8502d19744cb06dadbbb3806b79b9647826a69ac2bc5cd4fce29213b32",
+      "pagination": null,
+      "params": [
+        {
+          "in": "query",
+          "name": "locale",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The BCP-47 locale codes for displaying the rejection reason, delimited by commas. Default: en-US Refer to [Locale codes](678e3a47bae28f030a8c7523) for the list of supported locale codes."
+        },
+        {
+          "in": "query",
+          "name": "return_or_cancel_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "The unique identifier for an order return or cancellation."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "GET 202309"
+      ]
+    },
+    {
+      "id": "return.aftersale_eligibility",
+      "method": "GET",
+      "path": "/return_refund/202512/orders/{order_id}/aftersale_eligibility",
+      "sha": "b4882c087601c2cc23c78352aa66e8f6ecc208eb6e8caa357d4e93b3e2517c2a",
+      "pagination": null,
+      "params": [
+        {
+          "in": "path",
+          "name": "order_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "The unique identifier for a TikTok Shop order."
+        },
+        {
+          "in": "query",
+          "name": "initiate_aftersale_user",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The type of user you would like to check aftersale options for. Default: SELLER Possible values: - SELLER - BUYER"
+        },
+        {
+          "in": "query",
+          "name": "request_types",
+          "required": false,
+          "type": "array",
+          "format": null,
+          "description": "Which request types you want to query. -CANCEL -REFUND -RETURN_AND_REFUND"
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "GET 202309",
+        "GET 202512"
+      ]
+    },
+    {
+      "id": "cancellation.search",
+      "method": "POST",
+      "path": "/return_refund/202309/cancellations/search",
+      "sha": "eefd06dd673966b3f5e96db0cc73409355b66c7d9b47a9d09913c2d529780e30",
+      "pagination": {
+        "requestParams": [
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "description": "The number of results to be returned per page. Default: 10. Valid range: [1-50]."
+          },
+          {
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "description": "An opaque token used to retrieve the next page of a paginated result set. Retrieve this value from the result of the next_page_token from a previous response. It is not needed for the first page."
+          }
+        ],
+        "responseFields": [
+          "next_page_token",
+          "total_count"
+        ]
+      },
+      "multipart": false,
+      "params": [
+        {
+          "in": "query",
+          "name": "sort_field",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The returned results will be sorted by the specified field. Default: create_time Possible values: - create_time - update_time Specify the order for sorting the returned results by using the sort_order parameter."
+        },
+        {
+          "in": "query",
+          "name": "sort_order",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The sort order for the sort_field parameter. Default: ASC Possible values: - ASC: Ascending order - DESC: Descending order"
+        },
+        {
+          "in": "query",
+          "name": "page_size",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The number of results to be returned per page. Default: 10. Valid range: [1-50]."
+        },
+        {
+          "in": "query",
+          "name": "page_token",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "An opaque token used to retrieve the next page of a paginated result set. Retrieve this value from the result of the next_page_token from a previous response. It is not needed for the first page."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": true,
+      "candidates": [
+        "POST 202309"
+      ]
+    },
+    {
+      "id": "cancellation.approve",
+      "method": "POST",
+      "path": "/return_refund/202309/cancellations/{cancel_id}/approve",
+      "sha": "76ca1e3b47c06d674e53851651de235e9a7ab0160471d72873a61ac1dfa4caff",
+      "pagination": null,
+      "params": [
+        {
+          "in": "path",
+          "name": "cancel_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "The identifier of a specific cancellation request."
+        },
+        {
+          "in": "query",
+          "name": "idempotency_key",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The idempotency key is a unique value generated by the client which the server uses to recognize a request. You may choose your own method of creating unique keys. We suggest using UUIDs, or another random string with enough entropy, to avoid collisions. Idempotency keys can be up to 255 characters long."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "POST 202309"
+      ]
+    },
+    {
+      "id": "cancellation.reject",
+      "method": "POST",
+      "path": "/return_refund/202309/cancellations/{cancel_id}/reject",
+      "sha": "aabc55ecbf83573967523c51fdbff4bd9ea308d47094c4ccc5468ed8cb14fb4a",
+      "pagination": null,
+      "multipart": false,
+      "params": [
+        {
+          "in": "path",
+          "name": "cancel_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "The identifier of a specific cancellation request."
+        },
+        {
+          "in": "query",
+          "name": "idempotency_key",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "The idempotency key is a unique value generated by the client which the server uses to recognize a request. You may choose your own method of creating unique keys. We suggest using UUIDs, or another random string with enough entropy, to avoid collisions. Idempotency keys can be up to 255 characters long."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": true,
+      "candidates": [
+        "POST 202309"
+      ]
+    },
+    {
+      "id": "cs.conversations",
+      "method": "GET",
+      "path": "/customer_service/202309/conversations",
+      "sha": "74374cb0e68869fef327cb82263ccf5aad5486f7cf187d84e8e90dc75af2ec35",
+      "pagination": {
+        "requestParams": [
+          {
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "description": "Paging cursor, this means where this query should start. For the next page, use \"next_page_token\" in response."
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": true,
+            "description": "Number of conversations on one page Max 20."
+          }
+        ],
+        "responseFields": [
+          "next_page_token"
+        ]
+      },
+      "params": [
+        {
+          "in": "query",
+          "name": "page_token",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Paging cursor, this means where this query should start. For the next page, use \"next_page_token\" in response."
+        },
+        {
+          "in": "query",
+          "name": "page_size",
+          "required": true,
+          "type": "integer",
+          "format": "int32",
+          "description": "Number of conversations on one page Max 20."
+        },
+        {
+          "in": "query",
+          "name": "locale",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "System message's display language. The messages sent by System will be returned in the setting language; The messages sent by the buyer, the shop, the CS agent will not be affected. The default value is en (English). Possible enumerations: - de-DE (German, Germany) - en (English) - en-GB (English, United Kingdom) - es-ES (Spanish, Spain) - es-MX (Spanish, Latin America) - fr-FR (French, France) - id-ID (Indonesian, Indonesia) - it-IT (Italian, Italy) - ja-JP (Japanese) - ms-MY (Malay, Malaysia) - th-TH (Thai, Thailand) - vi-VN (Vietnamese, Vietnam) - pt-BR (Portuguese, Brazil) - zh-CN (Simplified Chinese, China)"
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "GET 202309"
+      ]
+    },
+    {
+      "id": "cs.messages",
+      "method": "GET",
+      "path": "/customer_service/202309/conversations/{conversation_id}/messages",
+      "sha": "fcbd2ddcf4def37a7ba4be16de4088ac159afe65e675140b6c70c50fa79036ea",
+      "pagination": {
+        "requestParams": [
+          {
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "description": "Paging cursor, this means where this query should start. For the next page, use \"next_page_token\" in response."
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": true,
+            "description": "Number of conversations in one page Max 10."
+          }
+        ],
+        "responseFields": [
+          "next_page_token"
+        ]
+      },
+      "params": [
+        {
+          "in": "path",
+          "name": "conversation_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Conversation ID"
+        },
+        {
+          "in": "query",
+          "name": "page_token",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Paging cursor, this means where this query should start. For the next page, use \"next_page_token\" in response."
+        },
+        {
+          "in": "query",
+          "name": "page_size",
+          "required": true,
+          "type": "integer",
+          "format": "int32",
+          "description": "Number of conversations in one page Max 10."
+        },
+        {
+          "in": "query",
+          "name": "locale",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "System message's display language. The messages sent by System will be returned in the setting language; The messages sent by the buyer, the shop, the CS agent will not be affected. The default value is en (English). Possible enumerations: - de-DE (German, Germany) - en (English) - en-GB (English, United Kingdom) - es-ES (Spanish, Spain) - es-MX (Spanish, Latin America) - fr-FR (French, France) - id-ID (Indonesian, Indonesia) - it-IT (Italian, Italy) - ja-JP (Japanese) - ms-MY (Malay, Malaysia) - th-TH (Thai, Thailand) - vi-VN (Vietnamese, Vietnam) - pt-BR (Portuguese, Brazil) - zh-CN (Simplified Chinese, China)"
+        },
+        {
+          "in": "query",
+          "name": "sort_order",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Sort order. Possible enumerations: - DESC(default) - ASC"
+        },
+        {
+          "in": "query",
+          "name": "sort_field",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Sort messages by one of the following properties: - `create_time` (default) - `index`"
+        },
+        {
+          "in": "query",
+          "name": "need_data",
+          "required": false,
+          "type": "boolean",
+          "format": null,
+          "description": "Need message.data"
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "GET 202309"
+      ]
+    },
+    {
+      "id": "cs.conversation_detail",
+      "method": "GET",
+      "path": "/customer_service/202601/conversations/{conversation_id}",
+      "sha": "2d5cc8dab4b6ae15254b8e8def722ff1fc28c456a8905495f0274650bcded976",
+      "pagination": null,
+      "params": [
+        {
+          "in": "path",
+          "name": "conversation_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Conversation ID"
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "GET 202601"
+      ]
+    },
+    {
+      "id": "cs.send_message_202309",
+      "method": "POST",
+      "path": "/customer_service/202309/conversations/{conversation_id}/messages",
+      "sha": "6c8acc60420d547e3d49ee5d9477b7d93e3a410d48dd696a36b570bc1e2d95f5",
+      "pagination": null,
+      "multipart": false,
+      "params": [
+        {
+          "in": "path",
+          "name": "conversation_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Conversation ID"
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": true,
+      "candidates": [
+        "POST 202309"
+      ]
+    },
+    {
+      "id": "cs.image_upload",
+      "method": "POST",
+      "path": "/customer_service/202309/images/upload",
+      "sha": "91165a6270ddd6d6e0090f998e989dafb6845100317d6172575b740c70ce5d9a",
+      "pagination": null,
+      "multipart": true,
+      "params": [
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: multipart/form-data"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "POST 202309"
+      ]
+    },
+    {
+      "id": "promotion.coupon_search",
+      "method": "POST",
+      "path": "/promotion/202406/coupons/search",
+      "sha": "55ab49140b3e805a19824d2c9c79313cd61f4ff9708e5b7597efb82ffe3b7e65",
+      "pagination": {
+        "requestParams": [
+          {
+            "in": "query",
+            "name": "page_token",
+            "required": false,
+            "description": "Page cursor. Omitting this parameter will return the first page of results."
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "description": "The number of coupons returned in one page of results. The range is `[1, 100]`, with a default value of `50`."
+          }
+        ],
+        "responseFields": [
+          "next_page_token",
+          "total_count"
+        ]
+      },
+      "multipart": false,
+      "params": [
+        {
+          "in": "query",
+          "name": "page_token",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Page cursor. Omitting this parameter will return the first page of results."
+        },
+        {
+          "in": "query",
+          "name": "page_size",
+          "required": false,
+          "type": "integer",
+          "format": "int32",
+          "description": "The number of coupons returned in one page of results. The range is `[1, 100]`, with a default value of `50`."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": true,
+      "candidates": [
+        "POST 202406"
+      ]
+    },
+    {
+      "id": "promotion.coupon_detail",
+      "method": "GET",
+      "path": "/promotion/202406/coupons/{coupon_id}",
+      "sha": "996218783ed21049d856f5129813625c0b1d315fa196d447cabbcd69d651c930",
+      "pagination": null,
+      "params": [
+        {
+          "in": "path",
+          "name": "coupon_id",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Coupon id."
+        },
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "GET 202406"
+      ]
+    },
+    {
+      "id": "event.webhooks_get",
+      "method": "GET",
+      "path": "/event/202309/webhooks",
+      "sha": "353d801c51446f218b1d0f6f23487896f2830461d65306ffa9aff7ec1b576831",
+      "pagination": {
+        "requestParams": [],
+        "responseFields": [
+          "total_count"
+        ]
+      },
+      "params": [
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": false,
+      "candidates": [
+        "GET 202309"
+      ]
+    },
+    {
+      "id": "event.webhooks_put",
+      "method": "PUT",
+      "path": "/event/202309/webhooks",
+      "sha": "dc37c2280e9e1a7f7742dd22c28c33b75c1d92d46eca875f1e46ce04764557a4",
+      "pagination": null,
+      "multipart": false,
+      "params": [
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": true,
+      "candidates": [
+        "PUT 202309"
+      ]
+    },
+    {
+      "id": "event.webhooks_delete",
+      "method": "DELETE",
+      "path": "/event/202309/webhooks",
+      "sha": "cdf47cf1ef487a25c5857b3b1e26dd94fbd31d836d33680ee53b8b3523576b78",
+      "pagination": null,
+      "multipart": false,
+      "params": [
+        {
+          "in": "query",
+          "name": "shop_cipher",
+          "required": false,
+          "type": "string",
+          "format": null,
+          "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response."
+        },
+        {
+          "in": "header",
+          "name": "x-tts-access-token",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": ""
+        },
+        {
+          "in": "header",
+          "name": "Content-Type",
+          "required": true,
+          "type": "string",
+          "format": null,
+          "description": "Allowed type: application/json"
+        }
+      ],
+      "hasBody": true,
+      "candidates": [
+        "DELETE 202309"
+      ]
+    }
+  ]
+}

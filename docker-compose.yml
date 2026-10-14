@@ -1,0 +1,86 @@
+# TikTok Shop simulator - standalone stack (NOT part of the SmartOmni root docker-compose.yml).
+# Own project name, own volumes, own credentials. Run from this directory:
+#   cp .env.example .env   # edit the CHANGE_ME values
+#   docker compose up --build
+name: smartomni-tiktok-simulator
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-simulator}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: tiktok_simulator
+    volumes:
+      - tiktok_sim_pgdata:/var/lib/postgresql/data
+    networks: [sim_internal] # internal-only network: no published port, unreachable from the host
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d tiktok_simulator"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: "8090"
+      DATABASE_URL: postgresql://${POSTGRES_USER:-simulator}:${POSTGRES_PASSWORD}@db:5432/tiktok_simulator
+      TEST_ADMIN_TOKEN: ${TEST_ADMIN_TOKEN:?set TEST_ADMIN_TOKEN in .env}
+      PUBLIC_API_BASE_URL: ${PUBLIC_API_BASE_URL:-http://localhost:8090}
+      HOST_CALLBACK_BASE_URL: ${HOST_CALLBACK_BASE_URL:-http://host.docker.internal}
+      SEED_ON_START: ${SEED_ON_START:-true}
+      SEED_APP_KEY: ${SEED_APP_KEY:-smartomni-dev-app-key}
+      SEED_APP_SECRET: ${SEED_APP_SECRET:-smartomni-dev-app-secret-fake}
+      SEED_APP_REDIRECT_URIS: ${SEED_APP_REDIRECT_URIS:-http://localhost:8080/api/v1/integrations/tiktok/callback}
+      SEED_APP_SCOPES: ${SEED_APP_SCOPES:-sim.authorized_shops.read,sim.product.read,sim.order.read}
+      OAUTH_AUTH_CODE_TTL_MS: ${OAUTH_AUTH_CODE_TTL_MS:-300000}
+      OAUTH_ACCESS_TOKEN_TTL_MS: ${OAUTH_ACCESS_TOKEN_TTL_MS:-3600000}
+      OAUTH_REFRESH_TOKEN_TTL_MS: ${OAUTH_REFRESH_TOKEN_TTL_MS:-2592000000}
+      OAUTH_SIGNATURE_WINDOW_MS: ${OAUTH_SIGNATURE_WINDOW_MS:-300000}
+      WEBHOOK_WORKER_ENABLED: ${WEBHOOK_WORKER_ENABLED:-true}
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:8090:8090"
+    volumes:
+      - tiktok_sim_media:/data/media
+      - tiktok_sim_pdf:/data/pdf
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # reach SmartOmni running on the host
+    networks: [sim_internal, sim_edge]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8090/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  ui:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      TEST_ADMIN_TOKEN: ${TEST_ADMIN_TOKEN:?set TEST_ADMIN_TOKEN in .env}
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:3090:80"
+    networks: [sim_internal, sim_edge]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+networks:
+  sim_internal:
+    internal: true
+  sim_edge: {}
+
+volumes:
+  tiktok_sim_pgdata:
+  tiktok_sim_media:
+  tiktok_sim_pdf:

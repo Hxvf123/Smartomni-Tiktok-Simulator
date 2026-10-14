@@ -1,0 +1,32 @@
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Same-origin proxy to the API. The test-admin token is injected here (server side),
+    # so it never appears in the JavaScript bundle. Keep the UI port bound to localhost.
+    location /demo/ {
+        proxy_pass http://api:8090;
+        proxy_set_header Host $host;
+        proxy_set_header X-Request-Id $request_id;
+        proxy_set_header X-Test-Admin-Token "";
+    }
+    location /test-admin/ {
+        proxy_pass http://api:8090;
+        proxy_set_header Host $host;
+        proxy_set_header X-Test-Admin-Token ${TEST_ADMIN_TOKEN};
+    }
+    location /health/ {
+        proxy_pass http://api:8090;
+    }
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok";
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

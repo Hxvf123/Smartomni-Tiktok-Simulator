@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "token-response.json",
+  "title": "Token get / refresh response (provisional)",
+  "x-verification": "PROVISIONAL, secondary only (npm tiktok-shop-client, packagist haistar/tiktokshop-api-client, useresponse docs). Not in the OAS; docv2 token page unreadable. The official FAQ confirms the path /api/v2/token/get and an 'open_id' field only. access_token_expire_in is reported as a Unix-style timestamp, NOT a TTL: unconfirmed. Token endpoints may not share the OpenAPI envelope.",
+  "type": "object",
+  "required": [
+    "code",
+    "message",
+    "data"
+  ],
+  "properties": {
+    "code": {
+      "type": "integer"
+    },
+    "message": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "access_token",
+        "access_token_expire_in",
+        "refresh_token",
+        "refresh_token_expire_in"
+      ],
+      "properties": {
+        "access_token": {
+          "type": "string",
+          "minLength": 1
+        },
+        "access_token_expire_in": {
+          "type": "integer"
+        },
+        "refresh_token": {
+          "type": "string",
+          "minLength": 1
+        },
+        "refresh_token_expire_in": {
+          "type": "integer"
+        },
+        "open_id": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

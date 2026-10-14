@@ -1,0 +1,428 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/fulfillment.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "f2f8f85aed0dfa94ede094721c3779e01a7798e293450c405d4b4745f89bc7b3",
+    "candidatesInBundle": [
+      {
+        "method": "GET",
+        "path": "/fulfillment/202309/packages/{package_id}",
+        "version": "202309"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "GET",
+  "path": "/fulfillment/202309/packages/{package_id}",
+  "operation": {
+    "tags": [
+      "fulfillment_v202309"
+    ],
+    "summary": "GetPackageDetail",
+    "description": "Returns information about a package, including handover time slot, tracking number, and shipping provider information.",
+    "parameters": [
+      {
+        "name": "package_id",
+        "in": "path",
+        "description": "TikTok Shop package ID.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "5433567853345"
+      },
+      {
+        "name": "shop_cipher",
+        "in": "query",
+        "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. Get by API [Get Authorization Shop](https://partner.tiktokshop.com/docv2/page/6507ead7b99d5302be949ba9?external_id=6507ead7b99d5302be949ba9)",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "GCP_XF90igAAAABh00qsWgtvOiGFNqyubMt3"
+      },
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "create_time": {
+                      "description": "Package creation time. Unix timestamp.",
+                      "example": 1635338186,
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "delivery_option_id": {
+                      "description": "Order delivery option ID. Delivery option ID is mapped to seller configured logistics templates ID.",
+                      "example": "7091146663229654785",
+                      "type": "string"
+                    },
+                    "delivery_option_name": {
+                      "description": "Delivery option name. For display purposes only.",
+                      "example": "Shipped from seller\n",
+                      "type": "string"
+                    },
+                    "dimension": {
+                      "description": "The dimensions of the scheduled package.",
+                      "properties": {
+                        "height": {
+                          "description": "The height of the scheduled package. ",
+                          "example": "0.03",
+                          "type": "string"
+                        },
+                        "length": {
+                          "description": "The length of the scheduled package. ",
+                          "example": "1.2",
+                          "type": "string"
+                        },
+                        "unit": {
+                          "description": "The unit of measurement used to measure the length. Possible values:\n- `CM`\n- `INCH`",
+                          "example": "CM",
+                          "type": "string"
+                        },
+                        "width": {
+                          "description": "The width of the scheduled package. ",
+                          "example": "0.2",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "handover_method": {
+                      "description": "Whether the package is delivered by pick up or drop off. Possible values:\n- `PICKUP`: A Logistics carrier will pickup the package(s) from the seller's pickup address.\n- `DROP_OFF`: Seller will need to drop off the package(s) to a designated location.",
+                      "example": "PICKUP",
+                      "type": "string"
+                    },
+                    "has_multi_skus": {
+                      "description": "Whether there are multiple SKU IDs in a package.",
+                      "example": true,
+                      "type": "boolean"
+                    },
+                    "insurance": {
+                      "description": "Provides details of shipping insurance auto-enrolled during label purchase",
+                      "properties": {
+                        "claim_status": {
+                          "description": "The insurance claim status.\nAvailable values:\n- `NOT_STARTED`: Claim has not been initiated for this package.\n- `CLAIM_PENDING`: Claim is currently under review.\n- `APPROVED`: Claim has been approved.\n- `DECLINED`: Claim has been declined.",
+                          "example": "CLAIM_PENDING",
+                          "type": "string"
+                        },
+                        "coverage_amount": {
+                          "description": "The insurance coverage amount for the package. Units: USD.",
+                          "example": "200",
+                          "type": "string"
+                        },
+                        "is_claim_eligible": {
+                          "description": "Whether the order is eligible for an insurance claim, based on eligible refund reasons.",
+                          "example": true,
+                          "type": "boolean"
+                        },
+                        "is_purchased": {
+                          "description": "Whether insurance has been purchased for the package.",
+                          "example": true,
+                          "type": "boolean"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "last_mile_tracking_number": {
+                      "description": "For cross-border order only. Cross-border order last mile tracking number.\n",
+                      "example": "6617675021119438849",
+                      "type": "string"
+                    },
+                    "note_tag": {
+                      "description": "Possible values:\n- `BUYER_UNNOTED`: The order has not been noted by buyer.\n- `BUYER_NOTED`: The order has been noted by buyer.\n",
+                      "example": "BUYER_UNNOTED",
+                      "type": "string"
+                    },
+                    "order_line_item_ids": {
+                      "description": "The order line item ID contained in the package.",
+                      "example": [
+                        "1729382476852921560"
+                      ],
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "orders": {
+                      "description": "The response list of TikTok Shop orders.",
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "description": "TikTok Shop order ID.",
+                            "example": "54335448533296",
+                            "type": "string"
+                          },
+                          "skus": {
+                            "description": "[Deprecated]SKU information.",
+                            "items": {
+                              "properties": {
+                                "id": {
+                                  "description": "[Deprecated]SKU ID.",
+                                  "example": "2729382476852921560",
+                                  "type": "string"
+                                },
+                                "image_url": {
+                                  "description": "[Deprecated]SKU image in order snapshot.",
+                                  "example": "https://p19-oec-sg.ibyteimg.com/tos-maliva-i-o3syd03w52-us/12345670c",
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "description": "[Deprecated]SKU name. ",
+                                  "example": "white,128g",
+                                  "type": "string"
+                                },
+                                "quantity": {
+                                  "description": "[Deprecated]SKU quantity.",
+                                  "example": 5,
+                                  "format": "int64",
+                                  "type": "integer"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "package_id": {
+                      "description": "TikTok Shop package ID.\n",
+                      "example": "5433567853345",
+                      "type": "string"
+                    },
+                    "package_status": {
+                      "description": "Possible values:\n- `PROCESSING`: Package has been arranged by seller. Waiting for carrier to collect the parcel.\n- `FULFILLING`: Package has been collected by carrier and in transit.\n- `COMPLETED`: Package has been delivered.\n- `CANCELLED`: Package has been canceled. Normally, the package is canceled due to the package being lost or damaged.",
+                      "example": "PROCESSING",
+                      "type": "string"
+                    },
+                    "pickup_slot": {
+                      "description": "Time slots available for pickup.",
+                      "properties": {
+                        "end_time": {
+                          "description": "End of time slot when a package is scheduled to be picked up by carrier. Unix timestamp.",
+                          "example": 1635338186,
+                          "format": "int64",
+                          "type": "integer"
+                        },
+                        "start_time": {
+                          "description": "Start of the time slot when a package is scheduled to be picked up by carrier. Unix timestamp.",
+                          "example": 1635338186,
+                          "format": "int64",
+                          "type": "integer"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "recipient_address": {
+                      "description": "Recipient address.\n",
+                      "properties": {
+                        "address_detail": {
+                          "description": "Full buyer detail address.",
+                          "example": "Unit one building 8\n",
+                          "type": "string"
+                        },
+                        "address_line1": {
+                          "description": "The first line of the street address",
+                          "example": "TikTok 5800 bristol Pkwy\n",
+                          "type": "string"
+                        },
+                        "address_line2": {
+                          "description": "The second line of the street address.",
+                          "example": "Suite 100\n",
+                          "type": "string"
+                        },
+                        "address_line3": {
+                          "description": "The third line of the street address. Usually only for the Brazilian market.",
+                          "example": "Suite 100\n",
+                          "type": "string"
+                        },
+                        "address_line4": {
+                          "description": "The fourth line of the street address. Usually only for the Brazilian market.",
+                          "example": "Suite 100\n",
+                          "type": "string"
+                        },
+                        "full_address": {
+                          "description": "The complete recipient addresses information.\n",
+                          "example": "1*** Coleman Ave San Jose, CA 95110\n",
+                          "type": "string"
+                        },
+                        "name": {
+                          "description": "The name of the recipient. Please note, if this order uses platform logistics, recipient name will be desensitized",
+                          "example": "Zay",
+                          "type": "string"
+                        },
+                        "phone_number": {
+                          "description": "The telephone number of the buyer. Please note, if this order use platform logistics, phone number will be desensitized.",
+                          "example": "(+1)213-***-1234\n",
+                          "type": "string"
+                        },
+                        "postal_code": {
+                          "description": "The postal code that can be used by seller for shipping (in the U.S, this refers to the ZIP code).",
+                          "example": "95110\n",
+                          "type": "string"
+                        },
+                        "region_code": {
+                          "description": "Region code.",
+                          "example": "US",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "sender_address": {
+                      "description": "Sender address.",
+                      "properties": {
+                        "address_detail": {
+                          "description": "Full sender detail address.",
+                          "example": "Unit one building 8",
+                          "type": "string"
+                        },
+                        "address_line1": {
+                          "description": "The first line of the sender's street address.",
+                          "example": "TikTok 5800 bristol Pkwy",
+                          "type": "string"
+                        },
+                        "address_line2": {
+                          "description": "The second line of the sender's street address.",
+                          "example": "Suite 100",
+                          "type": "string"
+                        },
+                        "address_line3": {
+                          "description": "The third line of the sender's street address. Usually only for the Brazilian market.",
+                          "example": "Suite 100",
+                          "type": "string"
+                        },
+                        "address_line4": {
+                          "description": "The fourth line of the sender's street address. Usually only for the Brazilian market.",
+                          "example": "Suite 100",
+                          "type": "string"
+                        },
+                        "full_address": {
+                          "description": "The complete sender addresses information.",
+                          "example": "1*** Coleman Ave San Jose, CA 95110",
+                          "type": "string"
+                        },
+                        "name": {
+                          "description": "The name of the sender.",
+                          "example": "Zay",
+                          "type": "string"
+                        },
+                        "phone_number": {
+                          "description": "The telephone number of the sender. ",
+                          "example": "(+1)213-***-1234\n",
+                          "type": "string"
+                        },
+                        "postal_code": {
+                          "description": "The postal code of the sender.",
+                          "example": "95110",
+                          "type": "string"
+                        },
+                        "region_code": {
+                          "description": "Region code of the sender.",
+                          "example": "US",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "shipping_provider_id": {
+                      "description": "Package shipping provider ID.",
+                      "example": "6617675021119438849",
+                      "type": "string"
+                    },
+                    "shipping_provider_name": {
+                      "description": "Package shipping provider name.",
+                      "example": "TT Virtual express",
+                      "type": "string"
+                    },
+                    "shipping_type": {
+                      "description": "The method of delivery. \nPossible values:\n- `TIKTOK`: Shipping service provided by TikTok. The seller should obtain a shipping label from TikTok.\n- `SELLER`: Seller provides shipping, including through 3rd party fulfillment providers on behalf of the seller. ",
+                      "example": "TIKTOK",
+                      "type": "string"
+                    },
+                    "split_and_combine_tag": {
+                      "description": "Possible values:\n- `DEFAULT`: The package has not undergone any combine or split operation.\n- `COMBINE`: The package has been consolidated with another order.\n- `SPLIT`: The order has been split into multiple orders.",
+                      "example": "SPLIT",
+                      "type": "string"
+                    },
+                    "tracking_number": {
+                      "description": "Package tracking number.",
+                      "example": "6617675021119438849",
+                      "type": "string"
+                    },
+                    "update_time": {
+                      "description": "The time the package has been updated. Unix timestamp.",
+                      "example": 1635338186,
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "weight": {
+                      "description": "The weight of the scheduled package.",
+                      "properties": {
+                        "unit": {
+                          "description": "The unit of measurement used to measure the weight. Possible values:\n- `GRAM`\n- `POUND`",
+                          "example": "GRAM",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "The value of the weight of the scheduled package.",
+                          "example": "1.2",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

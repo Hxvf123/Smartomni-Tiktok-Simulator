@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ops/cancellation.search.response.json",
+  "title": "POST /return_refund/202309/cancellations/search response",
+  "x-verification": "official OAS 0.1.7 (2026-10-14); OAS declares no per-field required flags, so only the envelope trio code/message/request_id is required here (envelope trio taken from every OAS response schema)",
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "integer"
+    },
+    "data": {
+      "type": "object",
+      "properties": {
+        "cancellations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cancel_id": {
+                "type": "string"
+              },
+              "cancel_line_items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "cancel_line_item_id": {
+                      "type": "string"
+                    },
+                    "order_line_item_id": {
+                      "type": "string"
+                    },
+                    "product_image": {
+                      "type": "object",
+                      "properties": {
+                        "height": {
+                          "type": "integer"
+                        },
+                        "url": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "product_name": {
+                      "type": "string"
+                    },
+                    "refund_amount": {
+                      "type": "object",
+                      "properties": {
+                        "buyer_service_fee": {
+                          "type": "string"
+                        },
+                        "currency": {
+                          "type": "string"
+                        },
+                        "refund_shipping_fee": {
+                          "type": "string"
+                        },
+                        "refund_subtotal": {
+                          "type": "string"
+                        },
+                        "refund_tax": {
+                          "type": "string"
+                        },
+                        "refund_total": {
+                          "type": "string"
+                        },
+                        "retail_delivery_fee": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "seller_sku": {
+                      "type": "string"
+                    },
+                    "sku_id": {
+                      "type": "string"
+                    },
+                    "sku_name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "cancel_reason": {
+                "type": "string"
+              },
+              "cancel_reason_text": {
+                "type": "string"
+              },
+              "cancel_status": {
+                "type": "string"
+              },
+              "cancel_type": {
+                "type": "string"
+              },
+              "create_time": {
+                "type": "integer"
+              },
+              "order_id": {
+                "type": "string"
+              },
+              "refund_amount": {
+                "type": "object",
+                "properties": {
+                  "buyer_service_fee": {
+                    "type": "string"
+                  },
+                  "currency": {
+                    "type": "string"
+                  },
+                  "refund_shipping_fee": {
+                    "type": "string"
+                  },
+                  "refund_subtotal": {
+                    "type": "string"
+                  },
+                  "refund_tax": {
+                    "type": "string"
+                  },
+                  "refund_total": {
+                    "type": "string"
+                  },
+                  "retail_delivery_fee": {
+                    "type": "string"
+                  }
+                }
+              },
+              "role": {
+                "type": "string"
+              },
+              "seller_next_action_response": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "action": {
+                      "type": "string"
+                    },
+                    "deadline": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "update_time": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "next_page_token": {
+          "type": "string"
+        },
+        "total_count": {
+          "type": "integer"
+        }
+      }
+    },
+    "message": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "code",
+    "message",
+    "request_id"
+  ]
+}

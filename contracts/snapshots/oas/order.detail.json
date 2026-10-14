@@ -1,0 +1,970 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/order.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "c9b20771d16e234f9af05ea54f84be6dd2b77a18d613a39dc5fbaa74c68395fa",
+    "candidatesInBundle": [
+      {
+        "method": "GET",
+        "path": "/order/202309/orders",
+        "version": "202309"
+      },
+      {
+        "method": "GET",
+        "path": "/order/202507/orders",
+        "version": "202507"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "GET",
+  "path": "/order/202507/orders",
+  "operation": {
+    "tags": [
+      "order_v202507"
+    ],
+    "summary": "GetOrderDetail",
+    "description": "Get the detailed order information of an order, including important attributes such as order status, shipping addresses, payment details, price and tax info, and package information.",
+    "parameters": [
+      {
+        "name": "ids",
+        "in": "query",
+        "description": "A list of TikTok Shop order ID values.\nMax count: 50",
+        "required": true,
+        "schema": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      {
+        "name": "shop_cipher",
+        "in": "query",
+        "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. ",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "orders": {
+                      "description": "Order information.",
+                      "items": {
+                        "properties": {
+                          "auto_combine_group_id": {
+                            "description": "An identifier assigned to orders from the same customer during a LIVE session to facilitate combined order shipping when \"auto-combination\" is activated in Seller Center.",
+                            "example": "12345677",
+                            "type": "string"
+                          },
+                          "buyer_avatar": {
+                            "description": "The avatar of the TikTok buyer, which is defined by the TikTok user. The buyer_avatar can be used in conjunction with the buyer_nickname when displaying the unboxing results within the TikTok Live Session.",
+                            "example": "https://p16-oec-va.itexeitg.com/tos-maliva-d-o5syd03w52-us/46123e87d14f40b69b839",
+                            "type": "string"
+                          },
+                          "buyer_email": {
+                            "description": "The anonymized email address of the buyer. It is not recommended to send messages directly to this email address. If you need to contact the buyer, please go to Seller Center - Buyer Messages page.",
+                            "example": "v2b2V5@chat.seller.tiktok.com",
+                            "type": "string"
+                          },
+                          "buyer_message": {
+                            "description": "The note from buyer.",
+                            "example": "Please ship asap!",
+                            "type": "string"
+                          },
+                          "buyer_nickname": {
+                            "description": "The nickname of the TikTok buyer, which is defined by the TikTok user. The buyer_nickname can be used to identify the buyer when displaying the unboxing results within the TikTok Live Session.",
+                            "example": "user213123",
+                            "type": "string"
+                          },
+                          "cancel_order_sla_time": {
+                            "description": "The automatic cancellation time for orders specified by the platform.\nUnix timestamp.",
+                            "example": 1619621355,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "cancel_reason": {
+                            "description": "The order level cancellation reason.\n**Note**: A multi-line order may have different `cancel_reason` across the multiple items.\nIf this occurs, the order-level `cancel_reason` will surface the `cancel_reason` from the first line item.\n[See here](https://partner.tiktokshop.com/docv2/page/cancel-reasons) for more details on cancellation reasons.",
+                            "example": "Pricing error",
+                            "type": "string"
+                          },
+                          "cancel_time": {
+                            "description": "The timestamp of the order's status update to `CANCELLED`.",
+                            "example": 1678389618,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "cancellation_initiator": {
+                            "description": "The initiator of a cancellation request.\nPossible values: \n- `SELLER`\n- `BUYER`\n- `SYSTEM`",
+                            "example": "SELLER",
+                            "type": "string"
+                          },
+                          "channel_entity_national_registry_id": {
+                            "description": "The national channel entity registration ID  of payment institution/creditor. In Brazil, it is the CNPJ of payment instituion.",
+                            "example": "26.545.167/0001-21",
+                            "type": "string"
+                          },
+                          "collection_due_time": {
+                            "description": "If the order hasn't updated its status to `IN_TRANSIT` before this time, the order will be automatically canceled by TikTok Shop",
+                            "example": 1678389618,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "collection_time": {
+                            "description": "The timestamp of the order's status update to `IN_TRANSIT`.",
+                            "example": 1678389618,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "commerce_platform": {
+                            "description": "The platform where the order was placed.\nPossible values:\n- TIKTOK_SHOP\n- TOKOPEDIA\n**Note**: Available only in the Indonesia market.",
+                            "example": "TIKTOK_SHOP",
+                            "type": "string"
+                          },
+                          "consultation_id": {
+                            "description": "An ID to identify the corresponding ePharmacy consultation. \nApplicable only if an ePharmacy consultation was initiated. Not applicable if the prescription was provided by the customer through an image upload.",
+                            "example": "123241",
+                            "type": "string"
+                          },
+                          "cpf": {
+                            "description": "CPF (invoice number), used to issue an invoice. Exclusive for the Brazil market.",
+                            "example": "3213-31231412",
+                            "type": "string"
+                          },
+                          "cpf_name": {
+                            "description": "Name belonging to the CPF number for the Brazil market.",
+                            "example": "John Smith",
+                            "type": "string"
+                          },
+                          "create_time": {
+                            "description": "The date and time that the order was created. Unix timestamp.",
+                            "example": 1619611561,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "delivery_due_time": {
+                            "description": "If the order hasn't updated its status to `DELIVERED` before this time, the order will be automatically canceled by TikTok Shop.",
+                            "example": 1678389618,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "delivery_option_id": {
+                            "description": "Order delivery option ID.",
+                            "example": "7091146663229654785",
+                            "type": "string"
+                          },
+                          "delivery_option_name": {
+                            "description": "Delivery option name. For display purposes only.",
+                            "example": "Express shipping",
+                            "type": "string"
+                          },
+                          "delivery_option_required_delivery_time": {
+                            "description": "Order should be delivered before this time.",
+                            "example": 1678389618,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "delivery_sla_time": {
+                            "description": "Order should arrive by this date to be considered on-time and to avoid late delivery penalties.",
+                            "example": 1678389618,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "delivery_time": {
+                            "description": "The timestamp of the order's status update to `DELIVERED`.",
+                            "example": 1678389618,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "delivery_type": {
+                            "description": "Indicates whether it is a PickUp DropOff (PUDO) location. The PUDO location is selected by the buyer when placing orders. \n- `HOME_DELIVERY`: not a PUDO location\n- `COLLECTION_POINT`: a PUDO location",
+                            "example": "HOME_DELIVERY",
+                            "type": "string"
+                          },
+                          "exchange_source_order_id": {
+                            "description": "If the order is an exchange order, this field returns the original order's order ID, from which the exchange order was generated. \nReturned only if is_exchange_order = true.\nNote: Only available in US and UK.",
+                            "example": "576461413038785752",
+                            "type": "string"
+                          },
+                          "fast_delivery_program": {
+                            "description": "A badge presented on the merchandise to tell the buyer that the seller participates in the fast delivery program, such that the order should arrive in a promised time period.\nPossible values:\n- `3_DAY_DELIVERY`\nNot returned if order did not meet fast delivery\nprogram requirements.\nNote: Applicable only for the US market.",
+                            "example": "3_DAY_DELIVERY",
+                            "type": "string"
+                          },
+                          "fast_dispatch_sla_time": {
+                            "description": "The latest collection time to gain incentives of NDD (Next Day Delivery) project. Unix timestamp\nOnly available in Thailand and Philippines.",
+                            "example": 1678389618,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "fulfillment_type": {
+                            "description": "Fulfillment type. \nOnly orders with fulfillment type can be shipped by sellers.\nPossible values:\n- `FULFILLMENT_BY_SELLER`: a method where sellers fulfill orders directly from their own inventory, without using TikTok's fulfillment centers. In this model, the seller is responsible for storing, packaging, and shipping the product to customers.\n- `FULFILLMENT_BY_TIKTOK`: a service offered by TikTok that enables sellers to send their products to TikTok's fulfillment centers. TikTok then takes care of storing, picking, packing, and shipping the products to customers.\n- `FULFILLMENT_BY_DILAYANI_TOKOPEDIA`: a method where Tokopedia GoTo Logistics provides warehousing and logistics services to sellers and charges a fee for the service.",
+                            "example": "FULFILLMENT_BY_SELLER",
+                            "type": "string"
+                          },
+                          "handling_duration": {
+                            "description": "The duration for the seller to process the order and hand it over to a shipping carrier after the order is placed. \nApplicable only if the `order_type` is `MADE_TO_ORDER` or `BACK_ORDER`.",
+                            "properties": {
+                              "days": {
+                                "description": "The number of days.",
+                                "example": "7",
+                                "type": "string"
+                              },
+                              "type": {
+                                "description": "Indicates if the duration is calculated in calendar days or business days.\nPossible values:\n- `CALENDAR_DAY`: Represents consecutive days, including weekends and holidays.\n- `BUSINESS_DAY`: Represents business days, excluding weekends and public holidays.\nDefault: `BUSINESS_DAY`",
+                                "example": "BUSINESS_DAY",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "has_updated_recipient_address": {
+                            "description": "Whether the recipient address has been updated.\n- `false`: no update\n- `true`: updated",
+                            "example": false,
+                            "type": "boolean"
+                          },
+                          "id": {
+                            "description": "A unique identifier for a TikTok Shop order.",
+                            "example": "576461413038785752",
+                            "type": "string"
+                          },
+                          "is_buyer_request_cancel": {
+                            "description": "True when the buyer has a pending cancellation request",
+                            "example": false,
+                            "type": "boolean"
+                          },
+                          "is_cod": {
+                            "description": "This option is for sellers that accept cash payment on delivery which is rare. Buyers will pay in cash upon receipt of package. Default value is `FALSE`. Only applicable to countries where Cash on Delivery (COD) is supported.",
+                            "example": false,
+                            "type": "boolean"
+                          },
+                          "is_exchange_order": {
+                            "description": "When TRUE, this is an exchange order.\nNote: Only available in US and UK.",
+                            "example": false,
+                            "type": "boolean"
+                          },
+                          "is_on_hold_order": {
+                            "description": "Indicates whether the order experienced or will be experienced `ON_HOLD` status.",
+                            "example": false,
+                            "type": "boolean"
+                          },
+                          "is_replacement_order": {
+                            "description": "When true, this is a replacement order.",
+                            "example": false,
+                            "type": "boolean"
+                          },
+                          "is_sample_order": {
+                            "description": "Use this field to determine whether the order is a sample order.",
+                            "example": false,
+                            "type": "boolean"
+                          },
+                          "line_items": {
+                            "description": "Line item info list.",
+                            "items": {
+                              "properties": {
+                                "buyer_service_fee": {
+                                  "description": "A service fee is charged on every transaction made. The charge is applied from the fifth order onwards and collected directly from customers during checkout. Only available in Indonesia market.",
+                                  "example": "1000",
+                                  "type": "string"
+                                },
+                                "cancel_reason": {
+                                  "description": "Item cancellation reason.",
+                                  "example": "Discount not as expected",
+                                  "type": "string"
+                                },
+                                "cancel_user": {
+                                  "description": "The initiator of a cancellation request:\n- `BUYER`\n- `SELLER`\n- `OPERATOR`\n- `SYSTEM`",
+                                  "example": "BUYER",
+                                  "type": "string"
+                                },
+                                "combined_listing_skus": {
+                                  "description": "For a virtual bundle SKU, returns an array of related product SKUs that compose the virtual bundle SKU.",
+                                  "items": {
+                                    "properties": {
+                                      "product_id": {
+                                        "description": "The original `product_id` related to the virtual bundle SKU.",
+                                        "example": "1729582718312380456",
+                                        "type": "string"
+                                      },
+                                      "seller_sku": {
+                                        "description": "The original `seller_sku` (which is defined by sellers) related to the virtual bundle SKU.",
+                                        "example": "yellow-24-XL",
+                                        "type": "string"
+                                      },
+                                      "sku_count": {
+                                        "description": "The quantity of original SKU that compose the virtual bundle SKU.",
+                                        "example": 1,
+                                        "format": "int32",
+                                        "type": "integer"
+                                      },
+                                      "sku_id": {
+                                        "description": "The original `sku_id` related to the virtual bundle SKU.",
+                                        "example": "2729382476852921123",
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  },
+                                  "type": "array"
+                                },
+                                "currency": {
+                                  "description": "Currency for payment.",
+                                  "example": "IDR",
+                                  "type": "string"
+                                },
+                                "display_status": {
+                                  "description": "- `UNPAID`: The order is placed, but payment is not yet completed.\n- `AWAITING_SHIPMENT`: The order is ready for shipment, but no items are shipped yet.\n- `AWAITING_COLLECTION`:  The shipment is arranged, but the package is waiting to be collected by the carrier.\n- `IN_TRANSIT`: The package is collected by the carrier and delivery is in progress.\n- `DELIVERED`: The package is delivered to buyer.\n- `COMPLETED`: The order is completed, and no further returns or refunds are allowed.\n- `CANCELLED`: The order is canceled.",
+                                  "example": "TO_SHIP",
+                                  "type": "string"
+                                },
+                                "distance_fee": {
+                                  "description": "Total distance fee for Horizon+ Program. Only applicable for ID market",
+                                  "example": "2000",
+                                  "type": "string"
+                                },
+                                "distance_shipping_fee": {
+                                  "description": "Distance shipping fee is fee that charged charged by our logistics partner and covers the separate distance-based cost for deliveries outside Java island as a part of Horizon+ Program.\nOnly applicable in ID Market.",
+                                  "example": "1000",
+                                  "type": "string"
+                                },
+                                "gift_retail_price": {
+                                  "description": "Retail price of the free item in orders Live giveaway, free sample and gift with purchase. For other orders, this field always returns 0.\nThis amount can be used for free samples and live giveaway order invoice in Brazil",
+                                  "example": "20",
+                                  "type": "string"
+                                },
+                                "handling_duration_days": {
+                                  "description": "[**Deprecated**: This field is deprecated and will be removed in a future API version. Use `handling_duration` instead.]\nThe number of business days required for the seller to process the order and hand it over to a shipping carrier after the order is placed. \nApplicable only if the value for `sku_type` is `MADE_TO_ORDER`.",
+                                  "example": "7",
+                                  "type": "string"
+                                },
+                                "id": {
+                                  "description": "Line item ID.",
+                                  "example": "577086512123755123",
+                                  "type": "string"
+                                },
+                                "is_dangerous_good": {
+                                  "description": "Whether the SKU is a hazmat item. When creating the label for a hazmat item, you must follow the platform rules to put certain items into one package. Please refer to the relationship between `sku_id` and `package_id` to determine how to follow platform rules.",
+                                  "example": true,
+                                  "type": "boolean"
+                                },
+                                "is_gift": {
+                                  "description": "Indicates whether the current order line is a gift.",
+                                  "example": false,
+                                  "type": "boolean"
+                                },
+                                "is_unboxing_item": {
+                                  "description": "If `true`, indicates the sku is a blind box item that will need be unboxed to reveal the actual product to the buyer. The actual product sku name and picture can also be updated to TikTok after the unboxing is completed. \n\nNote: This is currently only available in the US market.",
+                                  "example": false,
+                                  "type": "boolean"
+                                },
+                                "item_tax": {
+                                  "description": "Item tax detail.",
+                                  "items": {
+                                    "properties": {
+                                      "tax_amount": {
+                                        "description": "Tax amount.",
+                                        "example": "21.2",
+                                        "type": "string"
+                                      },
+                                      "tax_rate": {
+                                        "description": "Tax rate.",
+                                        "example": "0.35",
+                                        "type": "string"
+                                      },
+                                      "tax_type": {
+                                        "description": "Tax type.\n- `SALES_TAX` (US market sales tax)\nCurrently only sales tax is available.",
+                                        "example": "SALES_TAX",
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  },
+                                  "type": "array"
+                                },
+                                "needs_prescription": {
+                                  "description": "A flag to indicate whether the included product requires a prescription.",
+                                  "example": true,
+                                  "type": "boolean"
+                                },
+                                "original_price": {
+                                  "description": "Item original price, please refer to the currency of `payment_info`.",
+                                  "example": "0.01",
+                                  "type": "string"
+                                },
+                                "package_id": {
+                                  "description": "An order can contain one or more packages based on how the seller chooses to ship. Each package has a unique `package_id` (and also a `tracking_id`, which is used to track the progress of the package as it is shipped). For local sellers in the US and UK markets, the `package_id` and `package_status` property will not be returned before the package is shipped",
+                                  "example": "1153132168123859123",
+                                  "type": "string"
+                                },
+                                "package_status": {
+                                  "description": "The package status of the item:\n- `TO_FULFILL`: package waiting seller to arrange shipment.\n- `PROCESSING`: package shipment has been arranged by seller. Waiting carrier to collect the parcel.\n- `FULFILLING`: package has been collected by carrier and in transit.\n- `COMPLETED`: package has been delivered.\n- `CANCELLED`: package has been canceled. Normally, the package is canceled due to the package being lost or damaged.",
+                                  "example": "TO_FULFILL",
+                                  "type": "string"
+                                },
+                                "pfand_fee": {
+                                  "description": "Deposit fee that is applied to certain products, typically beverage containers such as bottles or cans.\n**Note** Only available in Germany market",
+                                  "example": "1.5",
+                                  "type": "string"
+                                },
+                                "platform_discount": {
+                                  "description": "Platform discount amount, please refer to the currency of `payment_info`.",
+                                  "example": "0",
+                                  "type": "string"
+                                },
+                                "product_id": {
+                                  "description": "Product ID.",
+                                  "example": "1729582718312380123",
+                                  "type": "string"
+                                },
+                                "product_name": {
+                                  "description": "Product name.",
+                                  "example": "Women's Winter Crochet Clothes",
+                                  "type": "string"
+                                },
+                                "retail_delivery_fee": {
+                                  "description": "RDF (retail delivery fee). Available only in the US market.",
+                                  "example": "1.28",
+                                  "type": "string"
+                                },
+                                "rts_time": {
+                                  "description": "The time seller shipped line order (call Ship Order endpoint successfully).\nUnix timestamp.",
+                                  "example": 1678389618,
+                                  "format": "int64",
+                                  "type": "integer"
+                                },
+                                "sale_price": {
+                                  "description": "Item sale price, please refer to the currency of `payment_info`.",
+                                  "example": "0.01",
+                                  "type": "string"
+                                },
+                                "seller_discount": {
+                                  "description": "Seller discount amount. Please refer to the currency of `payment_info`.",
+                                  "example": "0",
+                                  "type": "string"
+                                },
+                                "seller_sku": {
+                                  "description": "The seller stock keeping unit (SKU) of the item.",
+                                  "example": "red_iphone_256",
+                                  "type": "string"
+                                },
+                                "shipping_provider_id": {
+                                  "description": "The shipping provider ID of the item.",
+                                  "example": "6617675021119438849",
+                                  "type": "string"
+                                },
+                                "shipping_provider_name": {
+                                  "description": "The shipping provider name of the item.",
+                                  "example": "TT Virtual express",
+                                  "type": "string"
+                                },
+                                "sku_id": {
+                                  "description": "SKU ID.",
+                                  "example": "2729382476852921560",
+                                  "type": "string"
+                                },
+                                "sku_image": {
+                                  "description": "SKU image.",
+                                  "example": "https://p16-oec-va.itexeitg.com/tos-maliva-d-o5syd03w52-us/46123e87d14f40b69b839",
+                                  "type": "string"
+                                },
+                                "sku_name": {
+                                  "description": "The name of the SKU, combined by product SKU attribute like size or color. For example, \"Black, 26.\"",
+                                  "example": "Iphone",
+                                  "type": "string"
+                                },
+                                "sku_type": {
+                                  "description": "[**Deprecated**: This field is deprecated and will be removed in a future API version. Use `order_type` instead.]\nThe order line type:\nPossible values based on region:\n**All regions**\n- `NORMAL`: An item that is in stock and available for immediate purchase and fulfillment.\n- `ZERO_LOTTERY:` An item purchased during a lottery event in TikTok LIVE.\n- `SHOP_PARTNER`: An item purchased from a TikTok Shop partner store.\n**US**\n- `PRE_ORDER`: An item that is not yet available or released. Fulfillment starts on a specific date in the future.\n- `MADE_TO_ORDER`: An item that is produced only after the order is received. Fulfillment starts after the product is produced.",
+                                  "example": "PRE_ORDER",
+                                  "type": "string"
+                                },
+                                "small_order_fee": {
+                                  "description": "Small order fee for TH.",
+                                  "example": "5000",
+                                  "type": "string"
+                                },
+                                "tracking_number": {
+                                  "description": "Tracking number. Available after package has been shipped.",
+                                  "example": "JX12345",
+                                  "type": "string"
+                                },
+                                "unboxing_sku_code": {
+                                  "description": "A seller's third party sku code for the actual unboxed item, which warehouse fulfillment operations can reference to identify the accurate product they are shipping.\n\nNote: This is currently only available in the US market. \n",
+                                  "example": "14531134",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "need_upload_invoice": {
+                            "description": "Whether an invoice needs to be uploaded (only for Brazil market).\n- `UNKNOWN`\n- `NEED_INVOICE`\n- `NO_NEED`\n- `INVOICE_UPLOADED`",
+                            "example": "NEED_INVOICE",
+                            "type": "string"
+                          },
+                          "order_rights": {
+                            "description": "Order tag identifier if has certain rights within the order based on the program subscribed by sellers.\n1 = Shipping Fee Reimbursement Program\n2 = Horizon+ Program \nApplicable for SEA market only ",
+                            "example": [
+                              1
+                            ],
+                            "items": {
+                              "format": "int32",
+                              "type": "integer"
+                            },
+                            "type": "array"
+                          },
+                          "order_type": {
+                            "description": "The order type.\nPossible values based on region:\n**All regions**\n- `NORMAL`: An item that is in stock and available for immediate purchase and fulfillment.\n- `ZERO_LOTTERY`: An order placed during a lottery event in TikTok LIVE.\n**US**\n- `PRE_ORDER`: An advance order for items that are not yet available or released. Fulfillment starts on a specific date in the future.\n- `MADE_TO_ORDER`: An order for items that are produced only after the order is received. Fulfillment starts after the product is produced.\n- `BACK_ORDER`: An order for items that are out of stock but expected to be restocked. Fulfillment starts after the product is restocked.\nReturns an empty value for standard orders or other types that don't fall into the above categories.",
+                            "example": "ZERO_LOTTERY",
+                            "type": "string"
+                          },
+                          "packages": {
+                            "description": "List of packages included in this order",
+                            "items": {
+                              "properties": {
+                                "id": {
+                                  "description": "Package ID",
+                                  "example": "1152321127278713123",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "paid_time": {
+                            "description": "The date and time that the order was paid. Unix timestamp.",
+                            "example": 1619611563,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "payment": {
+                            "description": "Payment info about a TikTok Shop order.",
+                            "properties": {
+                              "buyer_service_fee": {
+                                "description": "A service fee is charged on every transaction made. The charge is applied from the fifth order onwards and collected directly from customers during checkout. Only available in Indonesia market.",
+                                "example": "1000",
+                                "type": "string"
+                              },
+                              "currency": {
+                                "description": "Currency for payment.",
+                                "example": "IDR",
+                                "type": "string"
+                              },
+                              "distance_fee": {
+                                "description": "Total distance fee for Horizon+ Program. Only applicable for ID market",
+                                "example": "2000",
+                                "type": "string"
+                              },
+                              "distance_shipping_fee": {
+                                "description": "Distance shipping fee is fee that charged charged by our logistics partner and covers the separate distance-based cost for deliveries outside Java island as a part of Horizon+ Program.\nOnly applicable in ID Market.",
+                                "example": "1000",
+                                "type": "string"
+                              },
+                              "handling_fee": {
+                                "description": "A fee charged to buyers to cover the additional processing, handling, and/or installment costs associated with the chosen payment method.",
+                                "example": "1000",
+                                "type": "string"
+                              },
+                              "item_insurance_fee": {
+                                "description": "The cost incurred by the buyers for coverage against defects or damage to the product after purchase.\n**Note**: Only available in the US and Indonesia markets.",
+                                "example": "1000",
+                                "type": "string"
+                              },
+                              "item_insurance_tax": {
+                                "description": "The tax paid on the insurance purchased by buyers.\n\nNote: Only applicable in US market.",
+                                "example": "10",
+                                "type": "string"
+                              },
+                              "original_shipping_fee": {
+                                "description": "Shipping fee before discount",
+                                "example": "5000",
+                                "type": "string"
+                              },
+                              "original_total_product_price": {
+                                "description": "Total original price of products (VAT included for crossborder shop).\nFor the US market, this is pre-tax total amount.",
+                                "example": "5000",
+                                "type": "string"
+                              },
+                              "payment_discount_service_fee": {
+                                "description": "Service fee as paid by the buyer to apply payment platform discount",
+                                "example": "10",
+                                "type": "string"
+                              },
+                              "payment_platform_discount": {
+                                "description": "Discount applied to the order funded by a payment platform",
+                                "example": "10",
+                                "type": "string"
+                              },
+                              "platform_discount": {
+                                "description": "Product discount by platform.",
+                                "example": "5000",
+                                "type": "string"
+                              },
+                              "product_tax": {
+                                "description": "The tax on the total item price.",
+                                "example": "21.3",
+                                "type": "string"
+                              },
+                              "retail_delivery_fee": {
+                                "description": "RDF (retail delivery fee). Available only in the US market.",
+                                "example": "1.28",
+                                "type": "string"
+                              },
+                              "seller_discount": {
+                                "description": "Product discount by seller.",
+                                "example": "5000",
+                                "type": "string"
+                              },
+                              "shipping_fee": {
+                                "description": "Buyer paid shipping fee. \n`shipping_fee` = `original_shipping_fee` - `shipping_fee_seller_discount` - `shipping_fee_platform_discount`\nFor the US market, this is pre-tax total amount.",
+                                "example": "5000",
+                                "type": "string"
+                              },
+                              "shipping_fee_cofunded_discount": {
+                                "description": "Shipping fee discount provided by seller, eligible for co-funded reimbursement upon order delivery, based on Co-Funded Free Shipping program terms. **Note**: This will be 0 for orders that did not meet minimum order value for co-funded reimbursement. In this case, refer to `shipping_fee_seller_discount` for the shipping discount the buyer received.",
+                                "example": "7",
+                                "type": "string"
+                              },
+                              "shipping_fee_platform_discount": {
+                                "description": "Shipping fee discount by platform.",
+                                "example": "5000",
+                                "type": "string"
+                              },
+                              "shipping_fee_seller_discount": {
+                                "description": "Shipping fee discount provided by seller for an order that will not qualify for co-funded reimbursement. **Note**: If an order meets the minimum order value for co-funded reimbursement, this will be 0. In this case, refer to `shipping_fee_cofunded_discount` for the shipping discount the buyer received.",
+                                "example": "5000",
+                                "type": "string"
+                              },
+                              "shipping_fee_tax": {
+                                "description": "The tax on the shipping price.",
+                                "example": "11",
+                                "type": "string"
+                              },
+                              "shipping_insurance_fee": {
+                                "description": "The cost incurred by the buyers for coverage against loss or damage to goods during transit.\n**Note**: Available only in the Indonesia market.",
+                                "example": "1000",
+                                "type": "string"
+                              },
+                              "small_order_fee": {
+                                "description": "Small order fee for TH.\nSmall order fee is for Thailand only. small order fee means that the platform will set a minimum order spending amount, when the order amount is lower than the minimum order spending amount, the user needs to pay small order fee to meet the platform minimum spending amount. \ne.g. Minimum order spending amount is 100, order amount is 80. So the small order fee will be 20.",
+                                "example": "3000",
+                                "type": "string"
+                              },
+                              "sub_total": {
+                                "description": "Buyer paid subtotal of all the SKUs in the order. For the US market, this is pre-tax total amount.\n`sub_total` = `original_total_product_price` - `seller_discount` - `platform_discount`",
+                                "example": "5000",
+                                "type": "string"
+                              },
+                              "tax": {
+                                "description": "Buyer paid total taxes of the order. Applicable to crossborder shops and the US market.",
+                                "example": "5000",
+                                "type": "string"
+                              },
+                              "total_amount": {
+                                "description": "Buyer paid total amount.\n`total_amount` = `sub_total` + `shipping_fee` + `taxes` + `retail_delivery_fee`",
+                                "example": "5000",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "payment_auth_code": {
+                            "description": "Authorization code of current transaction (only for the Brazilian market).\nFor card transactions (credit/debit card), this field will be transaction authorization code. For PIX transactions, this field will be E2E ID.",
+                            "example": "AUTH123457",
+                            "type": "string"
+                          },
+                          "payment_card_type": {
+                            "description": "Code to distinguish different payment method. Only assigned when the payment method is using bank card. Possible values are: Debit, Credit, Prepaid",
+                            "example": "Debit\n",
+                            "type": "string"
+                          },
+                          "payment_method_code": {
+                            "description": "Payment method code identifying current transaction. It will contains payment method and card brand if it is card transaction.",
+                            "example": "pm_pi_ccdc_visa_c_d",
+                            "type": "string"
+                          },
+                          "payment_method_name": {
+                            "description": "Payment method name, only for display",
+                            "example": "CCDC",
+                            "type": "string"
+                          },
+                          "pick_up_cut_off_time": {
+                            "description": "To avoid LDR, you must ensure the package is picked up by this time. Only applicable in Southeast Asia regions.",
+                            "example": 1678389618,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "recipient_address": {
+                            "description": "`recipient_address` is not available under `UNPAID` and `ON_HOLD` status.",
+                            "properties": {
+                              "address_detail": {
+                                "description": "Full buyer detail address.",
+                                "example": "Unit one building 8",
+                                "type": "string"
+                              },
+                              "address_line1": {
+                                "description": "The first line of the street address.",
+                                "example": "TikTok 5800 bristol Pkwy",
+                                "type": "string"
+                              },
+                              "address_line2": {
+                                "description": "The second line of the street address",
+                                "example": "Suite 100",
+                                "type": "string"
+                              },
+                              "address_line3": {
+                                "description": "The third line of the street address. \nApplicable only for the BR market.",
+                                "example": "Vila Olímpia",
+                                "type": "string"
+                              },
+                              "address_line4": {
+                                "description": "The fourth line of the street address.\nApplicable only for the BR market.",
+                                "example": "Avenida Presidente Juscelino Kubitschek",
+                                "type": "string"
+                              },
+                              "delivery_preferences": {
+                                "description": "Contains all of the delivery instructions provided by the buyer for the shipping address. Currently, only available in the US market.",
+                                "properties": {
+                                  "drop_off_location": {
+                                    "description": "Drop-off location selected by the buyer.",
+                                    "example": "Front Door",
+                                    "type": "string"
+                                  }
+                                },
+                                "type": "object"
+                              },
+                              "district_info": {
+                                "description": "District information list.",
+                                "items": {
+                                  "properties": {
+                                    "address_level": {
+                                      "description": "Administrative district level code. Value can be L0/L1/L2/L3/L4. eg. US is L0",
+                                      "example": "L0",
+                                      "type": "string"
+                                    },
+                                    "address_level_name": {
+                                      "description": "The name of administrative division that can be used by seller for ship. e.g. state/county/city/district/town etc.",
+                                      "example": "Country",
+                                      "type": "string"
+                                    },
+                                    "address_name": {
+                                      "description": "Administrative area name. eg: London",
+                                      "example": "United Kingdom",
+                                      "type": "string"
+                                    },
+                                    "iso_code": {
+                                      "description": "ISO code of the administrative district level",
+                                      "example": "VAN",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "type": "object"
+                                },
+                                "type": "array"
+                              },
+                              "first_name": {
+                                "description": "The first name of the recipient. If the buyer does not provide their first and last name separately, this parameter will have the same value as the \"name\" parameter. ",
+                                "example": "David",
+                                "type": "string"
+                              },
+                              "first_name_local_script": {
+                                "description": "Recipient first name in katakana.\n**Note**: Applicable only for the JP market.",
+                                "example": "ジョン",
+                                "type": "string"
+                              },
+                              "full_address": {
+                                "description": "The complete recipient addresses information.",
+                                "example": "1199 Coleman Ave San Jose, CA 95110",
+                                "type": "string"
+                              },
+                              "last_name": {
+                                "description": "The last name of the recipient. If the buyer does not provide their first and last name separately, this parameter will be empty. ",
+                                "example": "Kong",
+                                "type": "string"
+                              },
+                              "last_name_local_script": {
+                                "description": "Recipient last name in katakana.\n**Note**: Applicable only for the JP market.",
+                                "example": "ドゥ",
+                                "type": "string"
+                              },
+                              "name": {
+                                "description": "The name of the recipient. Please note, if this order uses platform logistics, recipient name will be desensitized",
+                                "example": "David Kong",
+                                "type": "string"
+                              },
+                              "phone_number": {
+                                "description": "The telephone number of the buyer. Please notice, if this order uses platform logistics, phone number will be desensitized.",
+                                "example": "(+1)213-***-1234",
+                                "type": "string"
+                              },
+                              "post_town": {
+                                "description": "Post town of the address\nNote: Available only in UK market",
+                                "example": "Ribbleton",
+                                "type": "string"
+                              },
+                              "postal_code": {
+                                "description": "The postal code that can be used by seller for shipping (in the U.S, this is the ZIP code).",
+                                "example": "95110",
+                                "type": "string"
+                              },
+                              "region_code": {
+                                "description": "Region code.",
+                                "example": "US",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "release_date": {
+                            "description": "The date on which order handling starts and the status of the order changes to [`AWAITING_SHIPMENT`](https://partner.tiktokshop.com/docv2/page/650b1b4bbace3e02b76d1011).\nApplicable only if the `order_type` is `PRE_ORDER`.",
+                            "example": 1619611762,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "replaced_order_id": {
+                            "description": "The order ID for the order that is being replaced. Returned only if `is_replacement_order` = `true`",
+                            "example": "576461416728782174",
+                            "type": "string"
+                          },
+                          "request_cancel_time": {
+                            "description": "Buyer request cancel time.",
+                            "example": 1678389618,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "rts_sla_time": {
+                            "description": "The latest shipping time specified by the platform. Unix timestamp.",
+                            "example": 1619611688,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "rts_time": {
+                            "description": "The time seller shipped the order (call Ship Order endpoint successfully).\nUnix timestamp.",
+                            "example": 1619611563,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "seller_note": {
+                            "description": "This field return the note, which seller notes in TikTok Seller Center.",
+                            "example": "seller note",
+                            "type": "string"
+                          },
+                          "shipping_due_time": {
+                            "description": "If the order hasn't updated its status to `AWAITING_COLLECTION` before this time, the order will be automatically canceled by TikTok Shop.",
+                            "example": 1678389618,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "shipping_provider": {
+                            "description": "The name of the current shipping provider.",
+                            "example": "TT Virtual express",
+                            "type": "string"
+                          },
+                          "shipping_provider_id": {
+                            "description": "The ID of the current shipping provider.",
+                            "example": "6617675021119438849",
+                            "type": "string"
+                          },
+                          "shipping_type": {
+                            "description": "The method of delivery.\n- `TIKTOK`: shipping service provided by TikTok. The seller should obtain shipping label from TikTok.\n- `SELLER`: seller provides shipping, including through 3rd party fulfillment providers on behalf of the seller.",
+                            "example": "TIKTOK",
+                            "type": "string"
+                          },
+                          "split_or_combine_tag": {
+                            "description": "Indicate whether the order is combined or split.\n- `COMBINED`\n- `SPLIT`\nThis field will be used in future fulfillment apis.",
+                            "example": "COMBINED",
+                            "type": "string"
+                          },
+                          "status": {
+                            "description": "The order status.\nPossible values:\n- `UNPAID`: The order is placed, but payment is not yet completed.\n- `ON_HOLD`: The order is accepted and is waiting for fulfillment so the buyer may still cancel without the seller’s approval. If `order_type=PRE_ORDER`, it also means the product is still awaiting release so payment will only be authorized 1 day before the release, but the seller should start preparing for the release.\n- `AWAITING_SHIPMENT`: The order is ready for shipment, but no items are shipped yet.\n- `PARTIALLY_SHIPPING`: Some items in the order are shipped, but not all.\n- `AWAITING_COLLECTION`: The shipment is arranged, but the package is waiting to be collected by the carrier.\n- `IN_TRANSIT`: The package is collected by the carrier and delivery is in progress.\n- `DELIVERED`: The package is delivered to buyer.\n- `COMPLETED`: The order is completed, and no further returns or refunds are allowed.\n- `CANCELLED`: The order is cancelled.",
+                            "example": "UNPAID",
+                            "type": "string"
+                          },
+                          "tracking_number": {
+                            "description": "Tracking number. Available after ship package.",
+                            "example": "JX12345",
+                            "type": "string"
+                          },
+                          "tts_sla_time": {
+                            "description": "The latest collection time specified by the platform.\nUnix timestamp.",
+                            "example": 1619611761,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "update_time": {
+                            "description": "Time of order status changes.\nUnix timestamp.",
+                            "example": 1619621355,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "user_id": {
+                            "description": "The buyer's user ID.",
+                            "example": "7021436810468230477",
+                            "type": "string"
+                          },
+                          "warehouse_id": {
+                            "description": "seller warehouse ID.",
+                            "example": "6955005333819123123",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

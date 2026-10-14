@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ops/auth.shops.response.json",
+  "title": "GET /authorization/202309/shops response",
+  "x-verification": "official OAS 0.1.7 (2026-10-14); OAS declares no per-field required flags, so only the envelope trio code/message/request_id is required here (envelope trio taken from every OAS response schema)",
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "integer"
+    },
+    "data": {
+      "type": "object",
+      "properties": {
+        "shops": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cipher": {
+                "type": "string"
+              },
+              "code": {
+                "type": "string"
+              },
+              "id": {
+                "type": "string",
+                "x-sample": "7000000000000000001",
+                "pattern": "^[0-9]+$"
+              },
+              "name": {
+                "type": "string"
+              },
+              "region": {
+                "type": "string"
+              },
+              "seller_type": {
+                "type": "string",
+                "enum": [
+                  "CROSS_BORDER",
+                  "LOCAL"
+                ]
+              }
+            },
+            "required": [
+              "cipher",
+              "code",
+              "id",
+              "name",
+              "region",
+              "seller_type"
+            ]
+          }
+        }
+      },
+      "required": [
+        "shops"
+      ]
+    },
+    "message": {
+      "type": "string"
+    },
+    "request_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "code",
+    "message",
+    "request_id"
+  ],
+  "x-adapterRequired": "data.shops[].{cipher,code,id,name,region,seller_type} are required by SmartOmni's adapter, not by an OAS required flag."
+}

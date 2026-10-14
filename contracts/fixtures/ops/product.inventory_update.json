@@ -1,0 +1,63 @@
+{
+  "operation": "product.inventory_update",
+  "schema": "schemas/ops/product.inventory_update.response.json",
+  "classification": "synthetic-from-official-oas",
+  "note": "Values are synthetic and generated from the official OAS response shape; they are not captured TikTok traffic. Error cases are TEST FAULTS: no readable official source documents their code/message values.",
+  "cases": [
+    {
+      "case": "success",
+      "response": {
+        "code": 0,
+        "data": {
+          "errors": [
+            {
+              "code": 12052990,
+              "detail": {
+                "extra_errors": [
+                  {
+                    "code": 12052097,
+                    "message": "TEST_message",
+                    "warehouse_id": "TEST_warehouse_id"
+                  }
+                ],
+                "sku_id": "TEST_sku_id"
+              },
+              "message": "TEST_message"
+            }
+          ]
+        },
+        "message": "Success",
+        "request_id": "TEST-product.inventory_update-success"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "empty",
+      "response": {
+        "code": 0,
+        "data": {
+          "errors": []
+        },
+        "message": "Success",
+        "request_id": "TEST-product.inventory_update-empty"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "invalid_input",
+      "classification": "test_fault_undocumented",
+      "trigger": "send a body that is not valid JSON or has a wrongly typed field",
+      "requestMustFailValidation": false
+    },
+    {
+      "case": "token_expired",
+      "classification": "test_fault_undocumented",
+      "trigger": "x-tts-access-token is past its expiry"
+    },
+    {
+      "case": "missing_scope",
+      "classification": "test_fault_undocumented",
+      "trigger": "app lacks the (unverified) scope of this operation"
+    }
+  ]
+}

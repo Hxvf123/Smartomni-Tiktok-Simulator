@@ -1,0 +1,76 @@
+{
+  "classification": "test_fault_undocumented",
+  "note": "No error codes/messages for these situations are documented in any readable official source (the bundled OAS has no error tables; docv2 unreadable). Per phase 01 rule they are TEST FAULTS (simulator-injected), not TikTok contract, and carry NO code/message values. Per-operation triggers are in fixtures/ops/<id>.json.",
+  "cases": [
+    {
+      "case": "invalid_input",
+      "operation": "any",
+      "documentedResponse": null,
+      "trigger": "malformed JSON body or missing required parameter",
+      "expect": "test_fault"
+    },
+    {
+      "case": "token_expired",
+      "operation": "any",
+      "documentedResponse": null,
+      "trigger": "access_token past expiry",
+      "expect": "test_fault"
+    },
+    {
+      "case": "missing_scope",
+      "operation": "any",
+      "documentedResponse": null,
+      "trigger": "app lacks the scope of the operation",
+      "expect": "test_fault"
+    },
+    {
+      "case": "bad_signature",
+      "operation": "any",
+      "documentedResponse": null,
+      "trigger": "sign param does not match",
+      "expect": "test_fault"
+    },
+    {
+      "case": "webhook_bad_signature",
+      "operation": "webhook.*",
+      "documentedResponse": "secondary (Hookdeck, unverified): receiver returns HTTP 200 empty body within 3 s on success; HTTP 401 on rejected signature",
+      "expect": "provisional"
+    }
+  ],
+  "faqReferences": {
+    "source": "tts-openapi-faq-index (official FAQ titles; the answers were not available)",
+    "items": [
+      {
+        "code": 105004,
+        "context": "FAQ title 'error code 105004' under App management and authorization",
+        "meaning": "not documented"
+      },
+      {
+        "code": 36004001,
+        "context": "FAQ title: legacy /api/token/refreshtoken returns message 'rt has expired'",
+        "meaning": "refresh token expired on the LEGACY path; do not map to 'access token expired'"
+      },
+      {
+        "code": 36009003,
+        "context": "FAQ title '错误码36009003是什么含义' under Sandbox",
+        "meaning": "not documented"
+      },
+      {
+        "message": "auth state is inactive; detail:Your seller account is yet to finish the onboarding review or your account is not allowed to authorize this APP due to our region restriction.",
+        "context": "authorization"
+      },
+      {
+        "message": "No authorization permission for your account region",
+        "context": "authorization"
+      },
+      {
+        "message": "signature is invalid",
+        "context": "signing (FAQ: 'What points should we pay attention to when generating signatures')"
+      },
+      {
+        "message": "package freeze",
+        "context": "Ship Package / Get Package Detail"
+      }
+    ]
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/fulfillment.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "a068d427b0c14e3e5aea1a9f03256f91d10e9ee58f9b85113703998ffedb154e",
+    "candidatesInBundle": [
+      {
+        "method": "GET",
+        "path": "/fulfillment/202309/packages/{package_id}/shipping_documents",
+        "version": "202309"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "GET",
+  "path": "/fulfillment/202309/packages/{package_id}/shipping_documents",
+  "operation": {
+    "tags": [
+      "fulfillment_v202309"
+    ],
+    "summary": "GetPackageShippingDocument",
+    "description": "For orders shipped by TikTok Shop, this API retrieves the URL of shipping documents (shipping label and packing slip) for a package specified by the package ID. This API is only applicable to \"TikTok Shipping\" orders. To obtain the shipping documents URL via this API, first call \"Ship Package\" to ship the corresponding package.",
+    "parameters": [
+      {
+        "name": "package_id",
+        "in": "path",
+        "description": "TikTok Shop package ID. ",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "5433567853345"
+      },
+      {
+        "name": "document_type",
+        "in": "query",
+        "description": "Available document types: \n- `SHIPPING_LABEL`: Returns the shipping label in PDF format by default.\n- `PACKING_SLIP`: Returns the packing slip in PDF format by default.\n- `SHIPPING_LABEL_AND_PACKING_SLIP`: Returns both the shipping label and the packing slip for the package, both in PDF format by default.              \n- `SHIPPING_LABEL_PICTURE`: Returns the shipping label in PNG format. \n- `HAZMAT_LABEL`: Returns the hazmat label in PDF format by default. You must only use this value when there are hazmat items in the package. When you use the value, `document_size` is fixed to A4, and you don't need to specify `document_size`.\n- `INVOICE_LABEL`: For Brazil market only, document_size is fixed to A6, and you don't need to specify `document_size`. Returns the invoice label in PDF format by default",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "SHIPPING_LABEL"
+      },
+      {
+        "name": "document_size",
+        "in": "query",
+        "description": "Use this field to specify the size of the document to obtain. This parameter is only applicable to shipping labels, picking slips, and packing slips that are in the PDF format. It is not applicable for hazmat labels as these are fixed to A4. \nIf you specify `SHIPPING_LABEL_PICTURE` for the `document_type`, any value specified in the `document_size` will be ignored. \n\nPossible values: \n- `A6` (Default)\n- `A5` ",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "A6"
+      },
+      {
+        "name": "document_format",
+        "in": "query",
+        "description": "The format of the shipping document.\nPossible values: \n- PDF (Default)\n- ZPL (Only for BR and MX market)\n\n**Note**: Not applicable for `SHIPPING_LABEL_PICTURE` document type.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "PDF"
+      },
+      {
+        "name": "shop_cipher",
+        "in": "query",
+        "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. ",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "doc_url": {
+                      "description": "The URL of the shipping label and packing slip generated for the specified package. \nThe URL is valid for 24 hours.",
+                      "example": "https://magelng.bytedance.net2/wsos_v2/oec_fulfillment_doc_tts/object/wsos641232",
+                      "type": "string"
+                    },
+                    "tracking_number": {
+                      "description": "The package tracking number from the shipping carrier.\n",
+                      "example": "752455325694",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,449 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/return_refund.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "eefd06dd673966b3f5e96db0cc73409355b66c7d9b47a9d09913c2d529780e30",
+    "candidatesInBundle": [
+      {
+        "method": "POST",
+        "path": "/return_refund/202309/cancellations/search",
+        "version": "202309"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "POST",
+  "path": "/return_refund/202309/cancellations/search",
+  "operation": {
+    "tags": [
+      "return_refund_v202309"
+    ],
+    "summary": "SearchCancellations",
+    "description": "Use this API to search and retrieve one or more order cancellations.",
+    "parameters": [
+      {
+        "name": "sort_field",
+        "in": "query",
+        "description": "The returned results will be sorted by the specified field. \nDefault: create_time\nPossible values:\n- create_time\n- update_time\n\nSpecify the order for sorting the returned results by using the sort_order parameter.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "update_time"
+      },
+      {
+        "name": "sort_order",
+        "in": "query",
+        "description": "The sort order for the sort_field parameter. \nDefault: ASC\nPossible values:\n- ASC: Ascending order\n- DESC: Descending order",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "ASC"
+      },
+      {
+        "name": "page_size",
+        "in": "query",
+        "description": "The number of results to be returned per page. \nDefault: 10. \nValid range: [1-50].",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "10"
+      },
+      {
+        "name": "page_token",
+        "in": "query",
+        "description": "An opaque token used to retrieve the next page of a paginated result set. Retrieve this value from the result of the next_page_token from a previous response. It is not needed for the first page.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "aDU2dHIzMlFhME5CUzJKUDhDdVJhTDM1WmJkeFVTVW9LTkRaSnNaZCtuWjJXVU5CSDhlaA=="
+      },
+      {
+        "name": "shop_cipher",
+        "in": "query",
+        "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. ",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "properties": {
+              "buyer_user_ids": {
+                "description": "List of TikTok Shop buyer user IDs.",
+                "example": [
+                  "7494845267308415300"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "cancel_ids": {
+                "description": "List of order cancellations IDs.",
+                "example": [
+                  "577087614418520388"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "cancel_status": {
+                "description": "List of order cancellation statuses.\nPossible values:\n- CANCELLATION_REQUEST_PENDING\n- CANCELLATION_REQUEST_SUCCESS\n- CANCELLATION_REQUEST_CANCEL\n- CANCELLATION_REQUEST_COMPLETE\n\nPlease see \"API Overview\" for more information about these statuses.",
+                "example": [
+                  "CANCELLATION_REQUEST_PENDING"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "cancel_types": {
+                "description": "List of order cancellation types.\nPossible values:\n- CANCEL: Cancel by seller or system.\n- BUYER_CANCEL: Cancel by buyer. Need to be approved by seller or system.",
+                "example": [
+                  "CANCEL"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "create_time_ge": {
+                "description": "Filter cancellations to show only orders that have been created after a specified date and time. Unix timestamp. ",
+                "example": 1690340825,
+                "format": "int64",
+                "type": "integer"
+              },
+              "create_time_lt": {
+                "description": "Filter cancellations to show only orders that have been created before a specified date and time. Unix timestamp. ",
+                "example": 1690340825,
+                "format": "int64",
+                "type": "integer"
+              },
+              "locale": {
+                "description": "The BCP-47 locale codes for displaying the order, delimited by commas. Default: en-US\nRefer to [Locale codes](678e3a47bae28f030a8c7523) for the list of supported locale codes.",
+                "example": "en-US",
+                "type": "string"
+              },
+              "order_ids": {
+                "description": "List of TikTok Shop order IDs.",
+                "example": [
+                  "577087614418520388"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "update_time_ge": {
+                "description": "Filter cancellations to show only orders that have been updated after a specified date and time. Unix timestamp.",
+                "example": 1690340825,
+                "format": "int64",
+                "type": "integer"
+              },
+              "update_time_lt": {
+                "description": "Filter cancellations to show only orders that have been updated before a specified date and time. Unix timestamp.",
+                "example": 1690340825,
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "cancellations": {
+                      "description": "List of order cancellations.",
+                      "items": {
+                        "properties": {
+                          "cancel_id": {
+                            "description": "The identifier of a specific order cancellation.",
+                            "example": "4035318504086604100",
+                            "type": "string"
+                          },
+                          "cancel_line_items": {
+                            "description": "Cancellation line items.",
+                            "items": {
+                              "properties": {
+                                "cancel_line_item_id": {
+                                  "description": "Cancellation line item ID.",
+                                  "example": "4035227913481196964",
+                                  "type": "string"
+                                },
+                                "order_line_item_id": {
+                                  "description": "Order line item ID.",
+                                  "example": "576468844534141348",
+                                  "type": "string"
+                                },
+                                "product_image": {
+                                  "description": "Product image object. Contains product image information.",
+                                  "properties": {
+                                    "height": {
+                                      "description": "Product image height.\nUnit: px",
+                                      "example": 200,
+                                      "format": "int32",
+                                      "type": "integer"
+                                    },
+                                    "url": {
+                                      "description": "Product image URL.",
+                                      "example": "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/004797ebfd8c4d3da2df1cc4bfdb0614~tplv-o3syd03w52-origin-jpeg.jpeg?from=4246405447",
+                                      "type": "string"
+                                    },
+                                    "width": {
+                                      "description": "Product image width.\nUnit: px",
+                                      "example": 200,
+                                      "format": "int32",
+                                      "type": "integer"
+                                    }
+                                  },
+                                  "type": "object"
+                                },
+                                "product_name": {
+                                  "description": "Product name.",
+                                  "example": "bundle No Heel Flat Heel Summer Winter Round Toe",
+                                  "type": "string"
+                                },
+                                "refund_amount": {
+                                  "description": "Refund amount information.",
+                                  "properties": {
+                                    "buyer_service_fee": {
+                                      "description": "Only for the ID market. Platform will charge the buyer service fee depending on the scenario. ",
+                                      "example": "1000",
+                                      "type": "string"
+                                    },
+                                    "currency": {
+                                      "description": "Refund currency.",
+                                      "example": "USD",
+                                      "type": "string"
+                                    },
+                                    "refund_shipping_fee": {
+                                      "description": "Shipping fee refund amount to the buyer.",
+                                      "example": "0.2",
+                                      "type": "string"
+                                    },
+                                    "refund_subtotal": {
+                                      "description": "Subtotal refund amount to the buyer.",
+                                      "example": "1",
+                                      "type": "string"
+                                    },
+                                    "refund_tax": {
+                                      "description": "Tax refund amount to the buyer.",
+                                      "example": "0.03",
+                                      "type": "string"
+                                    },
+                                    "refund_total": {
+                                      "description": "Total refund amount to the buyer.",
+                                      "example": "1.23",
+                                      "type": "string"
+                                    },
+                                    "retail_delivery_fee": {
+                                      "description": "Retail delivery fee takes effect once platform GMV exceeds 500,000 USD, according to Colorado (US) compliance rules.\n",
+                                      "example": "0.1",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "type": "object"
+                                },
+                                "seller_sku": {
+                                  "description": "SKU name defined by the seller.",
+                                  "example": "YYAPC23078TRT30",
+                                  "type": "string"
+                                },
+                                "sku_id": {
+                                  "description": "SKU ID.",
+                                  "example": "2729382476852921560",
+                                  "type": "string"
+                                },
+                                "sku_name": {
+                                  "description": "SKU name.",
+                                  "example": "1#, Standard",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "cancel_reason": {
+                            "description": "Order cancellation reason.",
+                            "example": "ecom_order_to_ship_canceled_reason_created_by_mistakes",
+                            "type": "string"
+                          },
+                          "cancel_reason_text": {
+                            "description": "Order cancellation reason, localized to another language.\nYou can change language using the locale field in the request parameter.",
+                            "example": "Order created by mistake",
+                            "type": "string"
+                          },
+                          "cancel_status": {
+                            "description": "Order cancellation status.\nPossible values:\n- CANCELLATION_REQUEST_PENDING\n- CANCELLATION_REQUEST_SUCCESS\n- CANCELLATION_REQUEST_CANCELLED\n- CANCELLATION_REQUEST_COMPLETE",
+                            "example": "CANCELLATION_REQUEST_PENDING",
+                            "type": "string"
+                          },
+                          "cancel_type": {
+                            "description": "Order cancellation type.\nPossible values:\n- CANCEL: Cancel by seller or system.\n- BUYER_CANCEL: Cancel by buyer. Need to be approved by seller or system. ",
+                            "example": "REQUEST_CANCEL_REFUND",
+                            "type": "string"
+                          },
+                          "create_time": {
+                            "description": "Order cancellation create time. Unix timestamp.",
+                            "example": 1690451136,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "order_id": {
+                            "description": "TikTok Shop order ID. Contains multiple order line item IDs.",
+                            "example": "577087614418520388",
+                            "type": "string"
+                          },
+                          "refund_amount": {
+                            "description": "Refund amount information.",
+                            "properties": {
+                              "buyer_service_fee": {
+                                "description": "Only for the ID market. Platform will charge the buyer a service fee depending on the scenario. ",
+                                "example": "1000",
+                                "type": "string"
+                              },
+                              "currency": {
+                                "description": "Refund currency.",
+                                "example": "USD",
+                                "type": "string"
+                              },
+                              "refund_shipping_fee": {
+                                "description": "Shipping fee refund amount to the buyer.",
+                                "example": "0.2",
+                                "type": "string"
+                              },
+                              "refund_subtotal": {
+                                "description": "Subtotal refund amount to the buyer.",
+                                "example": "1",
+                                "type": "string"
+                              },
+                              "refund_tax": {
+                                "description": "Tax refund amount to the buyer.",
+                                "example": "0.03",
+                                "type": "string"
+                              },
+                              "refund_total": {
+                                "description": "Total refund amount to the buyer.",
+                                "example": "1.23",
+                                "type": "string"
+                              },
+                              "retail_delivery_fee": {
+                                "description": "Retail delivery fee takes effect once platform GMV exceeds $500,000 USD, according to Colorado (US) compliance rules.",
+                                "example": "0.1",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "role": {
+                            "description": "Order cancellation initiator.\nPossible values:\n- BUYER\n- SELLER\n- SYSTEM",
+                            "example": "BUYER",
+                            "type": "string"
+                          },
+                          "seller_next_action_response": {
+                            "description": "Seller's next action and deadline.",
+                            "items": {
+                              "properties": {
+                                "action": {
+                                  "description": "Seller's next action.\nPossible values:\n- SELLER_RESPOND_CANCEL",
+                                  "example": "SELLER_RESPOND_CANCEL",
+                                  "type": "string"
+                                },
+                                "deadline": {
+                                  "description": "Unix timestamp indicating the deadline for when the seller must perform the next action.",
+                                  "example": 1690554680,
+                                  "format": "int64",
+                                  "type": "integer"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "update_time": {
+                            "description": "Order cancellation update time. Unix timestamp.",
+                            "example": 1690451136,
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "next_page_token": {
+                      "description": "An opaque token used to retrieve the next page of a paginated result set. Provide this value in the page_token parameter of your request if the current response does not return all the results.",
+                      "example": "aDU2dHIzMlFhME5CUzJKUDhDdVJhTDM1WmJkeFVTVW9LTkRaSnNaZCtuWjJXVU5CSDhlaA==",
+                      "type": "string"
+                    },
+                    "total_count": {
+                      "description": "The number of cancellations that meet the query conditions.",
+                      "example": 100,
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

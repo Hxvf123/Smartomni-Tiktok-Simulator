@@ -1,0 +1,575 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/product.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "ce6064e2865ae7fe40e7c48381f4bc6442eeab9181f02dde06c6fd1f0c04ea69",
+    "candidatesInBundle": [
+      {
+        "method": "POST",
+        "path": "/product/202309/products/search",
+        "version": "202309"
+      },
+      {
+        "method": "POST",
+        "path": "/product/202312/products/search",
+        "version": "202312"
+      },
+      {
+        "method": "POST",
+        "path": "/product/202502/products/search",
+        "version": "202502"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "POST",
+  "path": "/product/202502/products/search",
+  "operation": {
+    "tags": [
+      "product_v202502"
+    ],
+    "summary": "SearchProducts",
+    "description": "Retrieve a list of products that meet the specified conditions. \nThis API will only return the key product properties. You can pass a returned product ID to the [Get Product API](https://partner.tiktokshop.com/docv2/page/6509d85b4a0bb702c057fdda) to obtain more details about the product.",
+    "parameters": [
+      {
+        "name": "page_size",
+        "in": "query",
+        "description": "The number of results to be returned per page. \nValid range: [1-100]",
+        "required": true,
+        "schema": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "example": 100
+      },
+      {
+        "name": "page_token",
+        "in": "query",
+        "description": "An opaque token used to retrieve the next page of a paginated result set. Retrieve this value from the result of the `next_page_token` from a previous response. It is not needed for the first page.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "b2Zmc2V0PTAK"
+      },
+      {
+        "name": "shop_cipher",
+        "in": "query",
+        "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. ",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "requestBody": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "properties": {
+              "audit_status": {
+                "description": "Filter products by their audit status for TikTok Shop.\nPossible values: \n- AUDITING: Returns products where the base version or a post-live edit is currently being audited.\n- FAILED: Returns products where the base version or a post-live edit has failed audit, or had the audit cancelled.\n- APPROVED: Returns products that passed the audit and has been listed on the platform.",
+                "example": [
+                  "AUDITING"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "category_version": {
+                "description": "Filter products by the category tree version.\nPossible values based on region:\n- US: `v2`, represents the 7-level category tree.\n- Other regions: `v1`, represents the 3-level category tree.\nDefault: Return all products from both `v1` and `v2` category trees.",
+                "example": "v1",
+                "type": "string"
+              },
+              "create_time_ge": {
+                "description": "Filter products to show only those that are created on or after the specified date and time. Unix timestamp.\n\n**Note**:\n`create_time_ge` and `create_time_le` together constitute the creation time filter condition.\n- If `create_time_ge` is filled but `create_time_le` is empty, `create_time_le` will default to the current time.\n- If `create_time_le` is filled but `create_time_ge` is empty, `create_time_ge` will default to the earliest shop time.",
+                "example": 1694309208,
+                "format": "int64",
+                "type": "integer"
+              },
+              "create_time_le": {
+                "description": "Filter products to show only those that are created on or before the specified date and time. Unix timestamp.\nRefer to notes in `create_time_ge` for more usage information.",
+                "example": 1694319208,
+                "format": "int64",
+                "type": "integer"
+              },
+              "listing_platforms": {
+                "description": "Filter products by the listing platforms.\nPossible values:\n- TOKOPEDIA\n- TIKTOK_SHOP\nDefault: Return all products regardless of their listing platform.\n\nApplicable only for sellers that migrated from Tokopedia.\n**Note**:\n- You must also specify a `status` value other than `ALL` when filtering by listing platforms. Returning all statuses is not supported.\n- If you pass in one platform, the search will return products that are listed on that platform, including those that are listed on both platforms.\n- If you pass in `[\"TIKTOK_SHOP\", \"TOKOPEDIA\"]`, only products listed on both platforms will be returned, not those listed on just one.",
+                "example": [
+                  "TIKTOK_SHOP"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "listing_quality_tiers": {
+                "description": "Filter products by their listing quality tier.\nPossible values:\n- POOR\n- FAIR\n- GOOD\nDefault: Returns all\n**Note**: Available only for the US market.",
+                "example": [
+                  "POOR",
+                  "FAIR"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "return_draft_version": {
+                "description": "Filter products to show only those that have a draft.\n- true: Returns products in their draft version only. Excludes those without a draft.\n- false: Returns all products regardless of whether they have a draft.\nDefault: false\n\n**Note**: Applicable only if the product status filter is `ALL`, `DRAFT`, `ACTIVATE`, `SELLER_DEACTIVATED`, or `PLATFORM_DEACTIVATED`.",
+                "example": true,
+                "type": "boolean"
+              },
+              "seller_skus": {
+                "description": "Filter products by these seller SKU codes.",
+                "example": [
+                  "Color-Red-XM001"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "sku_ids": {
+                "description": "Filter products by SKU IDs.\nMax count: 10",
+                "example": [
+                  "1729592969712207230"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "sns_filter": {
+                "description": "Filter products by their Subscribe and Save (SNS) status. Possible values:\n- CONFIGURED\n- ELIGIBLE",
+                "example": "CONFIGURED",
+                "type": "string"
+              },
+              "status": {
+                "description": "Filter products based on the product's base version. In other words, this filter does not apply to post-live drafts or edits. For example, `status=DRAFT` returns only unpublished products in the DRAFT state, not live products with an active draft.\n\nPossible values: \n- ALL\n- DRAFT\n- PENDING\n- FAILED\n- ACTIVATE\n- SELLER_DEACTIVATED\n- PLATFORM_DEACTIVATED\n- FREEZE\n- DELETED\nDefault: ALL",
+                "example": "ALL",
+                "type": "string"
+              },
+              "update_time_ge": {
+                "description": "Filter products to show only those that are updated on or after the specified date and time. Unix timestamp.\n\n**Note**:\n`update_time_ge` and `update_time_le` together define the update time filter condition.\n- If `update_time_ge` is filled but `update_time_le` is empty, `update_time_le` will default to the current time.\n- If `update_time_le` is filled but `update_time_ge` is empty, `update_time_ge` will default to the earliest shop time.",
+                "example": 1694319208,
+                "format": "int64",
+                "type": "integer"
+              },
+              "update_time_le": {
+                "description": "Filter products to show only those that are updated on or before the specified date and time. Unix timestamp.\nRefer to notes in `update_time_ge` for more usage information.",
+                "example": 1694319208,
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "next_page_token": {
+                      "description": "An opaque token used to retrieve the next page of a paginated result set. Provide this value in the `page_token` parameter of your request if the current response does not return all the results.",
+                      "example": "b2Zmc2V0PTAK",
+                      "type": "string"
+                    },
+                    "products": {
+                      "description": "The list of products that meet the query conditions.",
+                      "items": {
+                        "properties": {
+                          "audit": {
+                            "description": "Product audit information for TikTok Shop.",
+                            "properties": {
+                              "pre_approved_reasons": {
+                                "description": "The reason why the product is pre-approved.\nApplicable only if `audit.status=PRE_APPROVED`, otherwise returns an empty array.\nPossible values:\n- KYC_PENDING: The seller's onboarding (KYC - Know Your Customer information) is incomplete or awaiting processing.\n- RESTRICTED_CATEGORY_PENDING: The product is in a restricted category, and category approval is still pending. To request access, submit an application through the Qualification Center on TikTok Shop Seller Center. Applicable only for the US market.",
+                                "example": [
+                                  "KYC_PENDING"
+                                ],
+                                "items": {
+                                  "type": "string"
+                                },
+                                "type": "array"
+                              },
+                              "status": {
+                                "description": "The product audit status.\nPossible values: \n- NONE: The product is not applicable for audit as it is still in a draft, frozen, or deactivated state.\n- AUDITING: The product is currently being audited.\n- FAILED: The product failed the audit, or the audit was cancelled.\n- PRE_APPROVED: The product has passed the audit but is not yet listed due to pending prerequisites.\n- APPROVED: The product passed the audit and has been listed on the platform.",
+                                "example": "AUDITING",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "create_time": {
+                            "description": "The time when the product is created.\nUnix timestamp.",
+                            "example": 1234567890,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "has_draft": {
+                            "description": "A flag to indicate if the product has a draft.\n- true: It has a draft.\n- false: It does not have a draft.\nUse Get Product with `return_draft_version=true` to obtain full details of the draft.",
+                            "example": true,
+                            "type": "boolean"
+                          },
+                          "id": {
+                            "description": "The product ID generated by TikTok Shop.",
+                            "example": "1729592969712207008",
+                            "type": "string"
+                          },
+                          "integrated_platform_statuses": {
+                            "description": "The current status of the product on platforms that are natively integrated with TikTok Shop (e.g. TOKOPEDIA).\n\n**Note**: For Indonesia sellers, if you did not set the listing platform as `TOKOPEDIA` when creating or editing a product, this will be omitted.",
+                            "items": {
+                              "properties": {
+                                "platform": {
+                                  "description": "The integrated platform name.\nPossible values:\n- TOKOPEDIA",
+                                  "example": "TOKOPEDIA",
+                                  "type": "string"
+                                },
+                                "status": {
+                                  "description": "The product status in the integrated platform.\nPossible values:\n- DRAFT\n- PENDING\n- FAILED\n- ACTIVATE\n- SELLER_DEACTIVATED\n- PLATFORM_DEACTIVATED\n- FREEZE\n- DELETED",
+                                  "example": "PLATFORM_DEACTIVATED",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "is_not_for_sale": {
+                            "description": "A flag indicating whether the product is not for sale.\nTrue: Not for sale.\nFalse: For sale.",
+                            "example": true,
+                            "type": "boolean"
+                          },
+                          "listing_quality_tier": {
+                            "description": "The current quality tier of this product listing. The quality tier of a product listing depends on the quality of the content in its product fields such as the title, image, attributes etc.\n\nPossible values:\n- POOR\n- FAIR\n- GOOD\n\n**Note**: Available only for the US market.",
+                            "example": "POOR",
+                            "type": "string"
+                          },
+                          "product_families": {
+                            "description": "The **live** product family that this product belongs to. A product family is a virtual group of products that share common characteristics (such as flavor, version, or size), allowing them to appear as selectable variations on the product page.\n**Note**: \n- Applicable only for US local sellers.\n- Omitted if this product does not belong to any product family.",
+                            "items": {
+                              "properties": {
+                                "id": {
+                                  "description": "The product family ID.",
+                                  "example": "1000592969712207000",
+                                  "type": "string"
+                                },
+                                "products": {
+                                  "description": "A list of products that belong to the family.",
+                                  "items": {
+                                    "properties": {
+                                      "id": {
+                                        "description": "The product ID.",
+                                        "example": "1729592969712207008",
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  },
+                                  "type": "array"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "product_sync_fail_reasons": {
+                            "description": "The reasons why synchronizing of global product information to local products failed. \nOnly applicable for cross-border sellers.",
+                            "example": [
+                              "The required qualification is missed."
+                            ],
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "recommended_categories": {
+                            "description": "Recommended categories for the product based on the product title, description, and images.",
+                            "items": {
+                              "properties": {
+                                "id": {
+                                  "description": "The ID of the recommended category.",
+                                  "example": "853000",
+                                  "type": "string"
+                                },
+                                "local_name": {
+                                  "description": "The name of the category in the country where the shop operates.",
+                                  "example": "Botol & Stoples Penyimpanan",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "sales_regions": {
+                            "description": "The regions where the product is sold.\nPossible values:\n- BR: Brazil\n- DE: Germany\n- ES: Spain\n- FR: France\n- GB: United Kingdom\n- ID: Indonesia\n- IE: Ireland\n- IT: Italy\n- JP: Japan\n- MX: Mexico\n- MY: Malaysia\n- PH: Philippines\n- SG: Singapore\n- TH: Thailand\n- US: United States\n- VN: Vietnam",
+                            "example": [
+                              "US"
+                            ],
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "skus": {
+                            "description": "A list of Stock Keeping Units (SKUs) used to identify distinct variants of the product.",
+                            "items": {
+                              "properties": {
+                                "external_list_prices": {
+                                  "description": "The SKU list price (e.g. MSRP, RRP) or original price information on external ecommerce platforms.\nApplicable only for selected sellers in the US market.\n\n**Note**: This value may appear as the strikethrough price on the product page. However, whether the strikethrough price is shown and the amount shown are subject to the audit team's review and decision based on various pricing information.",
+                                  "items": {
+                                    "properties": {
+                                      "amount": {
+                                        "description": "The price amount.",
+                                        "example": "1",
+                                        "type": "string"
+                                      },
+                                      "currency": {
+                                        "description": "The currency.\nPossible values: USD",
+                                        "example": "USD",
+                                        "type": "string"
+                                      },
+                                      "source": {
+                                        "description": "The external ecommerce platform from which the price is sourced.\nPossible values:\n- SHOPIFY_COMPARE_AT_PRICE: The compare_at_price in Shopify.",
+                                        "example": "SHOPIFY_COMPARE_AT_PRICE",
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  },
+                                  "type": "array"
+                                },
+                                "fees": {
+                                  "description": "The fees required for this product based on TikTok Shop policies. Fees are required only for certain product categories, retrieve the requirements from the [Get Category Rules API](https://partner.tiktokshop.com/docv2/page/6509c0febace3e02b74594a9). ",
+                                  "items": {
+                                    "properties": {
+                                      "additional_attribute": {
+                                        "description": "An optional attribute that provides additional context for the fee. The accepted values may vary by fee type and market.\n\nPossible values for Pfand:\n- SINGLE_USE\n- REUSABLE\n- NOT_APPLICABLE",
+                                        "example": "SINGLE_USE",
+                                        "type": "string"
+                                      },
+                                      "amount": {
+                                        "description": "The fee amount.\nValid range:\n- PFAND: [0.00 - 6300.00]",
+                                        "example": "1.01",
+                                        "type": "string"
+                                      },
+                                      "type": {
+                                        "description": "The type of fee.\nPossible values: PFAND",
+                                        "example": "PFAND",
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  },
+                                  "type": "array"
+                                },
+                                "id": {
+                                  "description": "The SKU ID generated by TikTok Shop.",
+                                  "example": "1729592969712207012",
+                                  "type": "string"
+                                },
+                                "inventory": {
+                                  "description": "SKU inventory information.\n**Note**: This field is not supported in post-live drafts, therefore the values here will always reflect those in the base version, even if you set `return_draft_version=true`.",
+                                  "items": {
+                                    "properties": {
+                                      "backorder_quantity": {
+                                        "description": "The `backorder_quantity` will automatically be converted to `quantity` once in-stock inventory is sold out. The fulfillment of this inventory follows the `handling_time` specified below.\nNote: Made-to-order (MTO), pre-order, and custom products cannot be backordered, and thus are incompatible with backorder_quantity.",
+                                        "example": 888,
+                                        "format": "int32",
+                                        "type": "integer"
+                                      },
+                                      "handling_time": {
+                                        "description": "The estimated number of working days needed for a backorder to be shipped. Currently, different warehouses for the same SKU are not allowed to have different `handling_time`",
+                                        "example": 5,
+                                        "format": "int32",
+                                        "type": "integer"
+                                      },
+                                      "quantity": {
+                                        "description": "The total SKU quantity available in the warehouse.\nValid range: [1, 99,999]\n\nNote: This quantity specifically refers to the in-stock inventory that can be shipped immediately.",
+                                        "example": 999,
+                                        "format": "int32",
+                                        "type": "integer"
+                                      },
+                                      "warehouse_id": {
+                                        "description": "The ID of the warehouse where the SKU is stored. \nRetrieve details of the warehouse from the [Get Warehouse List API](https://partner.tiktokshop.com/docv2/page/650aa418defece02be6e66b6).",
+                                        "example": "7068517275539719942",
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  },
+                                  "type": "array"
+                                },
+                                "list_price": {
+                                  "description": "The SKU's list price information that has been verified to be legitimate by the audit team. This is equivalent to the manufacturer's suggested retail price (MSRP), or the recommended retail price (RRP).\nApplicable only for the US market.\n\n**Note**: \n- This field will be empty or display the last verified price if the submitted price fails verification.\n- This value may appear as the strikethrough price on the product page. However, whether the strikethrough price is shown and the amount shown are subject to the audit team's review and decision based on various pricing information.",
+                                  "properties": {
+                                    "amount": {
+                                      "description": "The price amount.",
+                                      "example": "1",
+                                      "type": "string"
+                                    },
+                                    "currency": {
+                                      "description": "The currency.\nPossible values: USD",
+                                      "example": "USD",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "type": "object"
+                                },
+                                "pre_sale": {
+                                  "description": "SKU presale information, used to tag a product as a presale product based on its presale type.\n\nIf this is not returned, it indicates that the product is a regular non-presale item.",
+                                  "properties": {
+                                    "fulfillment_type": {
+                                      "description": "Information about the type of pre-sale order fulfillment and the corresponding timeframe.\n- `handling_duration_days` is for fulfillment with an extended duration.\n- `release_date` is for starting fulfillment on a fixed date.",
+                                      "properties": {
+                                        "handling_duration_days": {
+                                          "description": "The desired duration for handling a pre-sale order and handing it over to a shipping carrier. \n\nApplicable only for the following regions and pre-sale type:\n**US**\n- `MADE_TO_ORDER`: Business days\n- `CUSTOM`: Business days\n\n**UK, EU, SEA, JP, and LATAM**\n- `PRE_ORDER`: Calendar days",
+                                          "example": 7,
+                                          "format": "int32",
+                                          "type": "integer"
+                                        },
+                                        "release_date": {
+                                          "description": "The date on which the product gets converted into a regular product and becomes available for general purchase. On this date, order handling will also start, changing the status of the order to [`AWAITING_SHIPMENT`](https://partner.tiktokshop.com/docv2/page/650b1b4bbace3e02b76d1011).\n\nApplicable only for `PRE_ORDER` in the US.\n**Note**: This date is a unix timestamp (seconds) based on the seller-selected timezone in Seller Center.",
+                                          "example": 1619611761,
+                                          "format": "int64",
+                                          "type": "integer"
+                                        }
+                                      },
+                                      "type": "object"
+                                    },
+                                    "type": {
+                                      "description": "The type of pre-sale.\nPossible values based on the region:\n**US**\n- `PRE_ORDER`: The product is not yet available or released. Fulfillment can be extended by specifying a release date.\n- `MADE_TO_ORDER`: The product is produced only after the order is received. Fulfillment can be extended by specifying a duration.\n- `CUSTOM`: The product requires a fulfillment timeline that exceeds the standard due to other factors. Fulfillment can be extended by specifying a duration.\n\n**UK, EU, SEA, JP, and LATAM**\n- `PRE_ORDER`: The product is not yet available or released. Fulfillment can be extended by specifying a duration. ",
+                                      "example": "PRE_ORDER",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "type": "object"
+                                },
+                                "price": {
+                                  "description": "SKU pricing information.",
+                                  "properties": {
+                                    "currency": {
+                                      "description": "The currency.\nPossible values:\n- BRL: Brazil\n- EUR: France, Germany, Ireland, Italy, Spain\n- GBP: United Kingdom\n- IDR: Indonesia\n- JPY: Japan\n- MXN: Mexico\n- MYR: Malaysia\n- PHP: Philippines\n- SGD: Singapore\n- THB: Thailand\n- USD: United States\n- VND: Vietnam",
+                                      "example": "USD",
+                                      "type": "string"
+                                    },
+                                    "sale_price": {
+                                      "description": "**Global sellers**\nThe SKU's **local display price** shown on the product page before any discounts.",
+                                      "example": "121.11",
+                                      "type": "string"
+                                    },
+                                    "tax_exclusive_price": {
+                                      "description": "**Local sellers/Intra-EU sellers**\nThe SKU's **local display price** shown on the product page before any discounts.\n\n**Global sellers**\nThe SKU's **local pre-tax price**. This excludes any applicable charges such as cross-border shipping costs, taxes, and other fees, and therefore does not appear on the product page.\n\n**Note**: Tax-exclusive pricing does not apply to the JP market, therefore this value is the same as `sale_price`.",
+                                      "example": "111.01",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "type": "object"
+                                },
+                                "seller_sku": {
+                                  "description": "An internal code/name for managing SKUs, not visible to buyers. ",
+                                  "example": "Color-Red-XM01",
+                                  "type": "string"
+                                },
+                                "status_info": {
+                                  "description": "Status information of the SKU.",
+                                  "properties": {
+                                    "deactivation_source": {
+                                      "description": "The deactivation source of the SKU with `DEACTIVATED` status.\nPossible values:\n- SELLER: Indicates that the seller deactivated the SKU\n- PLATFORM: Indicates that the platform de-activated the SKU due to violation reasons\n- COMBO_RELATION: Indicates that the platform de-activated the combined-SKU due to the deactivation of sub-SKU.",
+                                      "example": "PLATFORM",
+                                      "type": "string"
+                                    },
+                                    "status": {
+                                      "description": "The SKU status in TikTok Shop.\nPossible values: \n- NORMAL\n- DEACTIVATED",
+                                      "example": "DEACTIVATED",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "type": "object"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "status": {
+                            "description": "The product status in TikTok Shop.\nPossible values: \n- DRAFT\n- PENDING\n- FAILED\n- ACTIVATE\n- SELLER_DEACTIVATED\n- PLATFORM_DEACTIVATED\n- FREEZE\n- DELETED\n\n**Note**: For Indonesia sellers, if you did not set the listing platform as `TIKTOK_SHOP` when creating or editing a product, this will be omitted.",
+                            "example": "ACTIVATE",
+                            "type": "string"
+                          },
+                          "title": {
+                            "description": "The product title.",
+                            "example": "Short Boat Invisible Socks",
+                            "type": "string"
+                          },
+                          "update_time": {
+                            "description": "The time when the product is last updated.\nUnix timestamp.",
+                            "example": 1234567800,
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "total_count": {
+                      "description": "The total number of products that meet the query conditions.",
+                      "example": 200,
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

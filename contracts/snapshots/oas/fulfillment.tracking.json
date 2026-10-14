@@ -1,0 +1,118 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/fulfillment.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "6f82d61c924a606a71b698f70c08dea07f5107efecaa0a61e57d86079f426d9c",
+    "candidatesInBundle": [
+      {
+        "method": "GET",
+        "path": "/fulfillment/202309/orders/{order_id}/tracking",
+        "version": "202309"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "GET",
+  "path": "/fulfillment/202309/orders/{order_id}/tracking",
+  "operation": {
+    "tags": [
+      "fulfillment_v202309"
+    ],
+    "summary": "GetTracking",
+    "description": "This API can use the order number to obtain the corresponding logistics tracking information.",
+    "parameters": [
+      {
+        "name": "order_id",
+        "in": "path",
+        "description": "TikTok Shop order ID.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "576461413038785752"
+      },
+      {
+        "name": "shop_cipher",
+        "in": "query",
+        "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. ",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "tracking": {
+                      "description": "The return list of tracking information.",
+                      "items": {
+                        "properties": {
+                          "description": {
+                            "description": "Tracking status description.",
+                            "example": "Your package was delivered!\n",
+                            "type": "string"
+                          },
+                          "update_time_millis": {
+                            "description": "Tracking status update time. Unix timestamp in milliseconds.",
+                            "example": 1694685539000,
+                            "format": "int64",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

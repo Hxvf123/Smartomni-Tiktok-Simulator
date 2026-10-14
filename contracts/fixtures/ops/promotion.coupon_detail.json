@@ -1,0 +1,163 @@
+{
+  "operation": "promotion.coupon_detail",
+  "schema": "schemas/ops/promotion.coupon_detail.response.json",
+  "classification": "synthetic-from-official-oas",
+  "note": "Values are synthetic and generated from the official OAS response shape; they are not captured TikTok traffic. Error cases are TEST FAULTS: no readable official source documents their code/message values.",
+  "cases": [
+    {
+      "case": "success",
+      "response": {
+        "code": 0,
+        "data": {
+          "coupon": {
+            "claim_duration": {
+              "end_time": 1709654340,
+              "start_time": 1709568000
+            },
+            "create_time": 1661756811000,
+            "creation_source": "TEST_creation_source",
+            "discount": {
+              "max_discount": {
+                "amount": "TEST_amount",
+                "currency": "TEST_currency"
+              },
+              "percentage": "TEST_percentage",
+              "reduction_amount": {
+                "amount": "TEST_amount",
+                "currency": "TEST_currency"
+              },
+              "type": "TEST_type"
+            },
+            "display_channels": [
+              "TEST_display_channels"
+            ],
+            "display_type": "TEST_display_type",
+            "id": "TEST_id",
+            "live_tasks": [
+              {
+                "min_watch_time": "TEST_min_watch_time",
+                "type": "TEST_type"
+              }
+            ],
+            "product_ids": [
+              "TEST_product_ids"
+            ],
+            "product_scope": "TEST_product_scope",
+            "promo_code": "TEST_promo_code",
+            "redemption_duration": {
+              "end_time": 1709754340,
+              "relative_time": 4,
+              "start_time": 1709768000,
+              "type": "TEST_type"
+            },
+            "seller_tnc": "TEST_seller_tnc",
+            "status": "TEST_status",
+            "target_buyer_segment": "TEST_target_buyer_segment",
+            "threshold": {
+              "min_spend": {
+                "amount": "TEST_amount",
+                "currency": "TEST_currency"
+              },
+              "type": "TEST_type"
+            },
+            "title": "TEST_title",
+            "update_time": 1661756811000,
+            "usage_limits": {
+              "redemption_limit": 1000,
+              "single_buyer_claim_limit": 30,
+              "total_claim_limit": 1000
+            },
+            "usage_stats": {
+              "claimed_count": 5,
+              "redeemed_count": 0
+            }
+          }
+        },
+        "message": "Success",
+        "request_id": "TEST-promotion.coupon_detail-success"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "empty",
+      "response": {
+        "code": 0,
+        "data": {
+          "coupon": {
+            "claim_duration": {
+              "end_time": 1709654340,
+              "start_time": 1709568000
+            },
+            "create_time": 1661756811000,
+            "creation_source": "TEST_creation_source",
+            "discount": {
+              "max_discount": {
+                "amount": "TEST_amount",
+                "currency": "TEST_currency"
+              },
+              "percentage": "TEST_percentage",
+              "reduction_amount": {
+                "amount": "TEST_amount",
+                "currency": "TEST_currency"
+              },
+              "type": "TEST_type"
+            },
+            "display_channels": [],
+            "display_type": "TEST_display_type",
+            "id": "TEST_id",
+            "live_tasks": [],
+            "product_ids": [],
+            "product_scope": "TEST_product_scope",
+            "promo_code": "TEST_promo_code",
+            "redemption_duration": {
+              "end_time": 1709754340,
+              "relative_time": 4,
+              "start_time": 1709768000,
+              "type": "TEST_type"
+            },
+            "seller_tnc": "TEST_seller_tnc",
+            "status": "TEST_status",
+            "target_buyer_segment": "TEST_target_buyer_segment",
+            "threshold": {
+              "min_spend": {
+                "amount": "TEST_amount",
+                "currency": "TEST_currency"
+              },
+              "type": "TEST_type"
+            },
+            "title": "TEST_title",
+            "update_time": 1661756811000,
+            "usage_limits": {
+              "redemption_limit": 1000,
+              "single_buyer_claim_limit": 30,
+              "total_claim_limit": 0
+            },
+            "usage_stats": {
+              "claimed_count": 0,
+              "redeemed_count": 0
+            }
+          }
+        },
+        "message": "Success",
+        "request_id": "TEST-promotion.coupon_detail-empty"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "invalid_input",
+      "classification": "test_fault_undocumented",
+      "trigger": "send a malformed path parameter",
+      "requestMustFailValidation": false
+    },
+    {
+      "case": "token_expired",
+      "classification": "test_fault_undocumented",
+      "trigger": "x-tts-access-token is past its expiry"
+    },
+    {
+      "case": "missing_scope",
+      "classification": "test_fault_undocumented",
+      "trigger": "app lacks the (unverified) scope of this operation"
+    }
+  ]
+}

@@ -1,0 +1,1608 @@
+{
+  "_meta": {
+    "source": "tts-openapi-guide bundled OAS (OpenAPI 3.0.0, server https://open-api.tiktokglobalshop.com)",
+    "bundledWith": "@tts-open-toolkit/cli 0.1.7",
+    "oasFile": "references/oas/paths/product.json",
+    "accessDate": "2026-10-14",
+    "sha256OfCanonicalOperation": "318d5427a99d53beec84cc5358a114b87f5482bbe7b3d020cf9ab0cd26898f04",
+    "candidatesInBundle": [
+      {
+        "method": "GET",
+        "path": "/product/202309/products/{product_id}",
+        "version": "202309"
+      }
+    ],
+    "note": "Verbatim OAS operation object (descriptions/examples included); sha256OfCanonicalOperation hashes the UNREDACTED bundle operation (expired CDN signature values are redacted in this file). Contains no secrets. docv2 pages could not be read (client-rendered SPA), so docv2 differences are UNKNOWN."
+  },
+  "method": "GET",
+  "path": "/product/202309/products/{product_id}",
+  "operation": {
+    "tags": [
+      "product_v202309"
+    ],
+    "summary": "GetProduct",
+    "description": "Retrieve all properties of a product, except those in the `FREEZE` or `DELETED` status.",
+    "parameters": [
+      {
+        "name": "product_id",
+        "in": "path",
+        "description": "The product ID in TikTok Shop.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "1729592969712207008"
+      },
+      {
+        "name": "return_under_review_version",
+        "in": "query",
+        "description": "A flag to indicate what product information to retrieve if a live product (`ACTIVATE` status) is edited and resent for TikTok Shop review.\n- True: Retrieves the latest version of the product information that is currently under review.\n- False: Retrieves a snapshot of the product information that is live and online (before the edit).\nDefault: False",
+        "required": false,
+        "schema": {
+          "type": "boolean"
+        },
+        "example": true
+      },
+      {
+        "name": "return_draft_version",
+        "in": "query",
+        "description": "A flag to indicate what product information to retrieve if a product has a draft in TikTok Shop.\n- True: Retrieves the draft version of the product information.\n- False: Retrieves the latest product information.\nDefault: False\n\n**Note**: \n- Applicable only if the product is in the `DRAFT`, `ACTIVATE`, `SELLER_DEACTIVATED`, or `PLATFORM_DEACTIVATED` status.\n- This field and `return_under_review_version` are mutually exclusive. Specify only one to receive results.",
+        "required": false,
+        "schema": {
+          "type": "boolean"
+        },
+        "example": true
+      },
+      {
+        "name": "locale",
+        "in": "query",
+        "description": "The locale or language.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "en"
+      },
+      {
+        "name": "shop_cipher",
+        "in": "query",
+        "description": "Use this property to pass shop information in requesting the API. Failure in passing the correct value when requesting the API for cross-border shops will return incorrect response. ",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "x-tts-access-token",
+        "in": "header",
+        "description": "",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "name": "Content-Type",
+        "in": "header",
+        "description": "Allowed type: application/json",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "The success or failure status code returned in API response.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "data": {
+                  "description": "Specific return information.",
+                  "properties": {
+                    "audit": {
+                      "description": "Product audit information.\n**Note**: Applicable only to products listed on TikTok Shop. Not applicable for products listed only on Tokopedia.",
+                      "properties": {
+                        "pre_approved_reasons": {
+                          "description": "The reason why the product is pre-approved. \nApplicable only if `audit.status=PRE_APPROVED`, otherwise returns an empty array.\n\nPossible values:\n- KYC_PENDING: The seller's onboarding (KYC - Know Your Customer information) is incomplete or awaiting processing.\n- RESTRICTED_CATEGORY_PENDING: The product is in a restricted category, and category approval is still pending. To request access, submit an application through the Qualification Center on TikTok Shop Seller Center. Applicable only for the US market.",
+                          "example": [
+                            "KYC_PENDING"
+                          ],
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "status": {
+                          "description": "The product audit status.\nPossible values: \n- NONE: The product is not applicable for audit because it has not been submitted for listing on this platform, or it is in a draft, frozen, or deactivated state.\n- AUDITING: The product is currently being audited.\n- FAILED: The product failed the audit, or the audit was cancelled.\n- PRE_APPROVED: The product has passed the audit but is not yet listed due to pending prerequisites. Refer to `pre_approved_reasons` for the prerequisites.\n- APPROVED: The product passed the audit and has been listed on the platform.",
+                          "example": "AUDITING",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "audit_failed_reasons": {
+                      "description": "TikTok Shop audit failure information.",
+                      "items": {
+                        "properties": {
+                          "listing_platform": {
+                            "description": "The platform for listing the product.\nPossible values:\n- TIKTOK_SHOP\n- TOKOPEDIA",
+                            "example": "TIKTOK_SHOP",
+                            "type": "string"
+                          },
+                          "position": {
+                            "description": "The audit failure reason name.",
+                            "example": "product",
+                            "type": "string"
+                          },
+                          "reasons": {
+                            "description": "A brief reason for failing TikTok Shop audit.",
+                            "example": [
+                              "violate listing rules"
+                            ],
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "suggestions": {
+                            "description": "A detailed explanation of the reason for failure.",
+                            "example": [
+                              "The product violates TikTok Shopping listing rules, please check and resubmit."
+                            ],
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "brand": {
+                      "description": "Product brand information.",
+                      "properties": {
+                        "id": {
+                          "description": "The ID of the brand of this product.",
+                          "example": "7082427311584347905",
+                          "type": "string"
+                        },
+                        "name": {
+                          "description": "The brand name of this product.",
+                          "example": "brand xxx aaa",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "category_chains": {
+                      "description": "Product category tree information.",
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "description": "The ID of the category of this product.",
+                            "example": "853000",
+                            "type": "string"
+                          },
+                          "is_leaf": {
+                            "description": "A flag to indicate if the category is a leaf category. \n\n**Note**: You can only create or edit products that belong to a leaf category.",
+                            "example": true,
+                            "type": "boolean"
+                          },
+                          "local_name": {
+                            "description": "The name of the category in the country where the shop operates.",
+                            "example": "Botol & Stoples Penyimpanan",
+                            "type": "string"
+                          },
+                          "parent_id": {
+                            "description": "The parent category ID. \nFor the root category, the parent ID is `0`.",
+                            "example": "851848",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "certifications": {
+                      "description": "The list of certifications for your product.",
+                      "items": {
+                        "properties": {
+                          "expiration_date": {
+                            "description": "The expiration date of this certification expressed in unix timestamp (seconds) UTC+0.",
+                            "example": 1741235456,
+                            "format": "int64",
+                            "type": "integer"
+                          },
+                          "files": {
+                            "description": "A list of certification related files.",
+                            "items": {
+                              "properties": {
+                                "format": {
+                                  "description": "The format of the certification file.",
+                                  "example": "PDF",
+                                  "type": "string"
+                                },
+                                "id": {
+                                  "description": "The ID of the certification file.",
+                                  "example": "v09ea0g40000cj91373c77u3mid3g1s0",
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "description": "The name of the certification file.",
+                                  "example": "CERT_X2.PDF",
+                                  "type": "string"
+                                },
+                                "urls": {
+                                  "description": " The URLs to view the certification files.",
+                                  "example": [
+                                    "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                                  ],
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "type": "array"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "id": {
+                            "description": "The ID to identify the type of certification required for the product.",
+                            "example": "602362",
+                            "type": "string"
+                          },
+                          "images": {
+                            "description": "A list of certification related images.",
+                            "items": {
+                              "properties": {
+                                "height": {
+                                  "description": "The image height.\nUnit: px",
+                                  "example": 600,
+                                  "format": "int32",
+                                  "type": "integer"
+                                },
+                                "thumb_urls": {
+                                  "description": "The URLs to view the image thumbnails.",
+                                  "example": [
+                                    "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                                  ],
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "type": "array"
+                                },
+                                "uri": {
+                                  "description": "The URI of the image. ",
+                                  "example": "tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4",
+                                  "type": "string"
+                                },
+                                "urls": {
+                                  "description": " The URLs to view the images.",
+                                  "example": [
+                                    "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                                  ],
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "type": "array"
+                                },
+                                "width": {
+                                  "description": "The image width.\nUnit: px",
+                                  "example": 600,
+                                  "format": "int32",
+                                  "type": "integer"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "title": {
+                            "description": "The title of the certification type.",
+                            "example": "SNI Certificate",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "create_time": {
+                      "description": "The time when the product is created.\nUnix timestamp.",
+                      "example": 1234567890,
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "delivery_options": {
+                      "description": "The custom delivery options applied to this product, overriding the default warehouse delivery option.  \n**Note**: This field is not supported in post-live drafts, therefore the values here will always reflect those in the base version, even if you set `return_draft_version=true`.",
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "description": "The delivery option ID.",
+                            "example": "1729592969712203232",
+                            "type": "string"
+                          },
+                          "is_available": {
+                            "description": "A flag indicating whether the delivery option is available for this product.",
+                            "example": true,
+                            "type": "boolean"
+                          },
+                          "name": {
+                            "description": "The delivery option name.",
+                            "example": "SEND_BY_SELLER",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "description": {
+                      "description": "The product description in HTML format.",
+                      "example": "<p>Please compare above detailed size with your measurement before purchase.</p>\n<ul> \n  <li>M-Size</li>\n  <li>XL-Size</li>\n</ul> \n<img src=\"https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/181595ea7d26489284b5667488d708c1~tplv-o3syd03w52-origin-jpeg.jpeg?from=1432613627\" />\n",
+                      "type": "string"
+                    },
+                    "external_product_id": {
+                      "description": "An external identifier used in an external ecommerce platform. This is used to associate the product between TikTok Shop and the external ecommerce platform. ",
+                      "example": "172959296971220002",
+                      "type": "string"
+                    },
+                    "global_product_association": {
+                      "description": "The global product association established through global product publishing or manual binding.\n\n**Note**: \n- Applicable for global sellers and intra-EU sellers.\n- Not applicable for EU sellers who synchronized products from other markets using the Global Product Replicate (GPR) tool. Refer to `global_listing_policy` instead to find the associated source products.",
+                      "properties": {
+                        "global_product_id": {
+                          "description": "The global product ID in TikTok Shop.",
+                          "example": "1729592969712207920",
+                          "type": "string"
+                        },
+                        "sku_mappings": {
+                          "description": "The list of sku mappings between the global and local products.",
+                          "items": {
+                            "properties": {
+                              "global_sku_id": {
+                                "description": "The global SKU ID in TikTok Shop.",
+                                "example": "1729592969712207234",
+                                "type": "string"
+                              },
+                              "local_sku_id": {
+                                "description": "The local SKU ID in TikTok Shop.",
+                                "example": "1729592969712207230",
+                                "type": "string"
+                              },
+                              "sales_attribute_mappings": {
+                                "description": "The list of sales attribute mappings between the global and local SKUs.",
+                                "items": {
+                                  "properties": {
+                                    "global_attribute_id": {
+                                      "description": "The global sales attribute ID.",
+                                      "example": "100000",
+                                      "type": "string"
+                                    },
+                                    "global_value_id": {
+                                      "description": "The global sales attribute value ID.",
+                                      "example": "1001064",
+                                      "type": "string"
+                                    },
+                                    "local_attribute_id": {
+                                      "description": "The local sales attribute ID.",
+                                      "example": "100000",
+                                      "type": "string"
+                                    },
+                                    "local_value_id": {
+                                      "description": "The local sales attribute value ID.",
+                                      "example": "1001064",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "type": "object"
+                                },
+                                "type": "array"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "has_draft": {
+                      "description": "A flag to indicate if the product has a draft.\n- true: It has a draft.\n- false: It does not have a draft.",
+                      "example": true,
+                      "type": "boolean"
+                    },
+                    "id": {
+                      "description": "The product ID generated by TikTok Shop.",
+                      "example": "1729592969712207008",
+                      "type": "string"
+                    },
+                    "integrated_platform_statuses": {
+                      "description": "The current status of the product on platforms that are natively integrated with TikTok Shop (e.g. TOKOPEDIA).\n\n**Note**: For Indonesia sellers, if you did not set the listing platform as `TOKOPEDIA` when creating or editing a product, this will be omitted.",
+                      "items": {
+                        "properties": {
+                          "platform": {
+                            "description": "The integrated platform name.\nPossible values:\n- TOKOPEDIA",
+                            "example": "TOKOPEDIA",
+                            "type": "string"
+                          },
+                          "status": {
+                            "description": "The product status in the integrated platform.\nPossible values:\n- DRAFT\n- PENDING\n- FAILED\n- ACTIVATE\n- SELLER_DEACTIVATED\n- PLATFORM_DEACTIVATED\n- FREEZE\n- DELETED",
+                            "example": "PLATFORM_DEACTIVATED",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "is_cod_allowed": {
+                      "description": "A flag indicating whether to show the Cash On Delivery (COD) payment option during checkout.\nApplicable only for the following markets:\n- Global sellers: MY, PH, SA, TH, VN\n- Local sellers: ID, MY, PH, SA, TH, VN",
+                      "example": true,
+                      "type": "boolean"
+                    },
+                    "is_not_for_sale": {
+                      "description": "A flag indicating whether the product is not for sale and only available through Gift with Purchase (GWP) promotions. Such products won't appear in searches or recommendations\nTrue: Not for sale\nFalse: For sale",
+                      "example": true,
+                      "type": "boolean"
+                    },
+                    "is_pre_owned": {
+                      "description": "A flag to indicate if the product is pre-owned.\nApplicable only if TOKOPEDIA is the sole listing platform.\n\n**Note**: Pre-owned products on the TikTok Shop platform are identified by the `category_id`, which must belong to one of the designated pre-owned product categories (e.g. pre-owned luxury bags, luggage, and accessories).",
+                      "example": false,
+                      "type": "boolean"
+                    },
+                    "is_replicated": {
+                      "description": "A flag to indicate if the product contains a replica (created through local replication) in other local markets.",
+                      "example": false,
+                      "type": "boolean"
+                    },
+                    "listing_quality_tier": {
+                      "description": "The current quality tier of this product listing. The quality tier of a product listing depends on the quality of the content in its product fields such as the title, image, attributes etc.\n\nPossible values:\n- POOR\n- FAIR\n- GOOD\n\n**Note**: Available only for the US market.",
+                      "example": "POOR",
+                      "type": "string"
+                    },
+                    "main_images": {
+                      "description": "A list of images to display in the product image gallery.",
+                      "items": {
+                        "properties": {
+                          "height": {
+                            "description": "The image height.\nUnit: px",
+                            "example": 600,
+                            "format": "int32",
+                            "type": "integer"
+                          },
+                          "thumb_urls": {
+                            "description": "The URLs to view the image thumbnails.",
+                            "example": [
+                              "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                            ],
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "uri": {
+                            "description": "The URI of the image.",
+                            "example": "tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4",
+                            "type": "string"
+                          },
+                          "urls": {
+                            "description": "The URLs to view the images.\n",
+                            "example": [
+                              "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                            ],
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "width": {
+                            "description": "The image width.\nUnit: px",
+                            "example": 600,
+                            "format": "int32",
+                            "type": "integer"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "manufacturer_ids": {
+                      "description": "The list of manufacturer IDs. \nPass this value to the `manufacturer_id` field in the [Search Manufacturers API](67066a580dcee902fa03ccf9) to obtain more information about a manufacturer.\n\n**Note**: Applicable only for the EU market in certain categories",
+                      "example": [
+                        "172959296971220002"
+                      ],
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "minimum_order_quantity": {
+                      "description": "The minimum order quantity for the product.\nValid range: [1, 20]\n\nApplicable only for the Indonesia market and selected sellers in other SEA markets. Contact your account manager for more information about gaining access to this field.",
+                      "example": 1,
+                      "format": "int32",
+                      "type": "integer"
+                    },
+                    "package_dimensions": {
+                      "description": "The dimensions of the product package ",
+                      "properties": {
+                        "height": {
+                          "description": "The package height.",
+                          "example": "10",
+                          "type": "string"
+                        },
+                        "length": {
+                          "description": "The package length.",
+                          "example": "10",
+                          "type": "string"
+                        },
+                        "unit": {
+                          "description": "The unit for the package dimensions.",
+                          "example": "CENTIMETER",
+                          "type": "string"
+                        },
+                        "width": {
+                          "description": "The package width.",
+                          "example": "10",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "package_weight": {
+                      "description": "The weight of the product package.",
+                      "properties": {
+                        "unit": {
+                          "description": "The unit for the package weight.\nPossible values:\n- `KILOGRAM`\n- `POUND`",
+                          "example": "KILOGRAM",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "The package weight.",
+                          "example": "1.32",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "prescription_requirement": {
+                      "description": "Prescription related information for the product.\n**Note**: Applicable only for Tokopedia. This object is returned for all pharmacy products, and omitted for non-pharmacy products. ",
+                      "properties": {
+                        "needs_prescription": {
+                          "description": "A flag to indicate whether a prescription is required to purchase this pharmacy product.",
+                          "example": false,
+                          "type": "boolean"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "primary_combined_product_id": {
+                      "description": "If the product is a virtual bundle, this value is the ID of the primary product in the bundle. The value is omitted if the product is not a virtual bundle.",
+                      "example": "1729592969712207008",
+                      "type": "string"
+                    },
+                    "product_attributes": {
+                      "description": "A list of general attributes (e.g. manufacturer, country of origin, materials used) that describe the product as a whole, regardless of variant.",
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "description": "The ID of the product attribute.",
+                            "example": "100392",
+                            "type": "string"
+                          },
+                          "name": {
+                            "description": "The product attribute name.",
+                            "example": "Occasion",
+                            "type": "string"
+                          },
+                          "values": {
+                            "description": "A list of selectable values for the product attribute.",
+                            "items": {
+                              "properties": {
+                                "id": {
+                                  "description": "The product attribute value ID.",
+                                  "example": "1001533",
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "description": "The product attribute value name.",
+                                  "example": "Birthday",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "product_families": {
+                      "description": "The **live** product family that this product belongs to. A product family is a virtual group of products that share common characteristics (such as flavor, version, or size), allowing them to appear as selectable variations on the product page.\n**Note**: \n- Applicable only for US local sellers.\n- Omitted if this product does not belong to any product family.",
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "description": "The product family ID.",
+                            "example": "1000592969712207000",
+                            "type": "string"
+                          },
+                          "products": {
+                            "description": "A list of products that belong to the family.",
+                            "items": {
+                              "properties": {
+                                "id": {
+                                  "description": "The product ID.",
+                                  "example": "1729592969712207008",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "product_status": {
+                      "description": "The product status in TikTok Shop unrelated to its audit status.\nPossible values: \n- INITIAL\n- DRAFT\n- ACTIVATE\n- SELLER_DEACTIVATED\n- PLATFORM_DEACTIVATED\n- FREEZE\n- DELETED\n\n**Note**: For Indonesia sellers, if you did not set the listing platform as `TIKTOK_SHOP` when creating or editing a product, this will be omitted.\n",
+                      "example": "SELLER_DEACTIVATED",
+                      "type": "string"
+                    },
+                    "product_types": {
+                      "description": "The product type.\nPossible values:\n- COMBINED_PRODUCT: Indicates this is a virtual bundle product.\n- IN_COMBINED_PRODUCT: Indicates this product is part of a virtual bundle.\n- GPR_TARGET_PRODUCT: Indicates this product is synchronized to global listings. Applicable only for the EU market.",
+                      "example": [
+                        "COMBINED_PRODUCT"
+                      ],
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "recommended_categories": {
+                      "description": "Recommended categories for the product based on the product title, description, and images.",
+                      "items": {
+                        "properties": {
+                          "id": {
+                            "description": "The ID of the recommended category.",
+                            "example": "850003",
+                            "type": "string"
+                          },
+                          "local_name": {
+                            "description": "The name of the category in the country where the shop operates.",
+                            "example": "\t\nBotol & Stoples Penyimpanan",
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "responsible_person_ids": {
+                      "description": "The list of responsible person IDs. \nPass this value to the `responsible_person_id` field in the [Search Responsible Persons API](67066a55f17b7d02f95d2fb1) to obtain more information about a responsible person.\n\n**Note**: Applicable only for the EU market in certain categories",
+                      "example": [
+                        "172959296971220003"
+                      ],
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "shipping_insurance_requirement": {
+                      "description": "The shipping insurance purchase requirement imposed on buyers for the product.\n\nPossible values:\n- REQUIRED: Shipping insurance is mandatory and buyers can't opt out.\n- OPTIONAL: Buyers can choose to purchase shipping insurance through the platform.\n- NOT_SUPPORTED: Shipping insurance is not supported for the product.\nDefault: OPTIONAL\n\nApplicable only if the listing platforms include TOKOPEDIA.",
+                      "example": "OPTIONAL",
+                      "type": "string"
+                    },
+                    "shipping_template_id": {
+                      "description": "Identifier of the shipping template that was bound to the product",
+                      "example": "7552764259994699538",
+                      "type": "string"
+                    },
+                    "size_chart": {
+                      "description": "The measurement details of the product to help buyers find the right size.",
+                      "properties": {
+                        "image": {
+                          "description": "An image of the size chart.",
+                          "properties": {
+                            "height": {
+                              "description": "The image height.\nUnit: px",
+                              "example": 600,
+                              "format": "int32",
+                              "type": "integer"
+                            },
+                            "thumb_urls": {
+                              "description": "The URLs to view the image thumbnails.",
+                              "example": [
+                                "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                              ],
+                              "items": {
+                                "type": "string"
+                              },
+                              "type": "array"
+                            },
+                            "uri": {
+                              "description": "The URI of the image. ",
+                              "example": "tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4",
+                              "type": "string"
+                            },
+                            "urls": {
+                              "description": " The URLs to view the images.",
+                              "example": [
+                                "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                              ],
+                              "items": {
+                                "type": "string"
+                              },
+                              "type": "array"
+                            },
+                            "width": {
+                              "description": "The image width.\nUnit: px",
+                              "example": 600,
+                              "format": "int32",
+                              "type": "integer"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "template": {
+                          "description": "A TikTok Shop size chart template generated by the size chart tool in Seller Center > Manage Products > Bulk action > Batch manage size charts.",
+                          "properties": {
+                            "id": {
+                              "description": "The size chart template ID.",
+                              "example": "7267563252536723205",
+                              "type": "string"
+                            }
+                          },
+                          "type": "object"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "skus": {
+                      "description": "A list of Stock Keeping Units (SKUs) used to identify distinct variants of the product.",
+                      "items": {
+                        "properties": {
+                          "combined_skus": {
+                            "description": "If this SKU belongs to a virtual bundle, this object contains the list of individual SKUs that form the bundle (e.g. gift basket, starter pack).",
+                            "items": {
+                              "properties": {
+                                "brand": {
+                                  "description": "Brand information of the source product included in the virtual bundle.",
+                                  "properties": {
+                                    "id": {
+                                      "description": "The ID of the brand of  the source product included in the virtual bundle.",
+                                      "example": "7082427311584347905",
+                                      "type": "string"
+                                    },
+                                    "name": {
+                                      "description": "The brand name of the source product included in the virtual bundle.",
+                                      "example": "brand xxx aaa",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "type": "object"
+                                },
+                                "categories": {
+                                  "description": "The category tree information of the source product included in the virtual bundle.",
+                                  "items": {
+                                    "properties": {
+                                      "id": {
+                                        "description": "The ID of the category of the source product included in the virtual bundle.",
+                                        "example": "853000",
+                                        "type": "string"
+                                      },
+                                      "is_leaf": {
+                                        "description": "A flag to indicate if the category is a leaf category. ",
+                                        "example": true,
+                                        "type": "boolean"
+                                      },
+                                      "local_name": {
+                                        "description": "The name of the category in the country where the shop operates.",
+                                        "example": "Botol & Stoples Penyimpanan",
+                                        "type": "string"
+                                      },
+                                      "parent_id": {
+                                        "description": "The parent category ID of the source product included in the virtual bundle.",
+                                        "example": "851848",
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  },
+                                  "type": "array"
+                                },
+                                "combined_listing_not_live_reasons": {
+                                  "description": "The reasons linked to the source product included in the virtual bundle that are keeping the virtual bundle status from being live.\nPossible values:\n- SUB_PRODUCT_DEACTIVATE: Indicate the source product has been deactivated.\n- SUB_PRODUCT_DELETE: Indicate the source product has been deleted.\n- SUB_PRODUCT_FROZEN: Indicate the source product has been frozen.\n- SUB_SKU_DELETE: Indicate the source SKU has been deleted. \n- SUB_PRODUCT_CATEGORY_FIRST_LEVEL_ERROR: Indicate the level one category of the virtual bundle does not match that of the source product. \n- SUB_PRODUCT_CATEGORY_OVER_RESTRICTION:  Indicate the level one category of the source product is not in the set of restricted categories.",
+                                  "example": [
+                                    "SUB_PRODUCT_DELETE"
+                                  ],
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "type": "array"
+                                },
+                                "inventory": {
+                                  "description": "Source SKU inventory details.",
+                                  "items": {
+                                    "properties": {
+                                      "quantity": {
+                                        "description": "The total quantity available in the warehouse of the source SKU.",
+                                        "example": 999,
+                                        "format": "int32",
+                                        "type": "integer"
+                                      },
+                                      "warehouse_id": {
+                                        "description": "The ID of the warehouse where the source SKU is stored. \nRetrieve details of the warehouse from the [Get Warehouse List API](https://partner.tiktokshop.com/docv2/page/get-warehouse-list-202309).",
+                                        "example": "6966568648651605766",
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  },
+                                  "type": "array"
+                                },
+                                "price": {
+                                  "description": "Source SKU pricing information.",
+                                  "properties": {
+                                    "currency": {
+                                      "description": "The currency.\nPossible values based on the region:\n- BRL:  Brazil\n- EUR: France, Germany, Ireland, Italy, Spain\n- GBP: United Kingdom\n- IDR: Indonesia\n- JPY: Japan\n- MXN: Mexico\n- MYR: Malaysia\n- PHP: Philippines\n- SGD: Singapore\n- THB: Thailand\n- USD: United States\n- VND: Vietnam",
+                                      "example": "USD",
+                                      "type": "string"
+                                    },
+                                    "sale_price": {
+                                      "description": "All sellers\nThe source SKU's local display price shown on the product page before any discounts.",
+                                      "example": "117.5",
+                                      "type": "string"
+                                    },
+                                    "tax_exclusive_price": {
+                                      "description": "Global sellers\nThe source SKU's local pre-tax price. This excludes any applicable charges such as cross-border shipping costs, taxes, and other fees, and therefore does not appear on the product page.\n\nNote: Tax-exclusive pricing does not apply to JP and US shops using China warehouses, therefore this value is the same as sale_price.",
+                                      "example": "110",
+                                      "type": "string"
+                                    }
+                                  },
+                                  "type": "object"
+                                },
+                                "product_id": {
+                                  "description": "The ID of the source product included in the virtual bundle.",
+                                  "example": "1729582718312380123",
+                                  "type": "string"
+                                },
+                                "product_main_image": {
+                                  "description": "The main image of the source product included in the virtual bundle.",
+                                  "properties": {
+                                    "height": {
+                                      "description": "The image height.\nUnit: px",
+                                      "example": 600,
+                                      "format": "int32",
+                                      "type": "integer"
+                                    },
+                                    "thumb_urls": {
+                                      "description": "The URLs to view the image thumbnails.",
+                                      "example": [
+                                        "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                                      ],
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "type": "array"
+                                    },
+                                    "uri": {
+                                      "description": "The URI of the image.",
+                                      "example": "tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4",
+                                      "type": "string"
+                                    },
+                                    "urls": {
+                                      "description": "The URLs to view the images.",
+                                      "example": [
+                                        "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                                      ],
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "type": "array"
+                                    },
+                                    "width": {
+                                      "description": "The image width.\nUnit: px",
+                                      "example": 600,
+                                      "format": "int32",
+                                      "type": "integer"
+                                    }
+                                  },
+                                  "type": "object"
+                                },
+                                "sales_attributes": {
+                                  "description": "A list of attributes  (e.g. size, color, length) that define the source SKU.",
+                                  "items": {
+                                    "properties": {
+                                      "id": {
+                                        "description": "The sales attribute ID.",
+                                        "example": "100000",
+                                        "type": "string"
+                                      },
+                                      "name": {
+                                        "description": "The sales attribute name.",
+                                        "example": "Color",
+                                        "type": "string"
+                                      },
+                                      "sku_img": {
+                                        "description": "The default/main image for each value (e.g. red) of the primary sales attribute (e.g. color) of the source product. This appears in the product options gallery on TikTok Shop.",
+                                        "properties": {
+                                          "height": {
+                                            "description": "The image height.\nUnit: px",
+                                            "example": 100,
+                                            "format": "int32",
+                                            "type": "integer"
+                                          },
+                                          "thumb_urls": {
+                                            "description": "The URLs to view the image thumbnails.",
+                                            "example": [
+                                              "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                                            ],
+                                            "items": {
+                                              "type": "string"
+                                            },
+                                            "type": "array"
+                                          },
+                                          "uri": {
+                                            "description": "The URI of the image.",
+                                            "example": "tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4",
+                                            "type": "string"
+                                          },
+                                          "urls": {
+                                            "description": "The URLs to view the images.",
+                                            "example": [
+                                              "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                                            ],
+                                            "items": {
+                                              "type": "string"
+                                            },
+                                            "type": "array"
+                                          },
+                                          "width": {
+                                            "description": "The image width.\nUnit: px",
+                                            "example": 100,
+                                            "format": "int32",
+                                            "type": "integer"
+                                          }
+                                        },
+                                        "type": "object"
+                                      },
+                                      "supplementary_sku_images": {
+                                        "description": "A list of supplementary images for each value (e.g. red) of the primary sales attribute (e.g. color) to provide multiple views or details of the source product for that attribute value. These appear in the product options gallery on TikTok Shop.\n\nApplicable only for the US market.",
+                                        "items": {
+                                          "properties": {
+                                            "height": {
+                                              "description": "The image height.\nUnit: px",
+                                              "example": 100,
+                                              "format": "int32",
+                                              "type": "integer"
+                                            },
+                                            "thumb_urls": {
+                                              "description": "The URLs to view the image thumbnails.",
+                                              "example": [
+                                                "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                                              ],
+                                              "items": {
+                                                "type": "string"
+                                              },
+                                              "type": "array"
+                                            },
+                                            "uri": {
+                                              "description": "The URI of the image.",
+                                              "example": "tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4",
+                                              "type": "string"
+                                            },
+                                            "urls": {
+                                              "description": "The URLs to view the images.",
+                                              "example": [
+                                                "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                                              ],
+                                              "items": {
+                                                "type": "string"
+                                              },
+                                              "type": "array"
+                                            },
+                                            "width": {
+                                              "description": "The image width.\nUnit: px",
+                                              "example": 100,
+                                              "format": "int32",
+                                              "type": "integer"
+                                            }
+                                          },
+                                          "type": "object"
+                                        },
+                                        "type": "array"
+                                      },
+                                      "value_id": {
+                                        "description": "The sales attribute value ID.",
+                                        "example": "100000",
+                                        "type": "string"
+                                      },
+                                      "value_name": {
+                                        "description": "The sales attribute value name.",
+                                        "example": "Red",
+                                        "type": "string"
+                                      }
+                                    },
+                                    "type": "object"
+                                  },
+                                  "type": "array"
+                                },
+                                "seller_sku": {
+                                  "description": "An internal code/name for managing the source SKU, not visible to buyers. ",
+                                  "example": "sku_name",
+                                  "type": "string"
+                                },
+                                "sku_count": {
+                                  "description": "The quantity of the source SKU included in the virtual bundle.",
+                                  "example": 1,
+                                  "format": "int32",
+                                  "type": "integer"
+                                },
+                                "sku_id": {
+                                  "description": "The ID of the source SKU included in the virtual bundle.",
+                                  "example": "1729582718312380123",
+                                  "type": "string"
+                                },
+                                "title": {
+                                  "description": "The title of the source product included in the virtual bundle.",
+                                  "example": "Short Boat Invisible Socks",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "external_list_prices": {
+                            "description": "The SKU list price (e.g. MSRP, RRP) or original price information on external ecommerce platforms.\nApplicable only for selected sellers in the US market.\n\n**Note**: This value may appear as the strikethrough price on the product page. However, whether the strikethrough price is shown and the amount shown are subject to the audit team's review and decision based on various pricing information.",
+                            "items": {
+                              "properties": {
+                                "amount": {
+                                  "description": "The price amount.",
+                                  "example": "1",
+                                  "type": "string"
+                                },
+                                "currency": {
+                                  "description": "The currency.\nPossible values: USD",
+                                  "example": "USD",
+                                  "type": "string"
+                                },
+                                "source": {
+                                  "description": "The external ecommerce platform from which the price is sourced.\nPossible values:\n- SHOPIFY_COMPARE_AT_PRICE: The compare_at_price in Shopify.",
+                                  "example": "SHOPIFY_COMPARE_AT_PRICE",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "external_sku_id": {
+                            "description": "An external identifier used in an external ecommerce platform. This is used to associate the SKU between TikTok Shop and the external ecommerce platform.",
+                            "example": "1729592969712207234",
+                            "type": "string"
+                          },
+                          "external_urls": {
+                            "description": "A list of URLs for third-party product listing pages where consumers can place orders.",
+                            "example": [
+                              "https://example.com/path1",
+                              "https://example.com/path2"
+                            ],
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "extra_identifier_codes": {
+                            "description": "A list of up to 10 additional identifier codes if the SKU belongs to a virtual bundle (containing multiple individual SKUs).\n\n**Note**: Applicable only for the EU market.",
+                            "example": [
+                              "00012345678905",
+                              "9780596520687"
+                            ],
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          },
+                          "fees": {
+                            "description": "The fees required for this product based on TikTok Shop policies. Fees are required only for certain product categories, retrieve the requirements from the [Get Category Rules API](https://partner.tiktokshop.com/docv2/page/6509c0febace3e02b74594a9). ",
+                            "items": {
+                              "properties": {
+                                "additional_attribute": {
+                                  "description": "Possible values for Pfand:\n- SINGLE_USE\n- REUSABLE\n- NOT_APPLICABLE",
+                                  "example": "SINGLE_USE",
+                                  "type": "string"
+                                },
+                                "amount": {
+                                  "description": "The fee amount.\nValid range:\n- PFAND: [0.00 - 6300.00]",
+                                  "example": "1.01",
+                                  "type": "string"
+                                },
+                                "type": {
+                                  "description": "The type of fee.\nPossible values: PFAND",
+                                  "example": "PFAND",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "global_listing_policy": {
+                            "description": "Global Product Replicate (GPR) related information if the product is a target for synchronization.\nApplicable only for the EU market.",
+                            "properties": {
+                              "inventory_type": {
+                                "description": "The type of inventory to synchronize.\nPossible values:\n- SHARED: Inventory Area Sharing\n- EXCLUSIVE: Inventory Exclusive",
+                                "example": "SHARED",
+                                "type": "string"
+                              },
+                              "price_sync": {
+                                "description": "A flag indicating whether the product price is synchronized.",
+                                "example": true,
+                                "type": "boolean"
+                              },
+                              "replicate_source": {
+                                "description": "The source global listing product to synchronize from.",
+                                "properties": {
+                                  "product_id": {
+                                    "description": "The ID of the source product.",
+                                    "example": "1729592969712203232",
+                                    "type": "string"
+                                  },
+                                  "shop_id": {
+                                    "description": "The shop ID of the source product.",
+                                    "example": "7295929697122032321",
+                                    "type": "string"
+                                  },
+                                  "sku_id": {
+                                    "description": "The SKU ID of the source product.",
+                                    "example": "1729592969712203232",
+                                    "type": "string"
+                                  }
+                                },
+                                "type": "object"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "id": {
+                            "description": "The SKU ID generated by TikTok Shop.",
+                            "example": "10001",
+                            "type": "string"
+                          },
+                          "identifier_code": {
+                            "description": "A regulated identifier code assigned to a product based on international standardized regulations (e.g. GTIN) to ensure the product is universally identifiable across various platforms and systems.",
+                            "properties": {
+                              "code": {
+                                "description": "The identifier code.",
+                                "example": "10000000000010",
+                                "type": "string"
+                              },
+                              "type": {
+                                "description": "The type of identifier code.\nPossible values:\n- GTIN\n- EAN\n- UPC\n- ISBN\n- JAN",
+                                "example": "GTIN",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "inventory": {
+                            "description": "SKU inventory details.\n**Note**: This field is not supported in post-live drafts. Therefore, the values here will always reflect those in the base version, even if you set `return_draft_version=true`.",
+                            "items": {
+                              "properties": {
+                                "backorder_quantity": {
+                                  "description": "The `backorder_quantity` will automatically be converted to `quantity` once in-stock inventory is sold out. The fulfillment of this inventory follows the `handling_time` specified below.\nNote: Made-to-order (MTO), pre-order, and custom products cannot be backordered, and thus are incompatible with backorder_quantity.",
+                                  "example": 888,
+                                  "format": "int32",
+                                  "type": "integer"
+                                },
+                                "handling_time": {
+                                  "description": "The estimated number of working days needed for a backorder to be shipped. Currently, different warehouses for the same SKU are not allowed to have different `handling_time`",
+                                  "example": 5,
+                                  "format": "int32",
+                                  "type": "integer"
+                                },
+                                "quantity": {
+                                  "description": "The total SKU quantity available in the warehouse.\nValid range: [1, 99,999]\n\nNote: This quantity specifically refers to the in-stock inventory that can be shipped immediately.",
+                                  "example": 999,
+                                  "format": "int32",
+                                  "type": "integer"
+                                },
+                                "warehouse_id": {
+                                  "description": "The ID of the warehouse where the SKU is stored. \nRetrieve details of the warehouse from the [Get Warehouse List API](https://partner.tiktokshop.com/docv2/page/650aa418defece02be6e66b6).",
+                                  "example": "6966568648651605766",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "list_price": {
+                            "description": "The SKU's list price information that has been verified to be legitimate by the audit team. This is equivalent to the manufacturer's suggested retail price (MSRP), or the recommended retail price (RRP).\nApplicable only for the US market.\n\n**Note**: \n- This field will be empty or display the last verified price if the submitted price fails verification.\n- This value may appear as the strikethrough price on the product page. However, whether the strikethrough price is shown and the amount shown are subject to the audit team's review and decision based on various pricing information.",
+                            "properties": {
+                              "amount": {
+                                "description": "The price amount.",
+                                "example": "1",
+                                "type": "string"
+                              },
+                              "currency": {
+                                "description": "The currency.\nPossible values: USD",
+                                "example": "USD",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "pre_sale": {
+                            "description": "SKU presale information, used to tag a product as a presale product based on its presale type.\n\nIf this is not returned, it indicates that the product is a regular non-presale item.",
+                            "properties": {
+                              "fulfillment_type": {
+                                "description": "Information about the type of pre-sale order fulfillment and the corresponding timeframe.\n- `handling_duration_days` is for fulfillment with an extended duration.\n- `release_date` is for starting fulfillment on a fixed date.",
+                                "properties": {
+                                  "handling_duration_days": {
+                                    "description": "The desired duration for handling a pre-sale order and handing it over to a shipping carrier. \n\nApplicable only for the following regions and pre-sale type:\n**US**\n- `MADE_TO_ORDER`: Business days, from 3 to 14 days.\n- `CUSTOM`: Business days, from 3 to 30 days.\n\n**UK, EU, SEA, JP, and LATAM**\n- `PRE_ORDER`: Calendar days, from 3 to 30 days.",
+                                    "example": 3,
+                                    "format": "int32",
+                                    "type": "integer"
+                                  },
+                                  "release_date": {
+                                    "description": "The date on which the product gets converted into a regular product and becomes available for general purchase. On this date, order handling will also start, changing the status of the order to [`AWAITING_SHIPMENT`](https://partner.tiktokshop.com/docv2/page/650b1b4bbace3e02b76d1011).\n\nApplicable only for `PRE_ORDER` in the US.\n**Note**: This date is a unix timestamp (seconds) based on the seller-selected timezone in Seller Center.\n",
+                                    "example": 1619611761,
+                                    "format": "int64",
+                                    "type": "integer"
+                                  }
+                                },
+                                "type": "object"
+                              },
+                              "type": {
+                                "description": "The type of pre-sale.\nPossible values based on the region:\n**US**\n- `PRE_ORDER`: The product is not yet available or released. Fulfillment can be extended by specifying a **release date**.\n- `MADE_TO_ORDER`: The product is produced only after the order is received. Fulfillment can be extended by specifying a **duration**.\n- `CUSTOM`: The product requires a fulfillment timeline that exceeds the standard due to other factors. Fulfillment can be extended by specifying a **duration**.\n\n**UK, EU, SEA, JP, and LATAM**\n- `PRE_ORDER`: The product is not yet available or released. Fulfillment can be extended by specifying a **duration**. ",
+                                "example": "PRE_ORDER",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "price": {
+                            "description": "SKU pricing information.",
+                            "properties": {
+                              "currency": {
+                                "description": "The currency.\nPossible values based on the region:\n- BRL:  Brazil\n- EUR: France, Germany, Ireland, Italy, Spain\n- GBP: United Kingdom\n- IDR: Indonesia\n- JPY: Japan\n- MXN: Mexico\n- MYR: Malaysia\n- PHP: Philippines\n- SGD: Singapore\n- THB: Thailand\n- USD: United States\n- VND: Vietnam",
+                                "example": "USD",
+                                "type": "string"
+                              },
+                              "sale_price": {
+                                "description": "**All sellers**\nThe SKU's **local display price** shown on the product page before any discounts.",
+                                "example": "117.5",
+                                "type": "string"
+                              },
+                              "tax_exclusive_price": {
+                                "description": "**Global sellers**\nThe SKU's **local pre-tax price**. This excludes any applicable charges such as cross-border shipping costs, taxes, and other fees, and therefore does not appear on the product page.\n\n**Note**: Tax-exclusive pricing does not apply to JP and US shops using China warehouses, therefore this value is the same as `sale_price`.",
+                                "example": "110",
+                                "type": "string"
+                              },
+                              "unit_price": {
+                                "description": "The unit price of the SKU. \nYou can display the unit price to facilitate easier price comparisons across different products and packaging sizes.\nApplicable only for the EU market.\n\n**Note**: \n- This value is available only if you have defined the elements used to calculate this price when creating the product.\n- Unit price = Selling price/(SKU unit count/base unit count)",
+                                "example": "1",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "sales_attributes": {
+                            "description": "A list of attributes  (e.g. size, color, length) that define each variant of a product.",
+                            "items": {
+                              "properties": {
+                                "id": {
+                                  "description": "The sales attribute ID.",
+                                  "example": "100000",
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "description": "The sales attribute name.",
+                                  "example": "Color",
+                                  "type": "string"
+                                },
+                                "sku_img": {
+                                  "description": "The default/main image for each value (e.g. red) of the primary sales attribute (e.g. color). This appears in the product options gallery on TikTok Shop.",
+                                  "properties": {
+                                    "height": {
+                                      "description": "The image height.\nUnit: px",
+                                      "example": 100,
+                                      "format": "int32",
+                                      "type": "integer"
+                                    },
+                                    "thumb_urls": {
+                                      "description": "The URLs to view the image thumbnails.",
+                                      "example": [
+                                        "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                                      ],
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "type": "array"
+                                    },
+                                    "uri": {
+                                      "description": "The URI of the image.",
+                                      "example": "tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4",
+                                      "type": "string"
+                                    },
+                                    "urls": {
+                                      "description": "The URLs to view the images.",
+                                      "example": [
+                                        "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                                      ],
+                                      "items": {
+                                        "type": "string"
+                                      },
+                                      "type": "array"
+                                    },
+                                    "width": {
+                                      "description": "The image width.\nUnit: px",
+                                      "example": 100,
+                                      "format": "int32",
+                                      "type": "integer"
+                                    }
+                                  },
+                                  "type": "object"
+                                },
+                                "supplementary_sku_images": {
+                                  "description": "A list of supplementary images for each value (e.g. red) of the primary sales attribute (e.g. color) to provide multiple views or details of the product for that attribute value. These appear in the product options gallery on TikTok Shop.\n\nApplicable only for the US market.",
+                                  "items": {
+                                    "properties": {
+                                      "height": {
+                                        "description": "The image height.\nUnit: px",
+                                        "example": 100,
+                                        "format": "int32",
+                                        "type": "integer"
+                                      },
+                                      "thumb_urls": {
+                                        "description": "The URLs to view the image thumbnails.",
+                                        "example": [
+                                          "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                                        ],
+                                        "items": {
+                                          "type": "string"
+                                        },
+                                        "type": "array"
+                                      },
+                                      "uri": {
+                                        "description": "The URI of the image.",
+                                        "example": "tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4",
+                                        "type": "string"
+                                      },
+                                      "urls": {
+                                        "description": "The URLs to view the images.",
+                                        "example": [
+                                          "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036"
+                                        ],
+                                        "items": {
+                                          "type": "string"
+                                        },
+                                        "type": "array"
+                                      },
+                                      "width": {
+                                        "description": "The image width.\nUnit: px",
+                                        "example": 100,
+                                        "format": "int32",
+                                        "type": "integer"
+                                      }
+                                    },
+                                    "type": "object"
+                                  },
+                                  "type": "array"
+                                },
+                                "value_id": {
+                                  "description": "The sales attribute value ID.",
+                                  "example": "100000",
+                                  "type": "string"
+                                },
+                                "value_name": {
+                                  "description": "The sales attribute value name.",
+                                  "example": "Red",
+                                  "type": "string"
+                                }
+                              },
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          "seller_sku": {
+                            "description": "An internal code/name for managing SKUs, not visible to buyers. ",
+                            "example": "sku name",
+                            "type": "string"
+                          },
+                          "sku_unit_count": {
+                            "description": "The total quantity/volume of the product represented by the SKU.\nFor example, if the SKU represents 500ml of water, this value would be 500 if the unit type is defined as ml.\nApplicable only for the EU market.\n\n**Note**: \n- This is mainly used to calculate the unit price of the SKU, and is required only if you wish to display the unit price to facilitate easier price comparisons across different products and packaging sizes.\n- Unit price = Selling price/(SKU unit count/base unit count). Therefore if you want to obtain the unit price, you would also need to define the \"base unit count\" and the \"unit type\" product attributes. Retrieve the relevant information for these product attributes by using the [Get Attributes API](https://partner.tiktokshop.com/docv2/page/6509c5784a0bb702c0561cc8).",
+                            "example": "1.00",
+                            "type": "string"
+                          },
+                          "status_info": {
+                            "description": "Status information of the SKU.",
+                            "properties": {
+                              "deactivation_source": {
+                                "description": "The deactivation source of the SKU with `DEACTIVATED` status.\nPossible values:\n- SELLER: Indicates that the seller deactivated the SKU\n- PLATFORM: Indicates that the platform de-activated the SKU due to violation reasons\n- COMBO_RELATION: Indicates that the platform de-activated the bundle-SKU due to the deactivation of sub-SKU.",
+                                "example": "PLATFORM",
+                                "type": "string"
+                              },
+                              "status": {
+                                "description": "The SKU status in TikTok Shop.\nPossible values: \n- NORMAL\n- DEACTIVATED",
+                                "example": "DEACTIVATED",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "status": {
+                      "description": "The product status in TikTok Shop. This status incorporates both the product status and the audit status.\nPossible values: \n- DRAFT\n- PENDING\n- FAILED\n- ACTIVATE\n- SELLER_DEACTIVATED\n- PLATFORM_DEACTIVATED\n- FREEZE\n- DELETED\n\n**Note**: For Indonesia sellers, if you did not set the listing platform as `TIKTOK_SHOP` when creating or editing a product, this will be omitted.",
+                      "example": "SELLER_DEACTIVATED",
+                      "type": "string"
+                    },
+                    "subscribe_info": {
+                      "description": "All the Save and Subscribe promotion info associated with the given product.",
+                      "properties": {
+                        "subscribe_discount_details": {
+                          "description": "All of the Save and Subscribe discount details.",
+                          "items": {
+                            "properties": {
+                              "discount_level": {
+                                "description": "An enum that communicated the type of discount:\n- REGULAR\n- FIRST_ORDER\n- RETENTION",
+                                "example": "REGULAR",
+                                "type": "string"
+                              },
+                              "discount_value": {
+                                "description": "The value of the discount. A value of 10, would indicate a 10% discount.",
+                                "example": 10,
+                                "format": "int32",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "subscribe_promotion_config": {
+                          "description": "A subscription configuration specific to the seller. It outlines the different types of promotions and associated constraints that are available for use.",
+                          "items": {
+                            "properties": {
+                              "discount_level": {
+                                "description": "An enum that communicated the type of discount:\n- REGULAR\n- FIRST_ORDER\n- RETENTION",
+                                "example": "REGULAR",
+                                "type": "string"
+                              },
+                              "discount_options": {
+                                "description": "The discount options available to the seller for the given discount level.",
+                                "example": [
+                                  5,
+                                  10,
+                                  15,
+                                  20
+                                ],
+                                "items": {
+                                  "format": "int32",
+                                  "type": "integer"
+                                },
+                                "type": "array"
+                              },
+                              "max_discount": {
+                                "description": "The maximum discount a seller can set for the associated discount level.",
+                                "example": 90,
+                                "format": "int32",
+                                "type": "integer"
+                              },
+                              "min_discount": {
+                                "description": "The minimum discount a seller can set for the associated discount level.",
+                                "example": 5,
+                                "format": "int32",
+                                "type": "integer"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "subscribe_status": {
+                          "description": "An enum outlining whether the given product has an active Subscribe and Save promotion:\n- ENABLED\n- NOT_ENABLED",
+                          "example": "ENABLED",
+                          "type": "string"
+                        },
+                        "support_subscribe": {
+                          "description": "A flag outlining whether the seller and given product support Subscribe and Save promotions.",
+                          "example": false,
+                          "type": "boolean"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "title": {
+                      "description": "The product title.",
+                      "example": "Short Boat Invisible Socks",
+                      "type": "string"
+                    },
+                    "update_time": {
+                      "description": "The time when the product is last updated.\nUnix timestamp.",
+                      "example": 1234567899,
+                      "format": "int64",
+                      "type": "integer"
+                    },
+                    "video": {
+                      "description": "Product video information.",
+                      "properties": {
+                        "cover_url": {
+                          "description": "The URL to view the video cover image.",
+                          "example": "https://p16-oec-va.ibyteimg.com/tos-maliva-i-o3syd03w52-us/6c8519a3663a4d728c4e3c131dc914b4~tplv-o3syd03w52-resize-jpeg:300:300.jpeg?from=522366036",
+                          "type": "string"
+                        },
+                        "format": {
+                          "description": "The video format.",
+                          "example": "MP4",
+                          "type": "string"
+                        },
+                        "height": {
+                          "description": "The video height.\nUnit: px",
+                          "example": 480,
+                          "format": "int32",
+                          "type": "integer"
+                        },
+                        "id": {
+                          "description": "The video ID.",
+                          "example": "v09ea0g40000cj91373c77u3mid3g1s0",
+                          "type": "string"
+                        },
+                        "size": {
+                          "description": "The video's original file size.\nUnit: MB",
+                          "example": 1000,
+                          "format": "int32",
+                          "type": "integer"
+                        },
+                        "url": {
+                          "description": "The URL to view the video.",
+                          "example": "https://v16m-default.akamaized.net/bbae7099581b26cd340beaa7821b2d8c/64de6020/video/tos/alisg/tos-alisg-v-f466fc-sg/oMne9QuzIBN3fIDN7bFCCMbBKuGigg12ghDC8k/?a=0&ch=0&cr=0&dr=0&er=0&lr=default&cd=0%7C0%7C0%7C0&br=2212&bt=1106&cs=0&ds=3&ft=dl9~j-Inz7TKnfsfiyq8Z&mime_type=video_mp4&qs=13&rc=anR4Ojk6ZmYzbTMzODRmNEBpanR4Ojk6ZmYzbTMzODRmNEBsYWFwcjRva2NgLS1kLy1zYSNsYWFwcjRva2NgLS1kLy1zcw%3D%3D&l=202308171159498F7B108584E58B010932&btag=e00048000",
+                          "type": "string"
+                        },
+                        "width": {
+                          "description": "The video width.\nUnit: px",
+                          "example": 1280,
+                          "format": "int32",
+                          "type": "integer"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                },
+                "message": {
+                  "description": "The success or failure messages returned in API response. Reasons of failure will be described in the message.",
+                  "type": "string"
+                },
+                "request_id": {
+                  "description": "Request log.",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}

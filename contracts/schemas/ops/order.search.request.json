@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "ops/order.search.request.json",
+  "title": "POST /order/202309/orders/search request body",
+  "x-verification": "official OAS 0.1.7; OAS declares no required body fields (unknown which are mandatory)",
+  "type": "object",
+  "properties": {
+    "buyer_user_id": {
+      "type": "string"
+    },
+    "create_time_ge": {
+      "type": "integer"
+    },
+    "create_time_lt": {
+      "type": "integer"
+    },
+    "is_buyer_request_cancel": {
+      "type": "boolean"
+    },
+    "order_status": {
+      "type": "string"
+    },
+    "shipping_type": {
+      "type": "string"
+    },
+    "update_time_ge": {
+      "type": "integer"
+    },
+    "update_time_lt": {
+      "type": "integer"
+    },
+    "warehouse_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

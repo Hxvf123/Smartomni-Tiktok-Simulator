@@ -1,0 +1,183 @@
+{
+  "operation": "cs.conversations",
+  "schema": "schemas/ops/cs.conversations.response.json",
+  "classification": "synthetic-from-official-oas",
+  "note": "Values are synthetic and generated from the official OAS response shape; they are not captured TikTok traffic. Error cases are TEST FAULTS: no readable official source documents their code/message values.",
+  "cases": [
+    {
+      "case": "success",
+      "response": {
+        "code": 0,
+        "data": {
+          "conversations": [
+            {
+              "can_send_message": false,
+              "create_time": 1691411573,
+              "id": "TEST_id",
+              "latest_message": {
+                "content": "TEST_content",
+                "create_time": 1691411573,
+                "id": "TEST_id",
+                "index": "TEST_index",
+                "is_visible": false,
+                "sender": {
+                  "avatar": "TEST_avatar",
+                  "im_user_id": "TEST_im_user_id",
+                  "nickname": "TEST_nickname",
+                  "role": "TEST_role"
+                },
+                "type": "TEST_type"
+              },
+              "participant_count": 3,
+              "participants": [
+                {
+                  "avatar": "TEST_avatar",
+                  "buyer_platform": "TEST_buyer_platform",
+                  "im_user_id": "TEST_im_user_id",
+                  "nickname": "TEST_nickname",
+                  "role": "TEST_role",
+                  "user_id": "TEST_user_id"
+                }
+              ],
+              "unread_count": 0
+            }
+          ],
+          "next_page_token": ""
+        },
+        "message": "Success",
+        "request_id": "TEST-cs.conversations-success"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "empty",
+      "response": {
+        "code": 0,
+        "data": {
+          "conversations": [],
+          "next_page_token": ""
+        },
+        "message": "Success",
+        "request_id": "TEST-cs.conversations-empty"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "multi_page_first",
+      "request": {
+        "query": {
+          "page_size": "1"
+        }
+      },
+      "response": {
+        "code": 0,
+        "data": {
+          "conversations": [
+            {
+              "can_send_message": false,
+              "create_time": 1691411573,
+              "id": "TEST_id",
+              "latest_message": {
+                "content": "TEST_content",
+                "create_time": 1691411573,
+                "id": "TEST_id",
+                "index": "TEST_index",
+                "is_visible": false,
+                "sender": {
+                  "avatar": "TEST_avatar",
+                  "im_user_id": "TEST_im_user_id",
+                  "nickname": "TEST_nickname",
+                  "role": "TEST_role"
+                },
+                "type": "TEST_type"
+              },
+              "participant_count": 3,
+              "participants": [
+                {
+                  "avatar": "TEST_avatar",
+                  "buyer_platform": "TEST_buyer_platform",
+                  "im_user_id": "TEST_im_user_id",
+                  "nickname": "TEST_nickname",
+                  "role": "TEST_role",
+                  "user_id": "TEST_user_id"
+                }
+              ],
+              "unread_count": 0
+            }
+          ],
+          "next_page_token": "TEST_PAGE_TOKEN_2"
+        },
+        "message": "Success",
+        "request_id": "TEST-cs.conversations-multi_first"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "multi_page_last",
+      "request": {
+        "query": {
+          "page_size": "1",
+          "page_token": "TEST_PAGE_TOKEN_2"
+        }
+      },
+      "response": {
+        "code": 0,
+        "data": {
+          "conversations": [
+            {
+              "can_send_message": false,
+              "create_time": 1691411573,
+              "id": "TEST_id",
+              "latest_message": {
+                "content": "TEST_content",
+                "create_time": 1691411573,
+                "id": "TEST_id",
+                "index": "TEST_index",
+                "is_visible": false,
+                "sender": {
+                  "avatar": "TEST_avatar",
+                  "im_user_id": "TEST_im_user_id",
+                  "nickname": "TEST_nickname",
+                  "role": "TEST_role"
+                },
+                "type": "TEST_type"
+              },
+              "participant_count": 3,
+              "participants": [
+                {
+                  "avatar": "TEST_avatar",
+                  "buyer_platform": "TEST_buyer_platform",
+                  "im_user_id": "TEST_im_user_id",
+                  "nickname": "TEST_nickname",
+                  "role": "TEST_role",
+                  "user_id": "TEST_user_id"
+                }
+              ],
+              "unread_count": 0
+            }
+          ],
+          "next_page_token": ""
+        },
+        "message": "Success",
+        "request_id": "TEST-cs.conversations-multi_last"
+      },
+      "expect": "valid"
+    },
+    {
+      "case": "invalid_input",
+      "classification": "test_fault_undocumented",
+      "trigger": "omit required query parameter 'page_size'",
+      "requestMustFailValidation": true
+    },
+    {
+      "case": "token_expired",
+      "classification": "test_fault_undocumented",
+      "trigger": "x-tts-access-token is past its expiry"
+    },
+    {
+      "case": "missing_scope",
+      "classification": "test_fault_undocumented",
+      "trigger": "app lacks the (unverified) scope of this operation"
+    }
+  ]
+}
