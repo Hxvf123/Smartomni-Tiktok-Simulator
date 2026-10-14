@@ -30,6 +30,8 @@ import { OAuthModule } from '../oauth/oauth.module';
 import { ChatModule } from '../chat/chat.module';
 import { ChatAdminController, ChatAdminGuard } from './chat-admin.controller';
 import { AdminTokenGuard, LoyaltyAdminController } from './loyalty-admin.controller';
+import { AftersaleModule } from '../aftersale/aftersale.module';
+import { AftersaleService } from '../aftersale/aftersale.service';
 import { OrdersModule } from '../orders/orders.module';
 import { OrdersService } from '../orders/orders.service';
 import { ORDER_STATUSES } from '../orders/order-state';
@@ -100,6 +102,7 @@ export class TestAdminController {
     @Inject(TokenAdminService) private readonly tokens: TokenAdminService,
     @Inject(BusinessClock) private readonly businessClock: BusinessClock,
     @Inject(OrdersService) private readonly orders: OrdersService,
+    @Inject(AftersaleService) private readonly aftersale: AftersaleService,
   ) {}
 
   @Get('status')
@@ -195,6 +198,46 @@ export class TestAdminController {
         endAt: c.endAt.toISOString(),
       })),
     };
+  }
+
+  // ---- Phase 07b: aftersale (cancellations / returns) ----
+
+  @Get('aftersale')
+  async listAftersale(@Query('shopId') shopId?: string, @Query('limit') limit?: string) {
+    const take = Math.min(Math.max(Number(limit) || 50, 1), 200);
+    const rows = await this.prisma.aftersaleRequest.findMany({
+      where: shopId ? { shopId } : {},
+      orderBy: { seq: 'desc' },
+      take,
+      include: { order: { select: { externalId: true } }, shop: { select: { name: true } }, _count: { select: { lines: true } } },
+    });
+    return {
+      items: rows.map((r) => ({
+        id: r.externalId,
+        shopId: r.shopId,
+        shopName: r.shop.name,
+        orderId: r.order.externalId,
+        kind: r.kind,
+        type: r.type,
+        status: r.status,
+        units: r._count.lines,
+        refundTotalVnd: r.refundTotal,
+        updatedAt: r.updatedAt.toISOString(),
+      })),
+    };
+  }
+
+  @Get('aftersale/:ref/records')
+  async aftersaleRecords(@Param('ref') ref: string, @Query('shopId') shopId?: string) {
+    const req = await this.aftersale.findForAdmin(ref, shopId);
+    return { id: req.externalId, status: req.status, records: (await this.aftersale.records(req.shopId, req.externalId)).map((r) => ({ from: r.fromStatus, to: r.toStatus, actor: r.actor, note: r.note, at: r.at.toISOString() })) };
+  }
+
+  /** The refund has been paid out: SUCCESS -> COMPLETE (cancellations and returns). */
+  @Post('aftersale/:ref/complete')
+  async completeAftersale(@Req() req: Rq, @Param('ref') ref: string, @Query('shopId') shopId?: string) {
+    const done = await this.aftersale.complete(ref, shopId, req.requestId);
+    return { id: done.externalId, status: done.status };
   }
 
   // ---- Phase 05: orders (state machine control) ----
@@ -376,5 +419,5 @@ export class TestAdminController {
   }
 }
 
-@Module({ imports: [OAuthModule, OrdersModule, ChatModule], controllers: [TestAdminController, ChatAdminController, LoyaltyAdminController], providers: [TestAdminGuard, ChatAdminGuard, AdminTokenGuard, TokenAdminService] })
+@Module({ imports: [OAuthModule, OrdersModule, ChatModule, AftersaleModule], controllers: [TestAdminController, ChatAdminController, LoyaltyAdminController], providers: [TestAdminGuard, ChatAdminGuard, AdminTokenGuard, TokenAdminService] })
 export class TestAdminModule {}

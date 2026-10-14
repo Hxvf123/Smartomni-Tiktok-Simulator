@@ -1,0 +1,131 @@
+import { Body, Controller, ForbiddenException, Get, Inject, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { z } from 'zod';
+import { AftersaleRow, AftersaleService, REJECT_REASONS, REQUEST_REASONS, RETURN_TYPES } from '../aftersale/aftersale.service';
+import { ZodPipe } from '../common/zod.pipe';
+import { DemoPrincipal, DemoRequest, DemoSessionGuard } from './demo-session.guard';
+
+const CreateReturn = z.object({
+  orderId: z.string().min(1).max(100),
+  items: z.array(z.object({ skuId: z.string().min(1).max(100), quantity: z.number().int().min(1).max(50) })).min(1).max(50),
+  returnType: z.enum(RETURN_TYPES),
+  reason: z.string().trim().min(1).max(300).default('OTHER'),
+});
+const CreateCancellation = z.object({ orderId: z.string().min(1).max(100), reason: z.string().trim().min(1).max(300).default('CHANGED_MIND') });
+const Approve = z.object({ decision: z.string().max(60).optional() });
+const Reject = z.object({ reason: z.string().min(1).max(100), comment: z.string().max(500).optional(), decision: z.string().max(60).optional() });
+
+function principal(req: DemoRequest): DemoPrincipal {
+  return req.demo!;
+}
+function assertOwnShop(p: DemoPrincipal, shopId: string): void {
+  if (p.shopId !== shopId) throw new ForbiddenException('This session cannot access another shop');
+}
+function buyerOf(p: DemoPrincipal): { id: string; shopId: string } {
+  if (p.role !== 'BUYER' || !p.buyerId) throw new ForbiddenException('Only a buyer session can do this');
+  return { id: p.buyerId, shopId: p.shopId };
+}
+function assertSeller(p: DemoPrincipal): void {
+  if (p.role !== 'SELLER') throw new ForbiddenException('Only a seller session can do this');
+}
+
+/** What the demo UIs see of a request: integer VND components and the units grouped per SKU. */
+export function aftersaleView(r: AftersaleRow) {
+  const bySku = new Map<string, { skuId: string; productName: string; skuName: string; quantity: number }>();
+  for (const l of r.lines) {
+    const row = bySku.get(l.orderLine.skuExternalId) ?? { skuId: l.orderLine.skuExternalId, productName: l.orderLine.productName, skuName: l.orderLine.skuName, quantity: 0 };
+    row.quantity += 1;
+    bySku.set(l.orderLine.skuExternalId, row);
+  }
+  return {
+    id: r.externalId,
+    orderId: r.order.externalId,
+    kind: r.kind,
+    type: r.type,
+    status: r.status,
+    reason: r.reason,
+    role: r.role,
+    rejectReason: r.rejectReason,
+    returnTrackingNumber: r.returnTrackingNumber,
+    buyer: { id: r.order.buyer.externalId, name: r.order.buyer.name },
+    refund: { subtotalVnd: r.refundSubtotal, shippingVnd: r.refundShipping, totalVnd: r.refundTotal },
+    createdAt: r.createdAt.toISOString(),
+    updatedAt: r.updatedAt.toISOString(),
+    items: [...bySku.values()],
+  };
+}
+
+/** Buyer aftersale requests and Seller decisions through /demo (the TikTok-shaped write operations live on the TikTok router). */
+@Controller()
+export class AftersaleDemoController {
+  constructor(@Inject(AftersaleService) private readonly aftersale: AftersaleService) {}
+
+  private rid(req: DemoRequest): string | undefined {
+    return (req as { requestId?: string }).requestId;
+  }
+
+  @Get('shops/:shopId/aftersale')
+  @UseGuards(DemoSessionGuard)
+  async list(@Req() req: DemoRequest, @Param('shopId') shopId: string) {
+    const p = principal(req);
+    assertOwnShop(p, shopId);
+    const rows = await this.aftersale.listForShop(shopId, p.role === 'BUYER' ? buyerOf(p).id : undefined);
+    return { items: rows.map(aftersaleView), requestReasons: REQUEST_REASONS, rejectReasons: REJECT_REASONS };
+  }
+
+  @Post('shops/:shopId/aftersale/returns')
+  @UseGuards(DemoSessionGuard)
+  async createReturn(@Req() req: DemoRequest, @Param('shopId') shopId: string, @Body(new ZodPipe(CreateReturn)) body: z.infer<typeof CreateReturn>) {
+    const p = principal(req);
+    assertOwnShop(p, shopId);
+    return { request: aftersaleView(await this.aftersale.createReturn(buyerOf(p), body.orderId, { items: body.items, returnType: body.returnType, reason: body.reason }, this.rid(req))) };
+  }
+
+  @Post('shops/:shopId/aftersale/cancellations')
+  @UseGuards(DemoSessionGuard)
+  async createCancellation(@Req() req: DemoRequest, @Param('shopId') shopId: string, @Body(new ZodPipe(CreateCancellation)) body: z.infer<typeof CreateCancellation>) {
+    const p = principal(req);
+    assertOwnShop(p, shopId);
+    return { request: aftersaleView(await this.aftersale.createCancellation(buyerOf(p), body.orderId, body.reason, this.rid(req))) };
+  }
+
+  @Post('shops/:shopId/aftersale/:id/cancel')
+  @UseGuards(DemoSessionGuard)
+  async buyerCancel(@Req() req: DemoRequest, @Param('shopId') shopId: string, @Param('id') id: string) {
+    const p = principal(req);
+    assertOwnShop(p, shopId);
+    return { request: aftersaleView(await this.aftersale.buyerCancelReturn(buyerOf(p), id, this.rid(req))) };
+  }
+
+  @Post('shops/:shopId/aftersale/:id/ship-back')
+  @UseGuards(DemoSessionGuard)
+  async shipBack(@Req() req: DemoRequest, @Param('shopId') shopId: string, @Param('id') id: string) {
+    const p = principal(req);
+    assertOwnShop(p, shopId);
+    return { request: aftersaleView(await this.aftersale.buyerShipBack(buyerOf(p), id, this.rid(req))) };
+  }
+
+  @Post('shops/:shopId/aftersale/:id/approve')
+  @UseGuards(DemoSessionGuard)
+  async approve(@Req() req: DemoRequest, @Param('shopId') shopId: string, @Param('id') id: string, @Body(new ZodPipe(Approve)) body: z.infer<typeof Approve>) {
+    const p = principal(req);
+    assertOwnShop(p, shopId);
+    assertSeller(p);
+    const existing = await this.aftersale.byExternal(shopId, id);
+    const r = existing.kind === 'CANCELLATION' ? await this.aftersale.approveCancellation(shopId, id, 'SELLER', this.rid(req)) : await this.aftersale.approveReturn(shopId, id, body.decision, 'SELLER', { requestId: this.rid(req) });
+    return { changed: r.changed, request: aftersaleView(r.request) };
+  }
+
+  @Post('shops/:shopId/aftersale/:id/reject')
+  @UseGuards(DemoSessionGuard)
+  async reject(@Req() req: DemoRequest, @Param('shopId') shopId: string, @Param('id') id: string, @Body(new ZodPipe(Reject)) body: z.infer<typeof Reject>) {
+    const p = principal(req);
+    assertOwnShop(p, shopId);
+    assertSeller(p);
+    const existing = await this.aftersale.byExternal(shopId, id);
+    const r =
+      existing.kind === 'CANCELLATION'
+        ? await this.aftersale.rejectCancellation(shopId, id, { reason: body.reason, comment: body.comment }, 'SELLER', this.rid(req))
+        : await this.aftersale.rejectReturn(shopId, id, { reason: body.reason, comment: body.comment, decision: body.decision }, 'SELLER', { requestId: this.rid(req) });
+    return { changed: r.changed, request: aftersaleView(r.request) };
+  }
+}

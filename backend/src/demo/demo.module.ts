@@ -23,7 +23,9 @@ import { APP_CONFIG, AppConfig } from '../config/config';
 import { OAuthModule } from '../oauth/oauth.module';
 import { OAuthService } from '../oauth/oauth.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { AftersaleModule } from '../aftersale/aftersale.module';
 import { FulfillmentModule } from '../fulfillment/fulfillment.module';
+import { AftersaleDemoController } from './aftersale.controller';
 import { OrdersModule } from '../orders/orders.module';
 import { ChatModule } from '../chat/chat.module';
 import { CatalogDemoController } from './catalog.controller';
@@ -185,5 +187,5 @@ export class DemoController {
   }
 }
 
-@Module({ imports: [OAuthModule, OrdersModule, ChatModule, FulfillmentModule], controllers: [DemoController, CatalogDemoController, OrdersDemoController, InventoryDemoController, ChatDemoController, FulfillmentDemoController, CouponsDemoController], providers: [DemoSessionGuard] })
+@Module({ imports: [OAuthModule, OrdersModule, ChatModule, FulfillmentModule, AftersaleModule], controllers: [DemoController, CatalogDemoController, OrdersDemoController, InventoryDemoController, ChatDemoController, FulfillmentDemoController, CouponsDemoController, AftersaleDemoController], providers: [DemoSessionGuard] })
 export class DemoModule {}
