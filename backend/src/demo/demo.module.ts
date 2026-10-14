@@ -25,6 +25,7 @@ import { OAuthService } from '../oauth/oauth.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { OrdersModule } from '../orders/orders.module';
 import { CatalogDemoController } from './catalog.controller';
+import { CouponsDemoController } from './coupons.controller';
 import { OrdersDemoController } from './orders.controller';
 import { DemoPrincipal, DemoRequest, DemoSessionGuard } from './demo-session.guard';
 
@@ -179,5 +180,5 @@ export class DemoController {
   }
 }
 
-@Module({ imports: [OAuthModule, OrdersModule], controllers: [DemoController, CatalogDemoController, OrdersDemoController], providers: [DemoSessionGuard] })
+@Module({ imports: [OAuthModule, OrdersModule], controllers: [DemoController, CatalogDemoController, OrdersDemoController, CouponsDemoController], providers: [DemoSessionGuard] })
 export class DemoModule {}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, Route, Routes, useParams } from 'react-router-dom';
 import { AsyncState } from '../components/AsyncState';
+import { CouponCodeInput } from '../components/CouponCodeInput';
 import { ApiError, api, vnd } from '../lib/api';
 import { useAsync } from '../lib/useAsync';
 import type { FeatureTab } from './registry';
@@ -38,6 +39,7 @@ export function CartPage({ shopId, token }: { shopId: string; token: string }) {
   const cart = useAsync(() => api<Cart>(`/demo/shops/${shopId}/cart`, { demoSession: token }), [shopId, token]);
   const [error, setError] = useState<string>();
   const [attemptKey, setAttemptKey] = useState(newKey);
+  const [couponCode, setCouponCode] = useState('');
   const [placed, setPlaced] = useState<OrderView>();
   const [busy, setBusy] = useState(false);
 
@@ -54,7 +56,7 @@ export function CartPage({ shopId, token }: { shopId: string; token: string }) {
     setError(undefined);
     setBusy(true);
     try {
-      const r = await api<{ order: OrderView }>(`/demo/shops/${shopId}/checkout`, { method: 'POST', body: { checkoutKey: attemptKey }, demoSession: token });
+      const r = await api<{ order: OrderView }>(`/demo/shops/${shopId}/checkout`, { method: 'POST', body: { checkoutKey: attemptKey, ...(couponCode ? { couponCode } : {}) }, demoSession: token });
       setPlaced(r.order);
       setAttemptKey(newKey());
       cart.reload();
@@ -110,6 +112,7 @@ export function CartPage({ shopId, token }: { shopId: string; token: string }) {
               </tbody>
             </table>
             <p>Items total: <strong>{vnd(d.totalVnd)}</strong> <span className="muted">Shipping is added at checkout.</span></p>
+            <div className="row-wrap"><CouponCodeInput value={couponCode} onChange={setCouponCode} /></div>
             <button disabled={busy || d.items.some((i) => !i.available)} onClick={() => void checkout()}>Checkout</button>
           </div>
         )}

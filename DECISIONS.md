@@ -10,3 +10,15 @@
 | D6 | New placeholder scope for the Events API. | `sim.event.manage` (added to default seed scopes); tokens issued earlier must re-authorize. | Official scope names are unresolved. |
 | D7 | Webhook delivery to `localhost` addresses from Docker. | `WEBHOOK_REWRITE_LOCALHOST` (true in compose) rewrites loopback hosts to `HOST_CALLBACK_BASE_URL`. | Subscription addresses are given by SmartOmni running on the host. |
 | D8 | Hold period after payment. | ON_HOLD for `ORDER_HOLD_MINUTES` (30, business clock); released by a background timer or `/test-admin/orders/release-due`. | OAS describes ON_HOLD but not its duration. |
+
+## Phase 09a
+| # | Issue | Choice | Reason |
+|---|---|---|---|
+| 09a-1 | Coupon creation through a TikTok-shaped API is unverified for VN. | No create/update/delete route exists on the TikTok router; coupons are created only through `/demo` (Seller). A test asserts plain 404 on signed writes and that `promotion.coupon_create` stays `unsupported`. | Phase 09 instructions + manifest lock. |
+| 09a-2 | Coupon `status` is not stored. | Derived at read time from `deactivated`, the window and the BUSINESS clock; search `status` filter is translated to SQL conditions. | Lets the Test Console cross start/expiry boundaries by moving the business clock only. |
+| 09a-3 | Discount base and rounding. | Discount applies to the product subtotal only (never shipping/tax), PERCENT_OFF rounds down then caps at `maxDiscount`, AMOUNT_OFF never exceeds the subtotal; recorded in `seller_discount`; per-line shares by largest remainder (ties to earlier line). | Keeps money components separate; deterministic integers. |
+| 09a-4 | Redemption limit under concurrency. | Guarded `UPDATE ... WHERE redeemedCount < redemptionLimit` inside the checkout transaction; unique `(couponId, orderId)` row; rolls back with the order. A retry with the same `checkoutKey` returns the original order before reaching the coupon. | Exactly-once usage without a prior check. |
+| 09a-5 | Give redemption back on cancel. | Only when the order is cancelled while UNPAID, exactly once (delete usage row, decrement only if a row was deleted). After payment the redemption stays used. | Phase says "only if exactly-once"; refunds after payment belong to Phase 07/09b. |
+| 09a-6 | Audience. | `ALL` and `NEW` (no non-cancelled earlier order in the shop) only; `REPEAT_CUSTOMERS`, product scopes and claim limits are not modelled. | Smallest set that can be tested honestly. |
+| 09a-7 | `claimed_count`. | Equals `redeemed_count` (no claim concept in the simulator). | Field exists in the OAS; value is unverified. |
+| 09a-8 | Shared-file edits. | `orders.service.ts`/`orders.controller.ts` (optional `couponCode`, small hooks), `orders.buyer.tsx` (coupon input in Cart), `test-admin.module.ts` (read-only `GET /test-admin/coupons`), `scopes.ts`/`config.ts`/`.env.example`/`docker-compose.yml` (new scope `sim.promotion.read`), `tiktok.module.ts`/`demo.module.ts` (registration), `routers.e2e-spec.ts` (controller list). | Needed for the feature; merge conflicts are expected to be trivial. |

@@ -6,6 +6,7 @@ import { APP_CONFIG, AppConfig } from '../config/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { numericId } from '../seed/seed-data';
 import { WebhookEmitter } from '../webhooks/webhook-emitter.service';
+import { distributeProportionally, recordCouponUsage, releaseCouponForOrder, reserveCoupon } from '../coupons/coupon-rules';
 import { canTransition, OrderStatus } from './order-state';
 
 export const MAX_UNITS_PER_SKU = 20;
@@ -16,6 +17,8 @@ export interface CheckoutInput {
   items: { skuExternalId: string; quantity: number }[];
   recipient: { name: string; phone: string; addressLine: string; district: string; city: string; postalCode?: string };
   buyerMessage?: string;
+  /** Phase 09a: optional promo code of the shop's coupon (see coupons/coupon-rules.ts). */
+  couponCode?: string;
 }
 
 export type Actor = 'BUYER' | 'SELLER' | 'TEST_CONSOLE' | 'SYSTEM';
@@ -142,6 +145,10 @@ export class OrdersService implements OnApplicationBootstrap, OnModuleDestroy {
         const now = this.clock.now();
         const orderId = randomUUID();
         const productTotal = skus.reduce((n, s) => n + s.priceVnd * merged.get(s.externalId)!, 0);
+        // Phase 09a: validate + take one redemption in THIS transaction (rolls back with the order; guarded against the usage limit).
+        const coupon = input.couponCode?.trim()
+          ? await reserveCoupon(tx, { shopId: shop.id, buyerId: buyer.id, code: input.couponCode, subtotalVnd: productTotal, now })
+          : null;
         const lines: Prisma.OrderLineCreateManyOrderInput[] = [];
         for (const s of skus) {
           for (let u = 0; u < merged.get(s.externalId)!; u++) {
@@ -159,6 +166,11 @@ export class OrdersService implements OnApplicationBootstrap, OnModuleDestroy {
               displayStatus: 'UNPAID',
             });
           }
+        }
+        if (coupon) {
+          // per-line seller_discount: proportional to the line price, integer VND, largest remainder (deterministic), sums to the order discount
+          const shares = distributeProportionally(coupon.discountVnd, lines.map((l) => l.salePrice));
+          lines.forEach((l, i) => (l.sellerDiscount = shares[i]));
         }
         await tx.order.create({
           data: {
@@ -180,11 +192,13 @@ export class OrdersService implements OnApplicationBootstrap, OnModuleDestroy {
             postalCode: input.recipient.postalCode ?? '',
             currency: shop.currency,
             originalProductPrice: productTotal,
+            sellerDiscount: coupon?.discountVnd ?? 0,
             originalShippingFee: this.config.orders.shippingFeeVnd,
             lines: { createMany: { data: lines } },
             audits: { create: { toStatus: 'UNPAID', actor: 'BUYER', note: 'checkout', at: now } },
           },
         });
+        if (coupon) await recordCouponUsage(tx, coupon, orderId, now);
         const created = await tx.order.findUniqueOrThrow({ where: { id: orderId }, include: orderInclude });
         await this.emitter.emit(tx, shop, 'ORDER_STATUS_CHANGE', this.eventData(created), requestId);
         return created;
@@ -268,7 +282,11 @@ export class OrdersService implements OnApplicationBootstrap, OnModuleDestroy {
       const res = await tx.order.updateMany({ where: { id: orderId, status: current.status }, data });
       if (res.count !== 1) throw new ConflictException('The order changed concurrently; retry');
       await tx.orderLine.updateMany({ where: { orderId }, data: { displayStatus: to } });
-      if (to === 'CANCELLED') await this.releaseStock(tx, current);
+      if (to === 'CANCELLED') {
+        await this.releaseStock(tx, current);
+        // Phase 09a: an UNPAID order gives its coupon redemption back (exactly once); after payment the redemption stays used
+        if (current.status === 'UNPAID') await releaseCouponForOrder(tx, orderId);
+      }
       await tx.orderAudit.create({ data: { orderId, fromStatus: current.status, toStatus: to, actor, note: opts.note ?? '', at: now } });
       const updated = await tx.order.findUniqueOrThrow({ where: { id: orderId }, include: orderInclude });
       const shop = await tx.shop.findUniqueOrThrow({ where: { id: current.shopId } });

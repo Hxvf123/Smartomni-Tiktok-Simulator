@@ -90,6 +90,7 @@ model Shop {
   webhookJobs      WebhookJob[]
   orders           Order[]
   webhookSubs      WebhookSubscription[]
+  coupons          Coupon[]
   faultRules       FaultRule[]
   demoSessions     DemoSession[]
   createdAt        DateTime              @default(now())
@@ -399,13 +400,13 @@ model CartItem {
 // Statuses are the OAS values: UNPAID ON_HOLD AWAITING_SHIPMENT PARTIALLY_SHIPPING AWAITING_COLLECTION IN_TRANSIT DELIVERED COMPLETED CANCELLED.
 // Money is integer VND per component; totals are computed by the backend and never re-derived from each other.
 model Order {
-  id                    String       @id @default(uuid())
+  id                    String        @id @default(uuid())
   shopId                String
-  shop                  Shop         @relation(fields: [shopId], references: [id])
+  shop                  Shop          @relation(fields: [shopId], references: [id])
   externalId            String
-  seq                   Int          @unique @default(autoincrement())
+  seq                   Int           @unique @default(autoincrement())
   buyerId               String
-  buyer                 Buyer        @relation(fields: [buyerId], references: [id])
+  buyer                 Buyer         @relation(fields: [buyerId], references: [id])
   status                String
   // business-clock timestamps (create_time / update_time / ... in the API are Unix seconds of these)
   createdAt             DateTime
@@ -419,28 +420,29 @@ model Order {
   cancelledAt           DateTime?
   cancelReason          String?
   cancellationInitiator String?
-  buyerRequestedCancel  Boolean      @default(false)
-  isOnHold              Boolean      @default(false)
+  buyerRequestedCancel  Boolean       @default(false)
+  isOnHold              Boolean       @default(false)
   warehouseId           String?
-  stockReleased         Boolean      @default(false)
+  stockReleased         Boolean       @default(false)
   checkoutKey           String
-  paymentMethodName     String       @default("Fake payment (simulator)")
-  buyerMessage          String       @default("")
+  paymentMethodName     String        @default("Fake payment (simulator)")
+  buyerMessage          String        @default("")
   recipientName         String
   recipientPhone        String
   addressLine           String
   district              String
   city                  String
-  postalCode            String       @default("")
-  currency              String       @default("VND")
+  postalCode            String        @default("")
+  currency              String        @default("VND")
   originalProductPrice  Int
-  sellerDiscount        Int          @default(0)
-  platformDiscount      Int          @default(0)
+  sellerDiscount        Int           @default(0)
+  platformDiscount      Int           @default(0)
   originalShippingFee   Int
-  shippingFeeDiscount   Int          @default(0)
-  tax                   Int          @default(0)
+  shippingFeeDiscount   Int           @default(0)
+  tax                   Int           @default(0)
   lines                 OrderLine[]
   audits                OrderAudit[]
+  CouponUsage           CouponUsage[]
 
   @@unique([shopId, externalId])
   @@unique([buyerId, checkoutKey])
@@ -497,4 +499,50 @@ model WebhookSubscription {
   updatedAt DateTime
 
   @@unique([shopId, appId, eventType])
+}
+
+// ---- Phase 09a: coupons (simulator-created fake data; reading is the only TikTok-shaped operation) --------------------
+
+// Status in the API is DERIVED from deactivated + window + the business clock (NOT_START | ONGOING | EXPIRED | DEACTIVATED).
+// Only FULL_SHOP scope and AMOUNT_OFF / PERCENT_OFF discounts exist; audience ALL | NEW (REPEAT_CUSTOMERS is not modelled).
+model Coupon {
+  id              String        @id @default(uuid())
+  shopId          String
+  shop            Shop          @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  externalId      String
+  seq             Int           @unique @default(autoincrement())
+  title           String
+  promoCode       String
+  displayType     String        @default("PROMO_CODE")
+  discountType    String
+  amountOffVnd    Int?
+  percentage      Int?
+  maxDiscountVnd  Int?
+  minSpendVnd     Int?
+  startAt         DateTime
+  endAt           DateTime
+  redemptionLimit Int?
+  redeemedCount   Int           @default(0)
+  audience        String        @default("ALL")
+  deactivated     Boolean       @default(false)
+  createdAt       DateTime
+  updatedAt       DateTime
+  usages          CouponUsage[]
+
+  @@unique([shopId, externalId])
+  @@unique([shopId, promoCode])
+  @@index([shopId, seq])
+}
+
+// One row per (coupon, order): the unique constraint is what makes a retried checkout unable to count twice.
+model CouponUsage {
+  id          String   @id @default(uuid())
+  couponId    String
+  coupon      Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  discountVnd Int
+  createdAt   DateTime
+
+  @@unique([couponId, orderId])
 }

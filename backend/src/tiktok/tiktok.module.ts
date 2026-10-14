@@ -3,6 +3,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { FaultService } from '../faults/fault.service';
 import { classifyRouter } from '../http-log/request-log.middleware';
 import { OAuthModule } from '../oauth/oauth.module';
+import { CouponsController } from './coupons.controller';
 import { EventsController } from './events.controller';
 import { OrdersController } from './orders.controller';
 import { ProductsController } from './products.controller';
@@ -49,7 +50,7 @@ export class TiktokFaultMiddleware implements NestMiddleware {
 
 @Module({
   imports: [OAuthModule],
-  controllers: [TokenController, ShopsController, ProductsController, OrdersController, EventsController],
+  controllers: [TokenController, ShopsController, ProductsController, OrdersController, EventsController, CouponsController],
   providers: [TiktokFaultMiddleware, TiktokApiGuard],
   exports: [TiktokFaultMiddleware],
 })
