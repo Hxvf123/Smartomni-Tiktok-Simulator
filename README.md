@@ -2,7 +2,7 @@
 
 Standalone simulator used to test SmartOmni's TikTok Shop features locally. It is **not** part of the SmartOmni Maven reactor and has its own database, volumes, ports and credentials. All data is fake; no real money or real TikTok access is involved.
 
-Status: Phase 02 foundation, Phase 03 simulator side (seller consent, authorization codes, token exchange/refresh, signed Get Authorized Shops) and Phase 04 simulator side (catalog: Search Products, Get Product, Get Warehouse List, Seller product management, Buyer storefront). More TikTok-shaped endpoints arrive in Phase 04+ from `contracts/` (Phase 01). The implementation plan lives in `spec/` (copied from the SmartOmni platform repo; links inside it that point at SmartOmni docs are not available here).
+Status: phases 01-09 are implemented on the simulator side (contracts, foundation, authorization, catalog, orders + webhooks, inventory, fulfillment + returns, conversations, coupons, loyalty test data). SmartOmni-side parts are NOT in this repo: see `docs/smartomni-requirements/`. Nothing is ticked in `spec/00-overview.md` (reviewers tick). Everything is a simulation on contracts that are still `unverified` (see `docs/support-matrix.md`). The implementation plan is in `spec/`.
 
 ## What is here
 
@@ -98,7 +98,7 @@ PostgreSQL-backed queue (`WebhookJob`/`WebhookAttempt`):
 * exponential backoff (`WEBHOOK_BASE_BACKOFF_MS`, capped), `DEAD` after `maxAttempts`, replay creates a linked new job;
 * faults (`HTTP_ERROR`, `DELAY`, `DROP`, `DUPLICATE`) from `/test-admin/faults`; injected duplicates are recorded in `deliveries`.
 
-Real webhook payloads, topics and signatures are Phase 05; the foundation sends the stored JSON payload with `x-simulator-*` headers only.
+Webhooks emitted by the simulator are signed and use the TikTok-shaped envelope (see "Orders and webhooks"); ad-hoc test jobs from `/test-admin/webhooks` are unsigned.
 
 ### Logging and secrets
 
@@ -106,7 +106,7 @@ Every request (except health probes and console polling reads) is stored in `Htt
 
 ## Test Console
 
-Status (DB, worker, clock, queue, seed), Shop & scenario, Reset (two-step), Clock, HTTP log (request-ID filter), Webhooks (history, replay, queue a test event), Faults. Seller and Buyer are shells for later phases (login as a demo identity, catalog view); every list has loading, error and empty states.
+Status (DB, worker, clock, queue, seed), Shop & scenario, Reset (two-step), Clock, HTTP log (request-ID filter), Webhooks (history, replay, queue a test event), Faults, plus feature tabs (Orders, Inventory, Fulfillment, Chat, Coupons, Aftersale). Seller and Buyer have matching tabs. Tabs are drop-in files `frontend/src/features/<name>.{buyer,seller,console}.tsx`; every list has loading, error and empty states.
 
 ## Phase 03: authorization and token lifecycle (simulator side)
 
@@ -132,3 +132,62 @@ Failures return the error-envelope shape `{code:-1,message,request_id,simulator_
 * Prices are strings in VND (`price.sale_price`), per SKU. Warehouse ids (`inventory[].warehouse_id`) match `GET /logistics/202309/warehouses` `id`.
 * Product writes exist only as `/demo` endpoints: the contract lists no verified product-write operation.
 * Buyer product link: `http://localhost:3090/buyer/product/<marketplace product id>` (opens in the Buyer session's shop; a product of another shop shows "not available").
+
+## Orders and webhooks (Phase 05)
+
+* Buyer (UI `/buyer`): product page (`/buyer/product/<marketplace product id>`) -> cart -> checkout (idempotent per `checkoutKey`) -> fake payment -> order history. Money is computed by the backend per component (product total, seller/platform discount, shipping, tax); the OAS has no line quantity, so each purchased unit is one line item.
+* State machine (simulator model, unverified): `UNPAID -> ON_HOLD -> AWAITING_SHIPMENT -> AWAITING_COLLECTION -> IN_TRANSIT -> DELIVERED -> COMPLETED`, `CANCELLED` from the early states. An ON_HOLD order cannot be shipped; DELIVERED is not COMPLETED. The hold lasts `ORDER_HOLD_MINUTES` (30, business clock) and is released by a timer or `POST /test-admin/orders/release-due`.
+* Read API: `POST /order/202309/orders/search` (keyset `page_token`, `sort_field`, `sort_order`, filters with `*_ge` inclusive / `*_lt` exclusive) and `GET /order/202507/orders?ids=a,b` (max 50). `recipient_address` is absent for UNPAID/ON_HOLD, as in the OAS.
+* Events API: `GET/PUT/DELETE /event/202309/webhooks` (scope `sim.event.manage`). Only subscribed topics are delivered. Emitted topics: `ORDER_STATUS_CHANGE` (type 1), `PACKAGE_UPDATE`, `RETURN_STATUS_CHANGE`, `CANCELLATION_STATUS_CHANGE`, `NEW_MESSAGE`, `NEW_CONVERSATION`; payload fields and numeric `type` values other than 1 are UNVERIFIED.
+* Delivery: events are written in the same DB transaction as the state change (outbox), delivered by the worker with retries/backoff and attempt history. Header `Authorization` = lowercase hex `HMAC-SHA256(app_secret, app_key + raw body)` (secondary source). Receivers should dedupe on `tts_notification_id` and reconcile by polling.
+* Callback addresses on `localhost`/`127.0.0.1` are rewritten to `HOST_CALLBACK_BASE_URL` inside Docker (`WEBHOOK_REWRITE_LOCALHOST`).
+* Faults for events (Test Console Faults tab or `/test-admin/faults`): `DROP`, `DUPLICATE`, `DELAY`, `HTTP_ERROR`, `REORDER` (holds one matching event back so a later one overtakes it; `params.holdMs`). Replay: `/test-admin/webhooks/:id/replay`.
+
+## Other phases in one place
+
+| Phase | Simulator behaviour | Notes |
+|---|---|---|
+| 06 Inventory | `POST /product/202309/products/{id}/inventory/update` sets ABSOLUTE quantities; per-SKU errors in `data.errors[]`; change log with before/after; faults `TIMEOUT_BEFORE_WRITE`, `TIMEOUT_AFTER_WRITE`, `APP_ERROR_200` | The simulator reserves stock at checkout and restores it once on cancel; it never adds stock on returns. |
+| 07a Fulfillment | tracking, package detail, ship package, shipping documents (fake PDF stamped `TEST DATA`, served from `/demo/files/shipping-documents/<token>.pdf`, stored on the PDF volume) | ON_HOLD orders are refused. |
+| 07b Aftersale | return search/records/approve/reject, cancellation search/approve/reject, reject reasons, eligibility | Partial returns never change the order status; return window `RETURN_WINDOW_DAYS` (15, business clock) is a test rule; `rma_202604` is not served. |
+| 08 Conversations | list/messages/detail/send (TEXT only, 202309), `NEW_MESSAGE`/`NEW_CONVERSATION` events | Send 202606 and image upload return 501. A conversation flag can drop the send response (indeterminate send). |
+| 09a Coupons | `POST /promotion/202406/coupons/search`, `GET .../coupons/{id}`; Seller creates coupons only via `/demo`; checkout applies a code to the product subtotal | No create-voucher route exists on the TikTok router (locked). |
+| 09b Loyalty data | `POST /test-admin/scenarios/loyalty-orders` creates orders around the 15-day boundary with the business clock | Points and claims are SmartOmni's job. |
+
+## Connecting SmartOmni (only the base URL and credentials change)
+
+| SmartOmni setting | Value for this simulator |
+|---|---|
+| `TIKTOK_OPEN_API_BASE_URL`, `TIKTOK_TOKEN_BASE_URL` | `http://localhost:8090` |
+| `TIKTOK_AUTHORIZATION_URL` | `http://localhost:3090/seller/authorize` |
+| `TIKTOK_APP_KEY` / `TIKTOK_APP_SECRET` | `SEED_APP_KEY` / `SEED_APP_SECRET` from your `.env` |
+| `TIKTOK_REDIRECT_URI` | must equal one entry of `SEED_APP_REDIRECT_URIS` |
+| Webhook address (PUT `/event/202309/webhooks`) | the SmartOmni receiver, for example `http://localhost:8080/...` (localhost is rewritten to the host inside Docker) |
+| Scopes | placeholders `sim.*` (see `backend/src/oauth/scopes.ts`); tokens issued before a phase added a scope must re-authorize |
+
+## Browser tests (Playwright)
+
+`e2e/` drives the running Docker stack through the UI (Buyer checkout, Seller, Test Console, chat, coupons, fulfillment, aftersale, restart persistence). It never runs against production.
+
+```bash
+docker compose up --build -d      # from the repo root, with a filled-in .env
+cd e2e && npm ci && npx playwright install chromium && npx playwright test
+```
+
+Set `E2E_UI_URL` / `E2E_API_URL` for non-default ports. Screenshots go to `e2e/test-results/shots/` (git-ignored).
+
+## Troubleshooting
+
+| Symptom | Cause / fix |
+|---|---|
+| `missing_scope` after upgrading | the token was issued before the scope existed: authorize again (consent page) |
+| 401 `bad_signature` | sign path + sorted query + the exact raw body (see `contracts/signing/README.md`); `timestamp` must be within `OAUTH_SIGNATURE_WINDOW_MS` of real time (the business clock does not matter) |
+| Webhooks never arrive | no subscription for that topic/shop/app (GET `/event/202309/webhooks`), worker disabled (`WEBHOOK_WORKER_ENABLED`), address unreachable from the container, or a `DROP` fault is active |
+| Order stuck ON_HOLD | wait `ORDER_HOLD_MINUTES` of business time, or advance the clock and `POST /test-admin/orders/release-due` |
+| Reset refuses to run | the database name must contain `simulator` |
+| Port in use | change `BIND_ADDRESS` / ports in `.env` and `docker-compose.yml`; UI 3090, API 8090 |
+| Tests flake with `ECONNRESET` | use the shared test helpers (`createApp` listens once); do not create a new supertest agent per concurrent request |
+
+## Documents
+
+`docs/support-matrix.md` (implemented / unverified / blocked), `docs/curl-samples.md`, `docs/postman-collection.json`, `docs/smartomni-requirements/` (work that belongs to the SmartOmni repo), `DECISIONS.md` (choices to review), `PROGRESS.md`, `REPORT.md`.

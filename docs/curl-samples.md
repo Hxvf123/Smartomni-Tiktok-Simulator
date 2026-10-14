@@ -79,3 +79,37 @@ curl -i -X POST "$CALLBACK_URL" -H "Authorization: ${SIG}" -H "Content-Type: app
 ```
 
 Error and edge cases (invalid input, expired token, missing scope) are test faults without documented codes; see `../contracts/fixtures/errors.json`.
+
+## Phase 05-09 additions (simulator behaviour on unverified contracts)
+
+Use the same `sign_api` helper. All of these need a token that holds the matching placeholder scope (`sim.order.read`, `sim.event.manage`, `sim.inventory.write`, `sim.fulfillment.*`, `sim.aftersale.*`, `sim.conversation.*`, `sim.promotion.read`; see `backend/src/oauth/scopes.ts`).
+
+```bash
+# Orders: search (page_size required; sort_field create_time|update_time; sort_order ASC|DESC; body filters)
+P=/order/202309/orders/search; TS=$(date +%s); BODY='{"order_status":"AWAITING_SHIPMENT"}'
+SIGN=$(sign_api "$P" "$BODY" app_key=$APP_KEY page_size=20 shop_cipher=$SHOP_CIPHER sort_order=ASC timestamp=$TS)
+curl -s -X POST "${BASE_URL}${P}?app_key=${APP_KEY}&timestamp=${TS}&page_size=20&sort_order=ASC&shop_cipher=${SHOP_CIPHER}&sign=${SIGN}" \
+  -H "x-tts-access-token: ${ACCESS_TOKEN}" -H "Content-Type: application/json" --data-binary "$BODY"
+
+# Subscribe to order events (the receiver verifies Authorization = HMAC-SHA256(app_secret, app_key + raw body))
+P=/event/202309/webhooks; TS=$(date +%s); BODY='{"event_type":"ORDER_STATUS_CHANGE","address":"http://localhost:8080/webhook"}'
+SIGN=$(sign_api "$P" "$BODY" app_key=$APP_KEY shop_cipher=$SHOP_CIPHER timestamp=$TS)
+curl -s -X PUT "${BASE_URL}${P}?app_key=${APP_KEY}&timestamp=${TS}&shop_cipher=${SHOP_CIPHER}&sign=${SIGN}" \
+  -H "x-tts-access-token: ${ACCESS_TOKEN}" -H "Content-Type: application/json" --data-binary "$BODY"
+
+# Absolute inventory update (retry-safe: sets the quantity, never decrements)
+P=/product/202309/products/$PRODUCT_ID/inventory/update; TS=$(date +%s)
+BODY="{\"skus\":[{\"id\":\"$SKU_ID\",\"inventory\":[{\"warehouse_id\":\"$WAREHOUSE_ID\",\"quantity\":12}]}]}"
+SIGN=$(sign_api "$P" "$BODY" app_key=$APP_KEY shop_cipher=$SHOP_CIPHER timestamp=$TS)
+curl -s -X POST "${BASE_URL}${P}?app_key=${APP_KEY}&timestamp=${TS}&shop_cipher=${SHOP_CIPHER}&sign=${SIGN}" \
+  -H "x-tts-access-token: ${ACCESS_TOKEN}" -H "Content-Type: application/json" --data-binary "$BODY"
+```
+
+Test Console / admin calls (token from your `.env`):
+
+```bash
+curl -s -X POST http://localhost:8090/test-admin/orders/release-due -H "x-test-admin-token: $TEST_ADMIN_TOKEN"
+curl -s -X POST http://localhost:8090/test-admin/faults -H "x-test-admin-token: $TEST_ADMIN_TOKEN" -H "content-type: application/json" \
+  -d '{"target":"WEBHOOK","kind":"REORDER","pathMatch":"ORDER_STATUS_CHANGE","remaining":1,"params":{"holdMs":60000}}'
+curl -s -X POST http://localhost:8090/test-admin/scenarios/loyalty-orders -H "x-test-admin-token: $TEST_ADMIN_TOKEN" -H "content-type: application/json" -d '{"shopId":"<shop row id>"}'
+```

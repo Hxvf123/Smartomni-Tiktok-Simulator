@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "SmartOmni TikTok Simulator - contract samples (unverified)",
-    "description": "Samples for operations whose schema comes from the official bundled OAS (status unverified: docv2, scopes and error codes unread). Set variables in a Postman environment; never commit real secrets. The pre-request script signs GET and JSON-body requests (body appended to the string to sign; evidence is indirect: the toolkit's local-broker signer, not the Common Parameters page). Uploads (multipart) are not signable: rule unverified. Fixtures per operation: contracts/fixtures/ops/.",
+    "description": "Samples for operations whose schema comes from the official bundled OAS (status unverified: docv2, scopes and error codes unread). Set variables in a Postman environment; never commit real secrets. The pre-request script signs GET and JSON-body requests (body appended to the string to sign; evidence is indirect: the toolkit's local-broker signer, not the Common Parameters page). Uploads (multipart) are not signable: rule unverified. Fixtures per operation: contracts/fixtures/ops/. Phase 04-09 samples added; request bodies for write operations (inventory update, ship package, return approve, send message) follow the simulator implementation of the official OAS and stay unverified. Voucher creation has no sample on purpose (locked).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -39,6 +39,22 @@
     },
     {
       "key": "conversation_id",
+      "value": ""
+    },
+    {
+      "key": "product_id",
+      "value": ""
+    },
+    {
+      "key": "sku_id",
+      "value": ""
+    },
+    {
+      "key": "warehouse_id",
+      "value": ""
+    },
+    {
+      "key": "coupon_id",
       "value": ""
     }
   ],
@@ -563,6 +579,773 @@
             "event",
             "202309",
             "webhooks"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "product.detail - GET /product/202309/products/{{product_id}}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/product/202309/products/{{product_id}}?app_key={{app_key}}&timestamp={{timestamp}}&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "product",
+            "202309",
+            "products",
+            "{{product_id}}"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "logistics.warehouses - GET /logistics/202309/warehouses",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/logistics/202309/warehouses?app_key={{app_key}}&timestamp={{timestamp}}&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "logistics",
+            "202309",
+            "warehouses"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "product.inventory_update - POST /product/202309/products/{{product_id}}/inventory/update",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/product/202309/products/{{product_id}}/inventory/update?app_key={{app_key}}&timestamp={{timestamp}}&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "product",
+            "202309",
+            "products",
+            "{{product_id}}",
+            "inventory",
+            "update"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"skus\":[{\"id\":\"{{sku_id}}\",\"inventory\":[{\"warehouse_id\":\"{{warehouse_id}}\",\"quantity\":12}]}]}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "event.webhooks_get - GET /event/202309/webhooks",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/event/202309/webhooks?app_key={{app_key}}&timestamp={{timestamp}}&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "event",
+            "202309",
+            "webhooks"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "event.webhooks_delete - DELETE /event/202309/webhooks",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/event/202309/webhooks?app_key={{app_key}}&timestamp={{timestamp}}&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "event",
+            "202309",
+            "webhooks"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"event_type\":\"ORDER_STATUS_CHANGE\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "fulfillment.tracking - GET /fulfillment/202309/orders/{{order_id}}/tracking",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/fulfillment/202309/orders/{{order_id}}/tracking?app_key={{app_key}}&timestamp={{timestamp}}&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "fulfillment",
+            "202309",
+            "orders",
+            "{{order_id}}",
+            "tracking"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "fulfillment.package_detail - GET /fulfillment/202309/packages/{{package_id}}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/fulfillment/202309/packages/{{package_id}}?app_key={{app_key}}&timestamp={{timestamp}}&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "fulfillment",
+            "202309",
+            "packages",
+            "{{package_id}}"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "fulfillment.package_ship - POST /fulfillment/202309/packages/{{package_id}}/ship",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/fulfillment/202309/packages/{{package_id}}/ship?app_key={{app_key}}&timestamp={{timestamp}}&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "fulfillment",
+            "202309",
+            "packages",
+            "{{package_id}}",
+            "ship"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"handover_method\":\"PICKUP\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "return.approve - POST /return_refund/202309/returns/{{return_id}}/approve",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/return_refund/202309/returns/{{return_id}}/approve?app_key={{app_key}}&timestamp={{timestamp}}&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "return_refund",
+            "202309",
+            "returns",
+            "{{return_id}}",
+            "approve"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"decision\":\"APPROVE_REFUND\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "return.records - GET /return_refund/202309/returns/{{return_id}}/records",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/return_refund/202309/returns/{{return_id}}/records?app_key={{app_key}}&timestamp={{timestamp}}&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "return_refund",
+            "202309",
+            "returns",
+            "{{return_id}}",
+            "records"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "cancellation.search - POST /return_refund/202309/cancellations/search",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/return_refund/202309/cancellations/search?app_key={{app_key}}&timestamp={{timestamp}}&page_size=10&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "return_refund",
+            "202309",
+            "cancellations",
+            "search"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "page_size",
+              "value": "10"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "cs.messages - GET /customer_service/202309/conversations/{{conversation_id}}/messages",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/customer_service/202309/conversations/{{conversation_id}}/messages?app_key={{app_key}}&timestamp={{timestamp}}&page_size=10&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "customer_service",
+            "202309",
+            "conversations",
+            "{{conversation_id}}",
+            "messages"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "page_size",
+              "value": "10"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "cs.send_message_202309 - POST /customer_service/202309/conversations/{{conversation_id}}/messages",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/customer_service/202309/conversations/{{conversation_id}}/messages?app_key={{app_key}}&timestamp={{timestamp}}&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "customer_service",
+            "202309",
+            "conversations",
+            "{{conversation_id}}",
+            "messages"
+          ],
+          "query": [
+            {
+              "key": "app_key",
+              "value": "{{app_key}}"
+            },
+            {
+              "key": "timestamp",
+              "value": "{{timestamp}}"
+            },
+            {
+              "key": "shop_cipher",
+              "value": "{{shop_cipher}}"
+            },
+            {
+              "key": "access_token",
+              "value": "{{access_token}}"
+            },
+            {
+              "key": "sign",
+              "value": "{{sign}}"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"type\":\"TEXT\",\"content\":\"{\\\"content\\\":\\\"Hello from Postman\\\"}\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "promotion.coupon_detail - GET /promotion/202406/coupons/{{coupon_id}}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-tts-access-token",
+            "value": "{{access_token}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/promotion/202406/coupons/{{coupon_id}}?app_key={{app_key}}&timestamp={{timestamp}}&shop_cipher={{shop_cipher}}&access_token={{access_token}}&sign={{sign}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "promotion",
+            "202406",
+            "coupons",
+            "{{coupon_id}}"
           ],
           "query": [
             {
