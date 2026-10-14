@@ -68,9 +68,10 @@ Backend/API tests, JSON Schema/OpenAPI validators, Playwright, JUnit/Mockito, Po
 
 ## Theo dõi
 
-- Người phụ trách:
-- PR/commit:
-- Bằng chứng kiểm thử:
-- Blocker / quyết định bổ sung:
-- Ngày hoàn thành:
-
+- Người phụ trách: (chưa gán) - agent Phase 10, chưa review bởi người.
+- PR/commit: các commit `phase-10(wip)` và `phase-10` trên `main` của repo simulator; báo cáo đầy đủ ở `REPORT.md`.
+- Bằng chứng (15/10/2026, Windows, Docker 29.8): `docker compose down -v` + `up --build` từ volume rỗng: db/api/ui healthy, 9 migration áp dụng, seed; backend 13 suites / 202 test pass, 0 skip; frontend 17 test pass; contract validator 10/10; Playwright 23/23 (7 file spec: 05, 06, 07a, 07b, 08, 09a, persistence) chạy 4 lần liên tiếp; restart `api` và `db`+`api` giữ dữ liệu (đơn + lịch sử, webhook job + attempts, chat, coupon, PDF cùng URL, clock, token), seed idempotent, log không chứa token/app secret. Repo platform (chỉ đọc): `mvn -o -B test` và `mvn -o -B clean verify` BUILD SUCCESS (1 test skipped: live simulator test cần biến môi trường).
+- Tài liệu: README (Docker/local, callback, base URL, seed/reset, scenario, troubleshooting), `docs/support-matrix.md`, `docs/curl-samples.md`, `docs/postman-collection.json`, `docs/smartomni-requirements/`, `DECISIONS.md`.
+- BLOCKED / chưa làm: bước 5 (integration test SmartOmni với PostgreSQL/RabbitMQ thật) và bước 11 (review migration SmartOmni) vì phần SmartOmni chưa được viết trong lượt này (repo platform chỉ để tham khảo); không có bằng chứng luồng Buyer → simulator → SmartOmni → inventory; không có test AI thật (Python service ngoài repo); không gọi TikTok thật; mọi operation vẫn `unverified`.
+- Checkbox `00-overview.md` KHÔNG được tick (việc của reviewer).
+- Ngày hoàn thành: chưa (PARTIAL).

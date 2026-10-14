@@ -66,7 +66,8 @@ test('after the hold the seller arranges shipment and the buyer sees tracking pr
   await expect(page.getByRole('row').filter({ hasText: orderId }).getByText('DELIVERED', { exact: true })).toBeVisible();
   await page.goto('/buyer/tracking');
   await expect(page.getByLabel(`tracking ${orderId}`).getByText('DELIVERED', { exact: true })).toBeVisible();
-  expect(await page.getByLabel(`tracking ${orderId}`).getByRole('listitem').count()).toBeGreaterThan(before);
+  // the status pill renders before the timeline items are fetched: wait for the timeline instead of reading the count once
+  await expect.poll(() => page.getByLabel(`tracking ${orderId}`).getByRole('listitem').count()).toBeGreaterThan(before);
   await shot(page, 'phase07a-buyer-delivered');
   await request.put('/test-admin/clock', { data: { reset: true } });
 });
