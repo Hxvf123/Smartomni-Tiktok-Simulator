@@ -68,3 +68,12 @@ Fixtures gồm package hợp lệ, order chưa giao được, PDF tải thành c
 - Bằng chứng kiểm thử:
 - Blocker / quyết định bổ sung:
 - Ngày hoàn thành:
+
+### 07b (steps 5-9) - agent Phase 07b, chưa review bởi người, chưa push
+
+- Người phụ trách: (chưa gán). PR/commit: commit trên nhánh `phase-07b` (xem `git log`).
+- Phạm vi phía simulator: migration `20261060000000_phase07b_aftersale` (AftersaleRequest/AftersaleLine/AftersaleRecord + chỉ mục duy nhất một phần chặn một unit nằm trong hai yêu cầu đang hoạt động); `AftersaleService` (hủy theo yêu cầu, trả hàng/hoàn tiền một phần theo từng unit, quyết định của seller, cửa sổ trả hàng theo Clock nghiệp vụ, listener hủy đơn cùng transaction); API TikTok `POST .../returns/search`, `GET .../returns/{id}/records`, `POST .../returns/{id}/approve|reject`, `GET .../reject_reasons`, `GET /return_refund/202512/orders/{id}/aftersale_eligibility`, `POST .../cancellations/search|{id}/approve|{id}/reject`; webhook `RETURN_STATUS_CHANGE`/`CANCELLATION_STATUS_CHANGE` qua outbox; `/demo` (Buyer tạo yêu cầu, rút lại, gửi trả; Seller duyệt/từ chối); Test Console (danh sách, lịch sử, hoàn tất hoàn tiền); UI `features/aftersale.*.tsx`; sửa `ResetService` cho bảng mới.
+- Bằng chứng (Windows, Node 22, PostgreSQL 16 nhúng, cổng 55445): `tiktok-aftersale.e2e-spec.ts` 15 test pass (trả một phần không đổi trạng thái đơn và không cộng tồn, đua đồng thời chỉ một thắng + chỉ mục DB từ chối dòng thứ hai, approve/reject idempotent, RETURN_AND_REFUND cần gửi trả, cửa sổ 15 ngày đúng biên bằng Clock đóng băng, hủy duyệt hoàn tồn đúng một lần kèm phí vận chuyển, từ chối giữ đơn mở, hủy UNPAID/ON_HOLD không tạo bản ghi, phân trang hai chiều + khoảng page_size theo OAS, cô lập shop, thiếu scope, `rma_202604` không phục vụ, webhook cùng transaction, schema OAS qua `test/contract.ts`, reset). Số lượng test toàn bộ xem commit.
+- BLOCKED (repo platform chỉ để tham khảo): toàn bộ phía SmartOmni - đồng bộ webhook/polling, lưu trạng thái nguồn, chặn sửa tay completed/returned, hoàn tồn bằng receipt idempotent theo order/line, hàng đợi lỗi có audit (`docs/smartomni-requirements/phase-07.md`, mục 07b). Chưa chạy Playwright và Docker cho phần này.
+- Quyết định/blocker: `DECISIONS.md` mục `Phase 07b` (D07b-1..13). Trạng thái, quyết định, lý do từ chối, mã `ineligible_code`, `type` webhook đều là lựa chọn của simulator, chưa xác minh.
+- Ngày hoàn thành: chưa (PARTIAL).

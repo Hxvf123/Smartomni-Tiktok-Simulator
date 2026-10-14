@@ -19,6 +19,10 @@ export const SCOPE_CONVERSATION_READ = 'sim.conversation.read';
 export const SCOPE_CONVERSATION_WRITE = 'sim.conversation.write';
 export const SCOPE_PRODUCT_READ = 'sim.product.read';
 
+/** Placeholder scopes for cancellations, returns/refunds, reject reasons and aftersale eligibility (official names unresolved). Older tokens must re-authorize. */
+export const SCOPE_AFTERSALE_READ = 'sim.aftersale.read';
+export const SCOPE_AFTERSALE_WRITE = 'sim.aftersale.write';
+
 /** Every scope a seeded app is granted by default (override with SEED_APP_SCOPES). Add new phase scopes here ONLY. */
 export const DEFAULT_APP_SCOPES = [
   SCOPE_AUTHORIZED_SHOPS,
@@ -31,4 +35,6 @@ export const DEFAULT_APP_SCOPES = [
   SCOPE_FULFILLMENT_READ,
   SCOPE_FULFILLMENT_WRITE,
   SCOPE_PROMOTION_READ,
+  SCOPE_AFTERSALE_READ,
+  SCOPE_AFTERSALE_WRITE,
 ];

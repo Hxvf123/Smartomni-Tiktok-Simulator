@@ -47,6 +47,10 @@ export interface AppConfig {
     /** Rewrite localhost/127.0.0.1 subscription addresses to HOST_CALLBACK_BASE_URL (needed inside Docker). */
     rewriteLocalhost: boolean;
   };
+  aftersale: {
+    /** Days (business clock) after DELIVERY during which a buyer may request a return/refund. A SIMULATOR / SmartOmni test rule, NOT a verified TikTok policy. */
+    returnWindowDays: number;
+  };
   demoSessionTtlMs: number;
   resetConfirmTtlMs: number;
 }
@@ -115,6 +119,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       lifecycleIntervalMs: int('ORDER_LIFECYCLE_INTERVAL_MS', 5000, env),
     },
     webhook: { rewriteLocalhost: bool('WEBHOOK_REWRITE_LOCALHOST', false, env) },
+    aftersale: { returnWindowDays: int('RETURN_WINDOW_DAYS', 15, env) },
     demoSessionTtlMs: int('DEMO_SESSION_TTL_MS', 8 * 3600 * 1000, env),
     resetConfirmTtlMs: int('RESET_CONFIRM_TTL_MS', 120000, env),
   };

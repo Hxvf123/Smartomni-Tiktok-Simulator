@@ -1,5 +1,6 @@
 import { Body, Controller, ForbiddenException, Get, Inject, NotFoundException, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { z } from 'zod';
+import { AftersaleService } from '../aftersale/aftersale.service';
 import { ZodPipe } from '../common/zod.pipe';
 import { OrderRow, OrdersService } from '../orders/orders.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -76,6 +77,7 @@ export class OrdersDemoController {
   constructor(
     @Inject(OrdersService) private readonly orders: OrdersService,
     @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(AftersaleService) private readonly aftersale: AftersaleService,
   ) {}
 
   @Get('shops/:shopId/cart')
@@ -125,7 +127,15 @@ export class OrdersDemoController {
   async cancel(@Req() req: DemoRequest, @Param('shopId') shopId: string, @Param('orderId') orderId: string, @Body(new ZodPipe(ReasonBody)) body: z.infer<typeof ReasonBody>) {
     const p = principal(req);
     assertOwnShop(p, shopId);
-    if (p.role === 'BUYER') return { order: orderView(await this.orders.buyerCancel(buyerOf(p), orderId, body.reason, (req as { requestId?: string }).requestId)) };
+    if (p.role === 'BUYER') {
+      const rid = (req as { requestId?: string }).requestId;
+      const row = await this.prisma.order.findFirst({ where: { buyerId: buyerOf(p).id, shopId, externalId: orderId }, select: { id: true, status: true } });
+      // Phase 07b: once the order is paid and released (AWAITING_SHIPMENT) a cancel is a REQUEST the seller must approve, recorded as an aftersale cancellation
+      if (row?.status === 'AWAITING_SHIPMENT') await this.aftersale.createCancellation(buyerOf(p), orderId, body.reason, rid);
+      else return { order: orderView(await this.orders.buyerCancel(buyerOf(p), orderId, body.reason, rid)) };
+      const updated = await this.prisma.order.findUniqueOrThrow({ where: { id: row.id }, include: { lines: { orderBy: [{ externalId: 'asc' }] }, buyer: { select: { externalId: true, name: true } } } });
+      return { order: orderView(updated) };
+    }
     const order = await this.prisma.order.findFirst({ where: { shopId, externalId: orderId }, select: { id: true } });
     if (!order) throw new NotFoundException('Unknown order');
     const updated = await this.orders.transition(order.id, 'CANCELLED', 'SELLER', { note: body.reason, cancelReason: body.reason, initiator: 'SELLER', requestId: (req as { requestId?: string }).requestId });

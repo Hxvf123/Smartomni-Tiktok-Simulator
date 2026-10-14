@@ -30,13 +30,13 @@ describe('router separation, demo isolation, clocks, request log', () => {
   describe('router separation', () => {
     it('TikTok module serves only the Phase 03/04 controllers and does not provide admin/demo/seed/reset services', () => {
       const controllers = (Reflect.getMetadata(MODULE_METADATA.CONTROLLERS, TiktokModule) as any[]).map((c) => c.name).sort();
-      expect(controllers).toEqual(['ConversationsController', 'CouponsController', 'EventsController', 'FulfillmentController', 'InventoryController', 'OrdersController', 'ProductsController', 'ShopsController', 'TokenController']);
+      expect(controllers).toEqual(['AftersaleController', 'ConversationsController', 'CouponsController', 'EventsController', 'FulfillmentController', 'InventoryController', 'OrdersController', 'ProductsController', 'ShopsController', 'TokenController']);
       const providers = (Reflect.getMetadata(MODULE_METADATA.PROVIDERS, TiktokModule) as any[]).map((p) => p.name).sort();
       expect(providers).toEqual(['TiktokApiGuard', 'TiktokFaultMiddleware']);
       // only the token-lifecycle module and the fulfillment module (the ship-package write is a TikTok-contract operation) may be imported:
       // no Demo/TestAdmin/Seed/Reset/Clock-control wiring
       const imports = (Reflect.getMetadata(MODULE_METADATA.IMPORTS, TiktokModule) as any[]).map((m) => m.name);
-      expect(imports).toEqual(['OAuthModule', 'ChatModule', 'FulfillmentModule']);
+      expect(imports).toEqual(['OAuthModule', 'ChatModule', 'FulfillmentModule', 'AftersaleModule']);
     });
 
     it('control endpoints exist only under /test-admin and demo endpoints only under /demo', async () => {
@@ -44,7 +44,7 @@ describe('router separation, demo isolation, clocks, request log', () => {
         await http.get(p).set(admin).expect(404);
         await http.post(p).set(admin).send({}).expect(404);
       }
-      for (const p of ['/tiktok/test-admin/seed', '/api/test-admin/seed', '/return_refund/202309/returns/1/approve']) {
+      for (const p of ['/tiktok/test-admin/seed', '/api/test-admin/seed', '/supply_chain/202309/shipments/1/confirm']) {
         await http.post(p).set(admin).send({}).expect(404);
       }
       // sanity: the real routes exist

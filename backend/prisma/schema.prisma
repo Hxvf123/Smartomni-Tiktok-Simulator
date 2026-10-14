@@ -73,35 +73,36 @@ model Seller {
 }
 
 model Shop {
-  id               String                @id @default(uuid())
-  tiktokShopId     String                @unique
-  shopCipher       String                @unique
+  id                String                @id @default(uuid())
+  tiktokShopId      String                @unique
+  shopCipher        String                @unique
   // Shop "code" and seller type as returned by Get Authorized Shops (code is simulator-generated; seller_type LOCAL for VN domestic shops, VN applicability unverified).
-  code             String                @default("")
-  sellerType       String                @default("LOCAL")
-  name             String
-  region           String                @default("VN")
-  currency         String                @default("VND")
-  status           ShopStatus            @default(ACTIVE)
-  sellerId         String
-  seller           Seller                @relation(fields: [sellerId], references: [id])
-  activeScenarioId String?
-  buyers           Buyer[]
-  warehouses       Warehouse[]
-  products         Product[]
-  scenarios        Scenario[]            @relation("ShopScenarios")
-  tokens           Token[]
-  authCodes        AuthorizationCode[]
-  webhookJobs      WebhookJob[]
-  orders           Order[]
-  conversations    Conversation[]
-  webhookSubs      WebhookSubscription[]
-  packages         Package[]
-  coupons          Coupon[]
-  faultRules       FaultRule[]
-  demoSessions     DemoSession[]
-  createdAt        DateTime              @default(now())
-  updatedAt        DateTime              @updatedAt
+  code              String                @default("")
+  sellerType        String                @default("LOCAL")
+  name              String
+  region            String                @default("VN")
+  currency          String                @default("VND")
+  status            ShopStatus            @default(ACTIVE)
+  sellerId          String
+  seller            Seller                @relation(fields: [sellerId], references: [id])
+  activeScenarioId  String?
+  buyers            Buyer[]
+  warehouses        Warehouse[]
+  products          Product[]
+  scenarios         Scenario[]            @relation("ShopScenarios")
+  tokens            Token[]
+  authCodes         AuthorizationCode[]
+  webhookJobs       WebhookJob[]
+  orders            Order[]
+  conversations     Conversation[]
+  webhookSubs       WebhookSubscription[]
+  packages          Package[]
+  aftersaleRequests AftersaleRequest[]
+  coupons           Coupon[]
+  faultRules        FaultRule[]
+  demoSessions      DemoSession[]
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
 
   @@index([sellerId])
 }
@@ -410,13 +411,13 @@ model CartItem {
 // Statuses are the OAS values: UNPAID ON_HOLD AWAITING_SHIPMENT PARTIALLY_SHIPPING AWAITING_COLLECTION IN_TRANSIT DELIVERED COMPLETED CANCELLED.
 // Money is integer VND per component; totals are computed by the backend and never re-derived from each other.
 model Order {
-  id                    String          @id @default(uuid())
+  id                    String             @id @default(uuid())
   shopId                String
-  shop                  Shop            @relation(fields: [shopId], references: [id])
+  shop                  Shop               @relation(fields: [shopId], references: [id])
   externalId            String
-  seq                   Int             @unique @default(autoincrement())
+  seq                   Int                @unique @default(autoincrement())
   buyerId               String
-  buyer                 Buyer           @relation(fields: [buyerId], references: [id])
+  buyer                 Buyer              @relation(fields: [buyerId], references: [id])
   status                String
   // business-clock timestamps (create_time / update_time / ... in the API are Unix seconds of these)
   createdAt             DateTime
@@ -430,31 +431,32 @@ model Order {
   cancelledAt           DateTime?
   cancelReason          String?
   cancellationInitiator String?
-  buyerRequestedCancel  Boolean         @default(false)
-  isOnHold              Boolean         @default(false)
+  buyerRequestedCancel  Boolean            @default(false)
+  isOnHold              Boolean            @default(false)
   warehouseId           String?
-  stockReleased         Boolean         @default(false)
+  stockReleased         Boolean            @default(false)
   checkoutKey           String
-  paymentMethodName     String          @default("Fake payment (simulator)")
-  buyerMessage          String          @default("")
+  paymentMethodName     String             @default("Fake payment (simulator)")
+  buyerMessage          String             @default("")
   recipientName         String
   recipientPhone        String
   addressLine           String
   district              String
   city                  String
-  postalCode            String          @default("")
-  currency              String          @default("VND")
+  postalCode            String             @default("")
+  currency              String             @default("VND")
   originalProductPrice  Int
-  sellerDiscount        Int             @default(0)
-  platformDiscount      Int             @default(0)
+  sellerDiscount        Int                @default(0)
+  platformDiscount      Int                @default(0)
   originalShippingFee   Int
-  shippingFeeDiscount   Int             @default(0)
-  tax                   Int             @default(0)
+  shippingFeeDiscount   Int                @default(0)
+  tax                   Int                @default(0)
   lines                 OrderLine[]
   audits                OrderAudit[]
   Package               Package?
   TrackingEvent         TrackingEvent[]
   CouponUsage           CouponUsage[]
+  aftersaleRequests     AftersaleRequest[]
 
   @@unique([shopId, externalId])
   @@unique([buyerId, checkoutKey])
@@ -464,9 +466,9 @@ model Order {
 
 // One row per purchased unit: the OAS line item has no quantity field.
 model OrderLine {
-  id                String  @id @default(uuid())
+  id                String          @id @default(uuid())
   orderId           String
-  order             Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order             Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
   externalId        String
   skuId             String?
   skuExternalId     String
@@ -476,10 +478,11 @@ model OrderLine {
   sellerSku         String
   originalPrice     Int
   salePrice         Int
-  sellerDiscount    Int     @default(0)
-  platformDiscount  Int     @default(0)
+  sellerDiscount    Int             @default(0)
+  platformDiscount  Int             @default(0)
   packageId         String?
   displayStatus     String
+  aftersaleLines    AftersaleLine[]
 
   @@index([orderId])
 }
@@ -554,6 +557,7 @@ model InventoryUpdateAttempt {
 
   @@index([shopId, seq])
 }
+
 // ---- Phase 08: customer-service conversations ------------------------------------------------------------------
 
 // One conversation between a TikTok buyer and the shop. `buyerId` is the simulator Buyer when the TikTok identity is KNOWN
@@ -716,4 +720,76 @@ model CouponUsage {
   createdAt   DateTime
 
   @@unique([couponId, orderId])
+}
+
+// ---- Phase 07b: cancellations and returns/refunds (aftersale) ---------------------------------------------------
+// One table for both kinds. Statuses are the OAS values:
+//   CANCELLATION: CANCELLATION_REQUEST_PENDING | _SUCCESS | _CANCELLED | _COMPLETE
+//   RETURN:       RETURN_OR_REFUND_REQUEST_PENDING | AWAITING_BUYER_SHIP | BUYER_SHIPPED_ITEM | REJECT_RECEIVE_PACKAGE |
+//                 REFUND_OR_RETURN_REQUEST_REJECT | RETURN_OR_REFUND_REQUEST_SUCCESS | _CANCEL | _COMPLETE
+// The order status is NEVER changed by a return (the OAS order statuses have no RETURNED value).
+model AftersaleRequest {
+  id                   String            @id @default(uuid())
+  shopId               String
+  shop                 Shop              @relation(fields: [shopId], references: [id])
+  orderId              String
+  order                Order             @relation(fields: [orderId], references: [id])
+  externalId           String
+  seq                  Int               @unique @default(autoincrement())
+  // CANCELLATION | RETURN
+  kind                 String
+  // cancel_type CANCEL | BUYER_CANCEL, or return_type REFUND | RETURN_AND_REFUND
+  type                 String
+  status               String
+  reason               String
+  // BUYER | SELLER | SYSTEM
+  role                 String
+  rejectReason         String?
+  rejectComment        String?
+  returnTrackingNumber String?
+  currency             String            @default("VND")
+  refundSubtotal       Int
+  refundShipping       Int               @default(0)
+  refundTotal          Int
+  createdAt            DateTime
+  updatedAt            DateTime
+  lines                AftersaleLine[]
+  records              AftersaleRecord[]
+
+  @@unique([shopId, externalId])
+  @@index([shopId, seq])
+  @@index([orderId])
+}
+
+// One row per purchased UNIT (OrderLine is per unit). `active` is true while the unit is held by a live or successful request;
+// a partial unique index (see the migration) allows at most ONE active row per order line, so a unit can never be refunded twice.
+model AftersaleLine {
+  id             String           @id @default(uuid())
+  requestId      String
+  request        AftersaleRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  orderLineId    String
+  orderLine      OrderLine        @relation(fields: [orderLineId], references: [id], onDelete: Cascade)
+  externalId     String
+  refundSubtotal Int
+  active         Boolean          @default(true)
+
+  @@index([requestId])
+  @@index([orderLineId])
+}
+
+model AftersaleRecord {
+  id             String           @id @default(uuid())
+  requestId      String
+  request        AftersaleRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  fromStatus     String?
+  toStatus       String
+  // BUYER | SELLER | SYSTEM | OPERATOR (test console)
+  actor          String
+  note           String           @default("")
+  idempotencyKey String?
+  at             DateTime
+  createdAt      DateTime         @default(now())
+
+  @@unique([requestId, idempotencyKey])
+  @@index([requestId, createdAt])
 }

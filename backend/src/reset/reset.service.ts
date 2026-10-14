@@ -143,6 +143,7 @@ export class ResetService {
           p.demoSession.deleteMany({ where: { shopId: shopId! } }),
           p.faultRule.deleteMany({ where: { shopId: shopId! } }),
           // orders first (Order -> Shop/Buyer are RESTRICT); lines, audits, packages, tracking and coupon usages cascade from the order
+          p.aftersaleRequest.deleteMany({ where: { shopId: shopId! } }),
           p.order.deleteMany({ where: { shopId: shopId! } }),
           p.conversation.deleteMany({ where: { shopId: shopId! } }),
           p.coupon.deleteMany({ where: { shopId: shopId! } }),
@@ -167,6 +168,7 @@ export class ResetService {
           p.webhookJob.deleteMany(),
           p.demoSession.deleteMany(),
           p.faultRule.deleteMany(),
+          p.aftersaleRequest.deleteMany(),
           p.order.deleteMany(),
           p.conversation.deleteMany(),
           p.coupon.deleteMany(),
