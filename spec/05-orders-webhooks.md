@@ -54,9 +54,10 @@ Callback URL là endpoint SmartOmni; các topic, chữ ký và JSON event phải
 
 ## Theo dõi
 
-- Người phụ trách:
-- PR/commit:
-- Bằng chứng kiểm thử:
-- Blocker / quyết định bổ sung:
-- Ngày hoàn thành:
-
+- Người phụ trách: (chưa gán) - agent Phase 05, chưa review bởi người.
+- PR/commit: commit `phase-05` trên `main` của repo simulator (xem `git log`).
+- Phạm vi đã làm (phía simulator): migration `20261017000000_phase05_orders`; giỏ hàng, checkout idempotent theo `checkoutKey`, thanh toán giả, state machine có audit, đặt/hoàn tồn khi hủy đúng một lần; `POST /order/202309/orders/search` (keyset cursor, lọc trạng thái/buyer/thời gian nửa mở), `GET /order/202507/orders`; Events API `GET/PUT/DELETE /event/202309/webhooks`; webhook `ORDER_STATUS_CHANGE` ghi cùng transaction (outbox), ký `Authorization = HMAC-SHA256(app_secret, app_key + body)`, fault `REORDER`; UI Buyer (giỏ, checkout, đơn), Seller (đơn), Test Console (đơn, chuyển trạng thái, release hold).
+- Bằng chứng (Windows, Node 22, PostgreSQL 16 nhúng): `npm test` backend = 7 suites / 110 tests pass (25 test mới `tiktok-orders.e2e-spec.ts`: tiền theo thành phần, snapshot, validate số lượng, oversell/đua tồn, idempotency đồng thời, ON_HOLD không giao được, DELIVERED chưa COMPLETED, hủy hoàn tồn một lần, phân trang/ lọc biên thời gian, cô lập shop, schema OAS, webhook cùng transaction, REORDER/DROP/DUPLICATE, chữ ký trên HTTP thật + vector `contracts/signing`); frontend typecheck/lint/test pass.
+- Chưa làm / BLOCKED: phần SmartOmni (bước 6-11: xác minh chữ ký + idempotency + polling bù + chặn sửa tay) - repo platform chỉ để tham khảo, yêu cầu ghi tại `docs/smartomni-requirements/phase-05.md`; bằng chứng Buyer → simulator → SmartOmni → inventory (cần Phase 06 + SmartOmni); Playwright (xem PROGRESS.md).
+- Quyết định/blocker: xem `DECISIONS.md` (D2-D8). Mọi hành vi chuyển trạng thái, `type` webhook ngoài ORDER_STATUS_CHANGE=1, thời lượng ON_HOLD đều là lựa chọn của simulator, chưa xác minh.
+- Ngày hoàn thành: chưa (PARTIAL).

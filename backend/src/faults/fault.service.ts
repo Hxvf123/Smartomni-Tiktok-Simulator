@@ -46,10 +46,12 @@ export class FaultService {
   }
 
   /** Return the first matching rule and consume one use (atomic for counted rules). */
-  async consume(target: FaultTarget, shopId: string | null, key: string): Promise<FaultRule | null> {
+  async consume(target: FaultTarget, shopId: string | null, key: string, kinds?: FaultKind[]): Promise<FaultRule | null> {
     const rules = await this.prisma.faultRule.findMany({
       where: {
         target,
+        // REORDER is applied when the event is enqueued, never at delivery
+        kind: kinds ? { in: kinds } : { not: 'REORDER' },
         OR: shopId ? [{ shopId }, { shopId: null }] : [{ shopId: null }],
         AND: [{ OR: [{ remaining: null }, { remaining: { gt: 0 } }] }],
       },

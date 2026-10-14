@@ -23,7 +23,9 @@ import { APP_CONFIG, AppConfig } from '../config/config';
 import { OAuthModule } from '../oauth/oauth.module';
 import { OAuthService } from '../oauth/oauth.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { OrdersModule } from '../orders/orders.module';
 import { CatalogDemoController } from './catalog.controller';
+import { OrdersDemoController } from './orders.controller';
 import { DemoPrincipal, DemoRequest, DemoSessionGuard } from './demo-session.guard';
 
 const CreateSession = z.union([
@@ -177,5 +179,5 @@ export class DemoController {
   }
 }
 
-@Module({ imports: [OAuthModule], controllers: [DemoController, CatalogDemoController], providers: [DemoSessionGuard] })
+@Module({ imports: [OAuthModule, OrdersModule], controllers: [DemoController, CatalogDemoController, OrdersDemoController], providers: [DemoSessionGuard] })
 export class DemoModule {}

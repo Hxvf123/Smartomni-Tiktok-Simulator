@@ -7,15 +7,16 @@ import { HttpLogPanel } from './console/HttpLogPanel';
 import { WebhooksPanel } from './console/WebhooksPanel';
 import { FaultsPanel } from './console/FaultsPanel';
 import { TokensPanel } from './console/TokensPanel';
+import { consoleTabs } from '../features/registry';
 import { api } from '../lib/api';
 import { useAsync } from '../lib/useAsync';
 import type { ShopSummary } from './console/types';
 
 const TABS = ['Status', 'Shop & scenario', 'Reset', 'Clock', 'HTTP log', 'Authorization', 'Webhooks', 'Faults'] as const;
-type Tab = (typeof TABS)[number];
 
 export function ConsolePage() {
-  const [tab, setTab] = useState<Tab>('Status');
+  const [tab, setTab] = useState<string>('Status');
+  const extra = consoleTabs();
   const [shopId, setShopId] = useState<string>('');
   const shops = useAsync(() => api<{ items: ShopSummary[] }>('/test-admin/shops'), []);
   const list = shops.data?.items ?? [];
@@ -36,7 +37,7 @@ export function ConsolePage() {
         </label>
       </div>
       <div className="tabs" role="tablist">
-        {TABS.map((t) => (
+        {[...TABS, ...extra.map((e) => e.label)].map((t) => (
           <button key={t} role="tab" aria-selected={tab === t} className={tab === t ? 'active' : ''} onClick={() => setTab(t)}>
             {t}
           </button>
@@ -51,6 +52,7 @@ export function ConsolePage() {
         {tab === 'Authorization' && <TokensPanel shopId={selected} />}
         {tab === 'Webhooks' && <WebhooksPanel shopId={selected} />}
         {tab === 'Faults' && <FaultsPanel shopId={selected} />}
+        {extra.filter((e) => e.label === tab).map((e) => <div key={e.path}>{e.render({ shopId: selected })}</div>)}
       </div>
     </div>
   );

@@ -33,6 +33,18 @@ export interface AppConfig {
     /** Accepted |now - timestamp| for API request signatures. UNVERIFIED: TikTok's server-side window is undocumented. */
     signatureWindowMs: number;
   };
+  orders: {
+    /** Flat shipping fee (VND). A simulator choice. */
+    shippingFeeVnd: number;
+    /** Minutes (business clock) an order stays ON_HOLD after payment before it is released to AWAITING_SHIPMENT. Simulator choice. */
+    holdMinutes: number;
+    /** Interval of the background release of due holds (0 disables it; /test-admin/orders/release-due always works). */
+    lifecycleIntervalMs: number;
+  };
+  webhook: {
+    /** Rewrite localhost/127.0.0.1 subscription addresses to HOST_CALLBACK_BASE_URL (needed inside Docker). */
+    rewriteLocalhost: boolean;
+  };
   demoSessionTtlMs: number;
   resetConfirmTtlMs: number;
 }
@@ -84,7 +96,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean),
-      appScopes: (env.SEED_APP_SCOPES ?? 'sim.authorized_shops.read,sim.product.read,sim.order.read')
+      appScopes: (env.SEED_APP_SCOPES ?? 'sim.authorized_shops.read,sim.product.read,sim.order.read,sim.event.manage')
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean),
@@ -95,6 +107,12 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       refreshTokenTtlMs: int('OAUTH_REFRESH_TOKEN_TTL_MS', 30 * 24 * 3600 * 1000, env),
       signatureWindowMs: int('OAUTH_SIGNATURE_WINDOW_MS', 5 * 60 * 1000, env),
     },
+    orders: {
+      shippingFeeVnd: int('ORDER_SHIPPING_FEE_VND', 25000, env),
+      holdMinutes: int('ORDER_HOLD_MINUTES', 30, env),
+      lifecycleIntervalMs: int('ORDER_LIFECYCLE_INTERVAL_MS', 5000, env),
+    },
+    webhook: { rewriteLocalhost: bool('WEBHOOK_REWRITE_LOCALHOST', false, env) },
     demoSessionTtlMs: int('DEMO_SESSION_TTL_MS', 8 * 3600 * 1000, env),
     resetConfirmTtlMs: int('RESET_CONFIRM_TTL_MS', 120000, env),
   };

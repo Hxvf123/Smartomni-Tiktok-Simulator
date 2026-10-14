@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": { "rootDir": ".", "noEmit": true, "incremental": false },
-  "include": ["src/**/*.ts", "test/**/*.ts"]
+  "compilerOptions": { "rootDir": "..", "noEmit": true, "incremental": false },
+  "include": ["src/**/*.ts", "test/**/*.ts", "../contracts/validator/schema.ts"]
 }

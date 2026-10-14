@@ -5,3 +5,9 @@ dist
 data
 coverage
 *.log
+
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+.tmp-live
+test-results
+playwright-report

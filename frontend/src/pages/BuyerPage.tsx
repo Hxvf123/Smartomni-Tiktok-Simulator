@@ -1,6 +1,8 @@
+import { NavLink, Route, Routes } from 'react-router-dom';
 import { AsyncState } from '../components/AsyncState';
 import { BuyerStorefront } from '../components/BuyerStorefront';
 import { DemoLogin } from '../components/DemoLogin';
+import { buyerTabs } from '../features/registry';
 import { api } from '../lib/api';
 import { useDemoSession } from '../lib/session';
 import { useAsync } from '../lib/useAsync';
@@ -18,6 +20,7 @@ export function BuyerPage() {
 
 function BuyerHome({ token, shopId, onLogout }: { token: string; shopId: string; onLogout: () => void }) {
   const me = useAsync(() => api<Me>('/demo/me', { demoSession: token }), [token]);
+  const tabs = buyerTabs();
   return (
     <div>
       <div className="row">
@@ -28,11 +31,18 @@ function BuyerHome({ token, shopId, onLogout }: { token: string; shopId: string;
         {(d) => (
           <section className="card">
             <h2>Shopping at {d.shop.name}</h2>
-            <p className="muted">Signed in as {d.buyer?.name} ({d.buyer?.city}). Cart, checkout, orders and returns arrive in later phases.</p>
+            <p className="muted">Signed in as {d.buyer?.name} ({d.buyer?.city}). Fake data only; payment is simulated.</p>
           </section>
         )}
       </AsyncState>
-      <BuyerStorefront shopId={shopId} token={token} />
+      <nav className="tabs" aria-label="Buyer sections">
+        <NavLink to="/buyer" end>Shop</NavLink>
+        {tabs.map((t) => <NavLink key={t.path} to={`/buyer/${t.path}`}>{t.label}</NavLink>)}
+      </nav>
+      <Routes>
+        {tabs.map((t) => <Route key={t.path} path={`${t.path}/*`} element={t.render({ token, shopId })} />)}
+        <Route path="*" element={<BuyerStorefront shopId={shopId} token={token} />} />
+      </Routes>
     </div>
   );
 }

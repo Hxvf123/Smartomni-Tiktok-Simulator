@@ -1,5 +1,7 @@
 import { Inject, Injectable, Logger, OnApplicationBootstrap, OnModuleDestroy } from '@nestjs/common';
 import { WebhookJob } from '@prisma/client';
+import { createHmac } from 'crypto';
+import { PrismaService } from '../prisma/prisma.service';
 import { APP_CONFIG, AppConfig } from '../config/config';
 import { FaultService } from '../faults/fault.service';
 import { ClaimedJob, QueueOptions, WebhookQueueService, AttemptOutcome } from './webhook-queue.service';
@@ -14,23 +16,51 @@ export abstract class WebhookTransport {
   abstract send(job: WebhookJob, ctx: { attemptNo: number; timeoutMs: number }): Promise<TransportResult>;
 }
 
+/** localhost / 127.0.0.1 / ::1 in a subscription address mean "the machine running SmartOmni", which from inside Docker is the host. */
+export function resolveTargetUrl(address: string, rewriteLocalhost: boolean, hostCallbackBaseUrl: string): string {
+  if (!rewriteLocalhost) return address;
+  try {
+    const url = new URL(address);
+    if (!['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) return address;
+    const host = new URL(hostCallbackBaseUrl);
+    url.hostname = host.hostname;
+    return url.toString();
+  } catch {
+    return address;
+  }
+}
+
+/** Webhook signature (SECONDARY source, see contracts/signing/README.md): `Authorization` = lowercase hex HMAC-SHA256(app_secret, app_key + raw body). */
+export function webhookSignature(appSecret: string, appKey: string, rawBody: string): string {
+  return createHmac('sha256', appSecret).update(appKey + rawBody).digest('hex');
+}
+
 @Injectable()
 export class FetchWebhookTransport extends WebhookTransport {
+  constructor(
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+    @Inject(APP_CONFIG) private readonly config: AppConfig,
+  ) {
+    super();
+  }
+
   async send(job: WebhookJob, ctx: { attemptNo: number; timeoutMs: number }): Promise<TransportResult> {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), ctx.timeoutMs);
     try {
-      const res = await fetch(job.targetUrl, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-simulator-webhook-id': job.id,
-          'x-simulator-attempt': String(ctx.attemptNo),
-          ...(job.requestId ? { 'x-request-id': job.requestId } : {}),
-        },
-        body: JSON.stringify(job.payload),
-        signal: controller.signal,
-      });
+      // The exact bytes sent are the bytes signed.
+      const body = JSON.stringify(job.payload);
+      const headers: Record<string, string> = {
+        'content-type': 'application/json',
+        'x-simulator-webhook-id': job.id,
+        'x-simulator-attempt': String(ctx.attemptNo),
+        ...(job.requestId ? { 'x-request-id': job.requestId } : {}),
+      };
+      if (job.appId) {
+        const app = await this.prisma.app.findUnique({ where: { id: job.appId } });
+        if (app) headers.authorization = webhookSignature(app.appSecret, app.appKey, body);
+      }
+      const res = await fetch(resolveTargetUrl(job.targetUrl, this.config.webhook.rewriteLocalhost, this.config.hostCallbackBaseUrl), { method: 'POST', headers, body, signal: controller.signal });
       const text = await res.text();
       return { httpStatus: res.status, body: text.slice(0, 1000) };
     } finally {

@@ -3,6 +3,8 @@ import type { NextFunction, Request, Response } from 'express';
 import { FaultService } from '../faults/fault.service';
 import { classifyRouter } from '../http-log/request-log.middleware';
 import { OAuthModule } from '../oauth/oauth.module';
+import { EventsController } from './events.controller';
+import { OrdersController } from './orders.controller';
 import { ProductsController } from './products.controller';
 import { ShopsController } from './shops.controller';
 import { TiktokApiGuard } from './tiktok-api.guard';
@@ -11,7 +13,8 @@ import { TokenController } from './token.controller';
 /**
  * TikTok-shaped public API (adapter). Method/path/header/JSON shapes come from `contracts/` (Phase 01).
  * Endpoints: GET /api/v2/token/get, GET /api/v2/token/refresh (provisional), GET /authorization/202309/shops (Phase 03);
- * POST /product/202502/products/search, GET /product/202309/products/{id}, GET /logistics/202309/warehouses (Phase 04, read-only).
+ * POST /product/202502/products/search, GET /product/202309/products/{id}, GET /logistics/202309/warehouses (Phase 04, read-only);
+ * POST /order/202309/orders/search, GET /order/202507/orders, GET/PUT/DELETE /event/202309/webhooks (Phase 05).
  * This module may import only OAuthModule (token lifecycle); it must never import Demo/TestAdmin/Seed/Reset providers; seed, reset, clock and fault control
  * live exclusively under /test-admin, and scenario helpers under /demo.
  * Unmatched paths return Nest's plain 404 - the simulator does not pretend unsupported endpoints exist.
@@ -46,7 +49,7 @@ export class TiktokFaultMiddleware implements NestMiddleware {
 
 @Module({
   imports: [OAuthModule],
-  controllers: [TokenController, ShopsController, ProductsController],
+  controllers: [TokenController, ShopsController, ProductsController, OrdersController, EventsController],
   providers: [TiktokFaultMiddleware, TiktokApiGuard],
   exports: [TiktokFaultMiddleware],
 })

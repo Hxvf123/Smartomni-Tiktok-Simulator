@@ -25,6 +25,9 @@ import { ZodPipe } from '../common/zod.pipe';
 import { APP_CONFIG, AppConfig } from '../config/config';
 import { FaultService } from '../faults/fault.service';
 import { OAuthModule } from '../oauth/oauth.module';
+import { OrdersModule } from '../orders/orders.module';
+import { OrdersService } from '../orders/orders.service';
+import { ORDER_STATUSES } from '../orders/order-state';
 import { TokenAdminService } from '../oauth/token-admin.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RESET_SCOPES, ResetService } from '../reset/reset.service';
@@ -55,7 +58,7 @@ const ClockSet = z.object({ setTo: z.string().datetime().optional(), advanceMs: 
 const FaultCreate = z.object({
   shopId: z.string().min(1).nullable().optional(),
   target: z.enum(['API', 'WEBHOOK']),
-  kind: z.enum(['HTTP_ERROR', 'DELAY', 'DROP', 'DUPLICATE']),
+  kind: z.enum(['HTTP_ERROR', 'DELAY', 'DROP', 'DUPLICATE', 'REORDER']),
   pathMatch: z.string().min(1).nullable().optional(),
   params: z.record(z.unknown()).optional(),
   remaining: z.number().int().positive().nullable().optional(),
@@ -73,6 +76,8 @@ const WebhookEnqueue = z.object({
 
 const CatalogBulk = z.object({ shopId: z.string().min(1), count: z.number().int().min(1).max(500), skusPerProduct: z.number().int().min(1).max(5).default(2) });
 
+const OrderTransition = z.object({ to: z.enum(ORDER_STATUSES), shopId: z.string().min(1).optional(), note: z.string().max(300).optional(), cancelReason: z.string().max(300).optional() });
+
 type Rq = Request & { requestId?: string };
 
 @Controller()
@@ -89,6 +94,7 @@ export class TestAdminController {
     @Inject(WebhookWorkerService) private readonly worker: WebhookWorkerService,
     @Inject(TokenAdminService) private readonly tokens: TokenAdminService,
     @Inject(BusinessClock) private readonly businessClock: BusinessClock,
+    @Inject(OrdersService) private readonly orders: OrdersService,
   ) {}
 
   @Get('status')
@@ -156,6 +162,53 @@ export class TestAdminController {
     if (!scenario) throw new NotFoundException('Unknown scenario for this shop');
     await this.prisma.shop.update({ where: { id: shopId }, data: { activeScenarioId: scenario.id } });
     return { shopId, activeScenarioId: scenario.id, key: scenario.key };
+  }
+
+  // ---- Phase 05: orders (state machine control) ----
+
+  @Get('orders')
+  async listOrders(@Query('shopId') shopId?: string, @Query('status') status?: string, @Query('limit') limit?: string) {
+    const take = Math.min(Math.max(Number(limit) || 50, 1), 200);
+    const rows = await this.prisma.order.findMany({
+      where: { ...(shopId ? { shopId } : {}), ...(status ? { status } : {}) },
+      orderBy: { seq: 'desc' },
+      take,
+      include: { shop: { select: { name: true, tiktokShopId: true } }, buyer: { select: { name: true } }, _count: { select: { lines: true } } },
+    });
+    return {
+      items: rows.map((o) => ({
+        id: o.externalId,
+        rowId: o.id,
+        shopId: o.shopId,
+        shopName: o.shop.name,
+        buyerName: o.buyer.name,
+        status: o.status,
+        units: o._count.lines,
+        createdAt: o.createdAt.toISOString(),
+        updatedAt: o.updatedAt.toISOString(),
+        releaseAt: o.releaseAt?.toISOString() ?? null,
+      })),
+    };
+  }
+
+  @Get('orders/:ref/audit')
+  async orderAudit(@Param('ref') ref: string, @Query('shopId') shopId?: string) {
+    const order = await this.orders.findForAdmin(ref, shopId);
+    return { orderId: order.externalId, status: order.status, history: (await this.orders.audits(order.id)).map((a) => ({ from: a.fromStatus, to: a.toStatus, actor: a.actor, note: a.note, at: a.at.toISOString() })) };
+  }
+
+  /** Force a transition through the same state machine the apps use (an invalid jump, e.g. ON_HOLD -> AWAITING_COLLECTION, is refused with 400). */
+  @Post('orders/:ref/transition')
+  async transitionOrder(@Req() req: Rq, @Param('ref') ref: string, @Body(new ZodPipe(OrderTransition)) body: z.infer<typeof OrderTransition>) {
+    const order = await this.orders.findForAdmin(ref, body.shopId);
+    const updated = await this.orders.transition(order.id, body.to, 'TEST_CONSOLE', { note: body.note ?? 'test console', cancelReason: body.cancelReason, requestId: req.requestId });
+    return { id: updated.externalId, from: order.status, status: updated.status, updatedAt: updated.updatedAt.toISOString() };
+  }
+
+  /** Release every ON_HOLD order whose hold period (business clock) has elapsed; advance the clock first to test the boundary. */
+  @Post('orders/release-due')
+  async releaseDue() {
+    return { released: await this.orders.releaseDue() };
   }
 
   /** Generates ACTIVATE products with several priced SKUs, to exercise multi-page imports. Fake data only. */
@@ -290,5 +343,5 @@ export class TestAdminController {
   }
 }
 
-@Module({ imports: [OAuthModule], controllers: [TestAdminController], providers: [TestAdminGuard, TokenAdminService] })
+@Module({ imports: [OAuthModule, OrdersModule], controllers: [TestAdminController], providers: [TestAdminGuard, TokenAdminService] })
 export class TestAdminModule {}

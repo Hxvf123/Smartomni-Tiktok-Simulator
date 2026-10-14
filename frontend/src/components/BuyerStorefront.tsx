@@ -61,6 +61,8 @@ function ProductDetail({ shopId, token }: { shopId: string; token: string }) {
     [shopId, token, productId],
   );
   const [picked, setPicked] = useState<string>();
+  const [qty, setQty] = useState(1);
+  const [note, setNote] = useState<string>();
   if (detail.error instanceof ApiError && detail.error.status === 404) {
     return <div className="state state-empty">This product is not available in the shop you are signed in to. <Link to="/buyer">Back to the shop</Link></div>;
   }
@@ -85,7 +87,23 @@ function ProductDetail({ shopId, token }: { shopId: string; token: string }) {
             <p aria-live="polite">
               {sku ? <>Selected: <strong>{sku.name}</strong> - {vnd(sku.priceVnd)} ({sku.stock} in stock)</> : `From ${priceRange(product)}. Choose a variant.`}
             </p>
-            <p className="muted">Cart and checkout arrive in Phase 05.</p>
+            <div className="row-wrap">
+              <label>Quantity <input aria-label="quantity" type="number" min={1} max={20} value={qty} onChange={(e) => setQty(Math.max(1, Math.min(20, Number(e.target.value) || 1)))} /></label>
+              <button
+                disabled={!sku || !sku.available}
+                onClick={() => {
+                  if (!sku) return;
+                  setNote(undefined);
+                  api(`/demo/shops/${shopId}/cart/items`, { method: 'PUT', body: { skuId: sku.id, quantity: qty }, demoSession: token })
+                    .then(() => setNote(`Added ${qty} × ${sku.name} to your cart.`))
+                    .catch((e: Error) => setNote(e.message));
+                }}
+              >
+                Add to cart
+              </button>
+              <Link to="/buyer/cart">Go to cart</Link>
+            </div>
+            {note ? <p role="status">{note}</p> : null}
           </section>
         );
       }}

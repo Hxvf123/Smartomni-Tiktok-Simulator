@@ -30,7 +30,7 @@ describe('router separation, demo isolation, clocks, request log', () => {
   describe('router separation', () => {
     it('TikTok module serves only the Phase 03/04 controllers and does not provide admin/demo/seed/reset services', () => {
       const controllers = (Reflect.getMetadata(MODULE_METADATA.CONTROLLERS, TiktokModule) as any[]).map((c) => c.name).sort();
-      expect(controllers).toEqual(['ProductsController', 'ShopsController', 'TokenController']);
+      expect(controllers).toEqual(['EventsController', 'OrdersController', 'ProductsController', 'ShopsController', 'TokenController']);
       const providers = (Reflect.getMetadata(MODULE_METADATA.PROVIDERS, TiktokModule) as any[]).map((p) => p.name).sort();
       expect(providers).toEqual(['TiktokApiGuard', 'TiktokFaultMiddleware']);
       // only the token-lifecycle module may be imported: no Demo/TestAdmin/Seed/Reset/Clock-control wiring
@@ -43,7 +43,7 @@ describe('router separation, demo isolation, clocks, request log', () => {
         await http.get(p).set(admin).expect(404);
         await http.post(p).set(admin).send({}).expect(404);
       }
-      for (const p of ['/tiktok/test-admin/seed', '/api/test-admin/seed', '/order/202309/orders/search']) {
+      for (const p of ['/tiktok/test-admin/seed', '/api/test-admin/seed', '/fulfillment/202309/packages/1/ship']) {
         await http.post(p).set(admin).send({}).expect(404);
       }
       // sanity: the real routes exist

@@ -55,7 +55,7 @@ export function FaultsPanel({ shopId }: { shopId: string }) {
         <p className="muted">Webhook faults apply to the delivery worker (match by topic). API faults apply only to TikTok-shaped routes (match by path prefix).</p>
         <div className="row-wrap">
           <label>Target <select value={target} onChange={(e) => setTarget(e.target.value as 'WEBHOOK' | 'API')}><option>WEBHOOK</option><option>API</option></select></label>
-          <label>Kind <select value={kind} onChange={(e) => setKind(e.target.value)}><option>HTTP_ERROR</option><option>DELAY</option><option>DROP</option><option>DUPLICATE</option></select></label>
+          <label>Kind <select value={kind} onChange={(e) => setKind(e.target.value)}><option>HTTP_ERROR</option><option>DELAY</option><option>DROP</option><option>DUPLICATE</option><option>REORDER</option></select></label>
           <label>{target === 'WEBHOOK' ? 'Topic' : 'Path prefix'} <input value={pathMatch} onChange={(e) => setPathMatch(e.target.value)} placeholder="(any)" /></label>
           {kind === 'HTTP_ERROR' ? <label>Status <input size={4} value={status} onChange={(e) => setStatus(e.target.value)} /></label> : null}
           {kind === 'DELAY' ? <label>Delay ms <input size={6} value={delayMs} onChange={(e) => setDelayMs(e.target.value)} /></label> : null}
