@@ -22,3 +22,14 @@
 | D6.6 | Inventory faults must not leak. | `INVENTORY_FAULT_KINDS` are excluded from the generic fault lookup (API middleware and webhook worker) and consumed only by the inventory handler. | Otherwise a rule meant for inventory would be used up by an unrelated request. |
 | D6.7 | Scope. | New placeholder `sim.inventory.write` in default seed scopes; tokens issued earlier must re-authorize. | Official scope names are unresolved. |
 | D6.8 | Which writers are logged. | API, SELLER edit, ORDER (checkout reservation and cancel restore) write `InventoryChange` rows in the same transaction as the stock change under the row lock, so the per-row log is a verifiable before/after chain. | Lets tests prove that no update is lost under concurrency. |
+## Phase 08
+
+| # | Issue | Choice | Reason |
+|---|---|---|---|
+| D8.1 | Send Message 202606 has no schema snapshot; 202309 has. | Implement 202309 (TEXT only); 202606 returns 501 `unsupported_operation`. | Do not claim an unverified version. |
+| D8.2 | Brief: expose only conversations after the connection. | The API exposes ALL seeded data, including history older than any connection; the sync window is SmartOmni's job. | A server that hides history would make "do not import history" untestable and differs from TikTok. |
+| D8.3 | OAS: NEW_CONVERSATION means a CS agent joins/leaves, not "first message". | NEW_CONVERSATION fires on agent join/leave (Test Console); NEW_MESSAGE fires for every message. Payload shapes are provisional. | Follows the OAS event_type description. |
+| D8.4 | Message types. | TEXT only is created; IMAGE/VIDEO/cards -> 400; upload -> 501. A seeded invisible `NOTIFICATION` message exists to test unknown-type handling. | Uploads/cards need contracts not verified. |
+| D8.5 | Test-admin guard. | `ChatAdminGuard` duplicates the 10-line TestAdminGuard in a separate file. | Avoids a circular import with test-admin.module.ts without refactoring shared files. |
+| D8.6 | TikTok router must not import write modules (router test). | TiktokModule now imports `ChatModule` (needed because Send Message writes); the routers test expects `['OAuthModule','ChatModule']`. | Send Message is a legitimate TikTok write. |
+| D8.7 | Indeterminate send. | Conversation flag `dropSendResponse`: message stored + event emitted, socket destroyed before the response. | Lets SmartOmni test "unknown outcome, do not retry blindly". |

@@ -21,7 +21,10 @@ export type FaultKind =
   | 'auth_code_used'
   | 'refresh_token_invalid'
   | 'refresh_token_expired'
-  | 'product_not_found';
+  | 'product_not_found'
+  | 'unsupported_operation'
+  | 'conversation_not_found'
+  | 'cannot_send_message';
 
 const IN_CONTRACT_FIXTURES: FaultKind[] = ['invalid_input', 'token_expired', 'missing_scope', 'bad_signature'];
 

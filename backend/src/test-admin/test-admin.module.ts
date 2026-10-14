@@ -26,6 +26,8 @@ import { APP_CONFIG, AppConfig } from '../config/config';
 import { FaultService } from '../faults/fault.service';
 import { historyOf } from '../demo/inventory.controller';
 import { OAuthModule } from '../oauth/oauth.module';
+import { ChatModule } from '../chat/chat.module';
+import { ChatAdminController, ChatAdminGuard } from './chat-admin.controller';
 import { OrdersModule } from '../orders/orders.module';
 import { OrdersService } from '../orders/orders.service';
 import { ORDER_STATUSES } from '../orders/order-state';
@@ -352,5 +354,5 @@ export class TestAdminController {
   }
 }
 
-@Module({ imports: [OAuthModule, OrdersModule], controllers: [TestAdminController], providers: [TestAdminGuard, TokenAdminService] })
+@Module({ imports: [OAuthModule, OrdersModule, ChatModule], controllers: [TestAdminController, ChatAdminController], providers: [TestAdminGuard, ChatAdminGuard, TokenAdminService] })
 export class TestAdminModule {}

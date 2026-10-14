@@ -30,12 +30,12 @@ describe('router separation, demo isolation, clocks, request log', () => {
   describe('router separation', () => {
     it('TikTok module serves only the Phase 03/04 controllers and does not provide admin/demo/seed/reset services', () => {
       const controllers = (Reflect.getMetadata(MODULE_METADATA.CONTROLLERS, TiktokModule) as any[]).map((c) => c.name).sort();
-      expect(controllers).toEqual(['EventsController', 'InventoryController', 'OrdersController', 'ProductsController', 'ShopsController', 'TokenController']);
+      expect(controllers).toEqual(['ConversationsController', 'EventsController', 'InventoryController', 'OrdersController', 'ProductsController', 'ShopsController', 'TokenController']);
       const providers = (Reflect.getMetadata(MODULE_METADATA.PROVIDERS, TiktokModule) as any[]).map((p) => p.name).sort();
       expect(providers).toEqual(['TiktokApiGuard', 'TiktokFaultMiddleware']);
       // only the token-lifecycle module may be imported: no Demo/TestAdmin/Seed/Reset/Clock-control wiring
       const imports = (Reflect.getMetadata(MODULE_METADATA.IMPORTS, TiktokModule) as any[]).map((m) => m.name);
-      expect(imports).toEqual(['OAuthModule']);
+      expect(imports).toEqual(['OAuthModule', 'ChatModule']);
     });
 
     it('control endpoints exist only under /test-admin and demo endpoints only under /demo', async () => {

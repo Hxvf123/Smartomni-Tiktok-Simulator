@@ -1,3 +1,5 @@
+import { DEFAULT_APP_SCOPES } from '../oauth/scopes';
+
 export interface AppConfig {
   port: number;
   databaseUrl: string;
@@ -96,7 +98,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean),
-      appScopes: (env.SEED_APP_SCOPES ?? 'sim.authorized_shops.read,sim.product.read,sim.order.read,sim.event.manage,sim.inventory.write')
+      appScopes: (env.SEED_APP_SCOPES || DEFAULT_APP_SCOPES.join(','))
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean),
