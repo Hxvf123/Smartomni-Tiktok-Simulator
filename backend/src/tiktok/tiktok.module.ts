@@ -3,9 +3,11 @@ import type { NextFunction, Request, Response } from 'express';
 import { FaultService } from '../faults/fault.service';
 import { classifyRouter } from '../http-log/request-log.middleware';
 import { OAuthModule } from '../oauth/oauth.module';
+import { FulfillmentModule } from '../fulfillment/fulfillment.module';
 import { EventsController } from './events.controller';
 import { ChatModule } from '../chat/chat.module';
 import { ConversationsController } from './conversations.controller';
+import { FulfillmentController } from './fulfillment.controller';
 import { InventoryController } from './inventory.controller';
 import { OrdersController } from './orders.controller';
 import { ProductsController } from './products.controller';
@@ -19,6 +21,7 @@ import { TokenController } from './token.controller';
  * POST /product/202502/products/search, GET /product/202309/products/{id}, GET /logistics/202309/warehouses (Phase 04, read-only);
  * POST /order/202309/orders/search, GET /order/202507/orders, GET/PUT/DELETE /event/202309/webhooks (Phase 05);
  * POST /product/202309/products/{id}/inventory/update (Phase 06, absolute quantity).
+ * GET /fulfillment/202309/orders/{id}/tracking, GET .../packages/{id}, GET .../packages/{id}/shipping_documents, POST .../packages/{id}/ship (Phase 07a).
  * This module may import only OAuthModule (token lifecycle); it must never import Demo/TestAdmin/Seed/Reset providers; seed, reset, clock and fault control
  * live exclusively under /test-admin, and scenario helpers under /demo.
  * Unmatched paths return Nest's plain 404 - the simulator does not pretend unsupported endpoints exist.
@@ -52,8 +55,8 @@ export class TiktokFaultMiddleware implements NestMiddleware {
 }
 
 @Module({
-  imports: [OAuthModule, ChatModule],
-  controllers: [TokenController, ShopsController, ProductsController, OrdersController, EventsController, InventoryController, ConversationsController],
+  imports: [OAuthModule, ChatModule, FulfillmentModule],
+  controllers: [TokenController, ShopsController, ProductsController, OrdersController, EventsController, InventoryController, ConversationsController, FulfillmentController],
   providers: [TiktokFaultMiddleware, TiktokApiGuard],
   exports: [TiktokFaultMiddleware],
 })

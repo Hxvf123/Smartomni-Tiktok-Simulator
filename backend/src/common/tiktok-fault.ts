@@ -24,7 +24,11 @@ export type FaultKind =
   | 'product_not_found'
   | 'unsupported_operation'
   | 'conversation_not_found'
-  | 'cannot_send_message';
+  | 'cannot_send_message'
+  | 'order_not_found'
+  | 'package_not_found'
+  | 'package_not_arranged'
+  | 'order_not_shippable';
 
 const IN_CONTRACT_FIXTURES: FaultKind[] = ['invalid_input', 'token_expired', 'missing_scope', 'bad_signature'];
 

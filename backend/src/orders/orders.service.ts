@@ -21,6 +21,19 @@ export interface CheckoutInput {
 
 export type Actor = 'BUYER' | 'SELLER' | 'TEST_CONSOLE' | 'SYSTEM';
 
+/** Context handed to transition listeners; they run INSIDE the transition's transaction, after the order's own event was written. */
+export interface TransitionContext {
+  tx: Prisma.TransactionClient;
+  shop: { id: string; tiktokShopId: string };
+  before: OrderRow;
+  after: OrderRow;
+  to: OrderStatus;
+  actor: Actor;
+  now: Date;
+  requestId?: string;
+}
+export type TransitionListener = (ctx: TransitionContext) => Promise<void>;
+
 export class OrderRuleError extends BadRequestException {
   constructor(readonly code: string, message: string) {
     super({ code, message });
@@ -39,6 +52,7 @@ export type OrderRow = Prisma.OrderGetPayload<{ include: typeof orderInclude }>;
 export class OrdersService implements OnApplicationBootstrap, OnModuleDestroy {
   private readonly logger = new Logger(OrdersService.name);
   private timer: NodeJS.Timeout | null = null;
+  private readonly listeners: TransitionListener[] = [];
 
   constructor(
     @Inject(PrismaService) private readonly prisma: PrismaService,
@@ -46,6 +60,11 @@ export class OrdersService implements OnApplicationBootstrap, OnModuleDestroy {
     @Inject(APP_CONFIG) private readonly config: AppConfig,
     @Inject(WebhookEmitter) private readonly emitter: WebhookEmitter,
   ) {}
+
+  /** Other aggregates (packages, aftersale...) react to status changes in the same transaction. */
+  addTransitionListener(listener: TransitionListener): void {
+    this.listeners.push(listener);
+  }
 
   onApplicationBootstrap(): void {
     const { lifecycleIntervalMs } = this.config.orders;
@@ -281,6 +300,7 @@ export class OrdersService implements OnApplicationBootstrap, OnModuleDestroy {
       const updated = await tx.order.findUniqueOrThrow({ where: { id: orderId }, include: orderInclude });
       const shop = await tx.shop.findUniqueOrThrow({ where: { id: current.shopId } });
       await this.emitter.emit(tx, shop, 'ORDER_STATUS_CHANGE', this.eventData(updated), opts.requestId);
+      for (const listener of this.listeners) await listener({ tx, shop, before: current, after: updated, to, actor, now, requestId: opts.requestId });
       return updated;
     });
   }

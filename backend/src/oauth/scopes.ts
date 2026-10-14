@@ -8,6 +8,9 @@ export const SCOPE_ORDER_READ = 'sim.order.read';
 export const SCOPE_EVENT_MANAGE = 'sim.event.manage';
 /** Placeholder scope for Update Inventory (official scope names are unresolved). Tokens issued before Phase 06 must re-authorize. */
 export const SCOPE_INVENTORY_WRITE = 'sim.inventory.write';
+/** Placeholder scopes for fulfillment reads (tracking, package detail, shipping documents) and the ship-package write. */
+export const SCOPE_FULFILLMENT_READ = 'sim.fulfillment.read';
+export const SCOPE_FULFILLMENT_WRITE = 'sim.fulfillment.write';
 /** Placeholder scope for product reads; the simulator also uses it for the warehouse list (listing needs warehouses). */
 /** Placeholder scopes for customer-service conversations (official names unresolved). */
 export const SCOPE_CONVERSATION_READ = 'sim.conversation.read';
@@ -23,4 +26,6 @@ export const DEFAULT_APP_SCOPES = [
   SCOPE_INVENTORY_WRITE,
   SCOPE_CONVERSATION_READ,
   SCOPE_CONVERSATION_WRITE,
+  SCOPE_FULFILLMENT_READ,
+  SCOPE_FULFILLMENT_WRITE,
 ];
