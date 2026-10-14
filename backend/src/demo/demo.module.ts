@@ -28,6 +28,7 @@ import { OrdersModule } from '../orders/orders.module';
 import { ChatModule } from '../chat/chat.module';
 import { CatalogDemoController } from './catalog.controller';
 import { ChatDemoController } from './chat.controller';
+import { CouponsDemoController } from './coupons.controller';
 import { FulfillmentDemoController } from './fulfillment.controller';
 import { InventoryDemoController } from './inventory.controller';
 import { OrdersDemoController } from './orders.controller';
@@ -184,5 +185,5 @@ export class DemoController {
   }
 }
 
-@Module({ imports: [OAuthModule, OrdersModule, ChatModule, FulfillmentModule], controllers: [DemoController, CatalogDemoController, OrdersDemoController, InventoryDemoController, ChatDemoController, FulfillmentDemoController], providers: [DemoSessionGuard] })
+@Module({ imports: [OAuthModule, OrdersModule, ChatModule, FulfillmentModule], controllers: [DemoController, CatalogDemoController, OrdersDemoController, InventoryDemoController, ChatDemoController, FulfillmentDemoController, CouponsDemoController], providers: [DemoSessionGuard] })
 export class DemoModule {}

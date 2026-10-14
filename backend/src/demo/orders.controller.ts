@@ -20,6 +20,7 @@ const CheckoutBody = z.object({
   items: z.array(z.object({ skuId: z.string().min(1).max(100), quantity: z.number().int().min(1).max(20) })).max(50).optional(),
   recipient: Recipient.optional(),
   buyerMessage: z.string().max(500).optional(),
+  couponCode: z.string().trim().min(1).max(20).optional(),
 });
 const ReasonBody = z.object({ reason: z.string().trim().min(1).max(300).default('no reason given') });
 
@@ -105,7 +106,7 @@ export class OrdersDemoController {
     const items = body.items ? body.items.map((i) => ({ skuExternalId: i.skuId, quantity: i.quantity })) : (await this.orders.cart(buyer.id)).map((i) => ({ skuExternalId: i.skuId, quantity: i.quantity }));
     const row = await this.prisma.buyer.findUniqueOrThrow({ where: { id: buyer.id } });
     const recipient = body.recipient ?? { name: row.name, phone: row.phone, addressLine: row.addressLine, district: row.district, city: row.city };
-    const { order, replayed } = await this.orders.checkout(buyer, { checkoutKey: body.checkoutKey, items, recipient, buyerMessage: body.buyerMessage }, (req as { requestId?: string }).requestId);
+    const { order, replayed } = await this.orders.checkout(buyer, { checkoutKey: body.checkoutKey, items, recipient, buyerMessage: body.buyerMessage, couponCode: body.couponCode }, (req as { requestId?: string }).requestId);
     if (fromCart && !replayed) await this.prisma.cartItem.deleteMany({ where: { buyerId: buyer.id } });
     return { replayed, order: orderView(order) };
   }

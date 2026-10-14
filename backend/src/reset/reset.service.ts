@@ -89,6 +89,7 @@ export class ResetService {
       case 'SHOP':
         return {
           webhookJobs: await p.webhookJob.count({ where: { shopId: shopId! } }),
+          orders: await p.order.count({ where: { shopId: shopId! } }),
           products: await p.product.count({ where: { shopId: shopId! } }),
           skus: await p.sku.count({ where: { shopId: shopId! } }),
           buyers: await p.buyer.count({ where: { shopId: shopId! } }),
@@ -99,6 +100,7 @@ export class ResetService {
       case 'ALL':
         return {
           shops: await p.shop.count(),
+          orders: await p.order.count(),
           products: await p.product.count(),
           buyers: await p.buyer.count(),
           tokens: await p.token.count(),
@@ -140,6 +142,10 @@ export class ResetService {
           p.webhookJob.deleteMany({ where: { shopId: shopId! } }),
           p.demoSession.deleteMany({ where: { shopId: shopId! } }),
           p.faultRule.deleteMany({ where: { shopId: shopId! } }),
+          // orders first (Order -> Shop/Buyer are RESTRICT); lines, audits, packages, tracking and coupon usages cascade from the order
+          p.order.deleteMany({ where: { shopId: shopId! } }),
+          p.conversation.deleteMany({ where: { shopId: shopId! } }),
+          p.coupon.deleteMany({ where: { shopId: shopId! } }),
           p.authorizationCode.deleteMany({ where: { shopId: shopId! } }),
           p.token.deleteMany({ where: { shopId: shopId! } }),
           p.httpRequestLog.deleteMany({ where: { shopId: shopId! } }),
@@ -161,6 +167,9 @@ export class ResetService {
           p.webhookJob.deleteMany(),
           p.demoSession.deleteMany(),
           p.faultRule.deleteMany(),
+          p.order.deleteMany(),
+          p.conversation.deleteMany(),
+          p.coupon.deleteMany(),
           p.authorizationCode.deleteMany(),
           p.token.deleteMany(),
           p.httpRequestLog.deleteMany(),

@@ -25,6 +25,7 @@ import { ZodPipe } from '../common/zod.pipe';
 import { APP_CONFIG, AppConfig } from '../config/config';
 import { FaultService } from '../faults/fault.service';
 import { historyOf } from '../demo/inventory.controller';
+import { couponStatus } from '../coupons/coupon-rules';
 import { OAuthModule } from '../oauth/oauth.module';
 import { ChatModule } from '../chat/chat.module';
 import { ChatAdminController, ChatAdminGuard } from './chat-admin.controller';
@@ -173,6 +174,26 @@ export class TestAdminController {
   async inventoryHistory(@Query('shopId') shopId?: string, @Query('limit') limit?: string) {
     if (!shopId) throw new NotFoundException('shopId is required');
     return historyOf(this.prisma, shopId, limit);
+  }
+
+  // ---- Phase 09a: coupons (read-only overview for the Test Console) ----
+
+  @Get('coupons')
+  async listCoupons(@Query('shopId') shopId?: string) {
+    const now = this.businessClock.now();
+    const rows = await this.prisma.coupon.findMany({ where: shopId ? { shopId } : {}, orderBy: { seq: 'asc' }, take: 200 });
+    return {
+      items: rows.map((c) => ({
+        id: c.externalId,
+        title: c.title,
+        promoCode: c.promoCode,
+        status: couponStatus(c, now),
+        redeemedCount: c.redeemedCount,
+        redemptionLimit: c.redemptionLimit,
+        startAt: c.startAt.toISOString(),
+        endAt: c.endAt.toISOString(),
+      })),
+    };
   }
 
   // ---- Phase 05: orders (state machine control) ----

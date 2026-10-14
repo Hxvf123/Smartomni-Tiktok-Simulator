@@ -53,9 +53,12 @@ Baseline: POST /promotion/202406/coupons/search, GET /promotion/202406/coupons/{
 
 ## Theo dõi
 
-- Người phụ trách:
-- PR/commit:
-- Bằng chứng kiểm thử:
-- Blocker / quyết định bổ sung:
-- Ngày hoàn thành:
+### 09a (steps 1-5) - agent Phase 09a, chưa review bởi người
 
+- Người phụ trách: (chưa gán). PR/commit: nhánh `phase-09a`, commit `phase-09a: coupons read API + checkout discount` (chưa merge/push).
+- Đã làm (phía simulator): migration `20261050000000_phase09a_coupons` (`Coupon`, `CouponUsage` unique `(couponId, orderId)`); `POST /promotion/202406/coupons/search` (page_size mặc định 50, keyset `page_token`, lọc `status` suy ra từ cửa sổ + cờ deactivate + **business clock**, `display_type`, `title_keyword`) và `GET /promotion/202406/coupons/{id}` (scope giả `sim.promotion.read`, chỉ shop của token); `/demo/shops/:id/coupons` (Seller tạo/sửa/ngừng, Buyer xem coupon dùng được); checkout nhận `couponCode`: kiểm hết hạn/chưa bắt đầu/ngừng/tối thiểu/đối tượng NEW/hết lượt, giảm giá vào `seller_discount` (tách khỏi ship/tax), chia theo dòng bằng largest-remainder, tăng lượt dùng bằng UPDATE có điều kiện trong cùng transaction, hoàn lượt đúng một lần khi hủy trước thanh toán; UI Seller/Buyer/Console + ô nhập mã ở giỏ.
+- API tạo voucher: KHÔNG có route nào; test chứng minh POST/PUT/PATCH/DELETE ký hợp lệ tới các đường `/promotion/...` ngoài search/detail trả 404 thuần và manifest vẫn `unsupported` + `LOCKED`.
+- Bằng chứng (Windows, Node 22, PostgreSQL 16 nhúng): backend typecheck/lint/build pass; jest toàn bộ 8 suites / 126 tests pass (16 test mới `tiktok-coupons.e2e-spec.ts`: schema OAS, cô lập shop, phân trang/lọc, lỗi đầu vào, scope/chữ ký, khóa tạo voucher, tiền tách thành phần, trần %, giảm không vượt tạm tính, mã lỗi ổn định, retry cùng `checkoutKey` kể cả đồng thời chỉ tính 1 lượt, 6 checkout đồng thời với limit 2 chỉ 2 thành công, hoàn lượt đúng một lần); frontend typecheck/lint/build, 10 test pass (3 mới). Ghi chú: trong các lần chạy song song với agent khác từng thấy 2/6 lần một test ngắt quãng của `tiktok-orders.e2e-spec.ts` (Phase 05) fail rồi pass lại ở 4 lần chạy sau, không tái hiện riêng lẻ; chưa xác định nguyên nhân (nghi áp lực CPU khi nhiều tiến trình chạy).
+- BLOCKED / chưa làm: phía SmartOmni (khóa API tạo voucher, không email giả thành công, claim/loyalty - xem `docs/smartomni-requirements/phase-09.md`); coupon card trong chat (bước 4) KHÔNG được hỗ trợ cho đến khi Send Message hỗ trợ `COUPON_CARD` trong snapshot (Phase 08); Playwright chưa chạy.
+- Quyết định/blocker: xem `DECISIONS.md` mục `Phase 09a`. Giá trị `claimed_count` = `redeemed_count` (simulator không có khái niệm claim; chưa xác minh); `display_type` mặc định `PROMO_CODE`; mã khuyến mãi 6-12 chữ/số, lưu IN HOA, duy nhất theo shop; chỉ phạm vi FULL_SHOP và đối tượng ALL/NEW.
+- Ngày hoàn thành: chưa (PARTIAL).

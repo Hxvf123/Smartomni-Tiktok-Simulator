@@ -344,6 +344,26 @@ describe('Phase 05: checkout, orders, Events API and signed webhooks', () => {
     });
   });
 
+  // ---------- reset ----------
+  it('a shop reset and a full reset succeed even when orders, packages and webhook jobs exist, and re-seed a clean baseline', async () => {
+    const a = await t.connect(0);
+    await t.call('PUT', HOOKS, a.accessToken, { body: { event_type: 'ORDER_STATUS_CHANGE', address: 'http://localhost:9/hook' } }).expect(200);
+    const buyer = await t.buyerSession(0);
+    await placeOrder(buyer, 'key-reset-0001', [{ skuId: 'sim-sku-a-BAG-NAT', quantity: 2 }]);
+    expect(await prisma.order.count()).toBe(1);
+    const reset = async (scope: string, shopId?: string) => {
+      const prep = await http.post('/test-admin/reset/prepare').set(admin).send({ scope, ...(shopId ? { shopId } : {}) }).expect(201);
+      return http.post('/test-admin/reset').set(admin).send({ scope, ...(shopId ? { shopId } : {}), confirmationToken: prep.body.confirmationToken });
+    };
+    expect((await reset('SHOP', shopAId)).status).toBe(201);
+    expect(await prisma.order.count()).toBe(0);
+    expect(await stockOf('sim-sku-a-BAG-NAT')).toBe(100); // baseline stock restored by the re-seed
+    await placeOrder(await t.buyerSession(0), 'key-reset-0002');
+    expect((await reset('ALL')).status).toBe(201);
+    expect(await prisma.order.count()).toBe(0);
+    expect(await prisma.webhookJob.count()).toBe(0);
+  });
+
   // ---------- Events API ----------
   describe('Events API (/event/202309/webhooks)', () => {
     it('subscribes, lists, overwrites and deletes per shop and app; rejects unknown topics and bad addresses', async () => {

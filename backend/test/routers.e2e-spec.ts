@@ -30,7 +30,7 @@ describe('router separation, demo isolation, clocks, request log', () => {
   describe('router separation', () => {
     it('TikTok module serves only the Phase 03/04 controllers and does not provide admin/demo/seed/reset services', () => {
       const controllers = (Reflect.getMetadata(MODULE_METADATA.CONTROLLERS, TiktokModule) as any[]).map((c) => c.name).sort();
-      expect(controllers).toEqual(['ConversationsController', 'EventsController', 'FulfillmentController', 'InventoryController', 'OrdersController', 'ProductsController', 'ShopsController', 'TokenController']);
+      expect(controllers).toEqual(['ConversationsController', 'CouponsController', 'EventsController', 'FulfillmentController', 'InventoryController', 'OrdersController', 'ProductsController', 'ShopsController', 'TokenController']);
       const providers = (Reflect.getMetadata(MODULE_METADATA.PROVIDERS, TiktokModule) as any[]).map((p) => p.name).sort();
       expect(providers).toEqual(['TiktokApiGuard', 'TiktokFaultMiddleware']);
       // only the token-lifecycle module and the fulfillment module (the ship-package write is a TikTok-contract operation) may be imported:

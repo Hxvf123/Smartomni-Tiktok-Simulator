@@ -2,6 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { PrismaClient } from '@prisma/client';
 import { AppModule } from '../src/app.module';
+import { PersistentBusinessClock } from '../src/clock/clock';
 import { configureApp } from '../src/configure-app';
 import { WebhookTransport, WorkerTime } from '../src/webhooks/webhook-worker.service';
 
@@ -58,5 +59,9 @@ export async function createApp(opts: { transport?: FakeTransport; time?: FakeTi
   const app = moduleRef.createNestApplication({ bodyParser: false, logger: false });
   configureApp(app);
   await app.init();
+  // Listen once: supertest otherwise binds a fresh ephemeral port per request, and concurrent requests race (read ECONNRESET).
+  await app.listen(0, '127.0.0.1');
+  // The business clock row lives in the shared test database: a suite that advanced it must not leak into the next suite's app.
+  await app.get(PersistentBusinessClock).reset();
   return app;
 }

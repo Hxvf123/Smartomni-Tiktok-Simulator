@@ -44,7 +44,7 @@ export class WebhookEmitter {
   async emit(tx: Prisma.TransactionClient, shop: Pick<Shop, 'id' | 'tiktokShopId'>, topic: string, data: Record<string, unknown>, requestId?: string | null): Promise<number> {
     const subs = await tx.webhookSubscription.findMany({ where: { shopId: shop.id, eventType: topic }, orderBy: { createdAt: 'asc' } });
     if (subs.length === 0) return 0;
-    const reorder = await this.faults.consume('WEBHOOK', shop.id, topic, ['REORDER']);
+    const reorder = await this.faults.consume('WEBHOOK', shop.id, topic, ['REORDER'], tx) // same transaction client: never take a second pool connection inside a transaction;
     const holdMs = reorder ? Math.min(Number((reorder.params as { holdMs?: number } | null)?.holdMs ?? 5000), 600000) : 0;
     const now = this.clock.now();
     for (const sub of subs) {

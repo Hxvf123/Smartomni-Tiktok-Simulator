@@ -97,6 +97,7 @@ model Shop {
   conversations    Conversation[]
   webhookSubs      WebhookSubscription[]
   packages         Package[]
+  coupons          Coupon[]
   faultRules       FaultRule[]
   demoSessions     DemoSession[]
   createdAt        DateTime              @default(now())
@@ -453,6 +454,7 @@ model Order {
   audits                OrderAudit[]
   Package               Package?
   TrackingEvent         TrackingEvent[]
+  CouponUsage           CouponUsage[]
 
   @@unique([shopId, externalId])
   @@unique([buyerId, checkoutKey])
@@ -668,4 +670,50 @@ model ShippingDocument {
   createdAt DateTime
 
   @@unique([packageId, docType])
+}
+
+// ---- Phase 09a: coupons (simulator-created fake data; reading is the only TikTok-shaped operation) --------------------
+
+// Status in the API is DERIVED from deactivated + window + the business clock (NOT_START | ONGOING | EXPIRED | DEACTIVATED).
+// Only FULL_SHOP scope and AMOUNT_OFF / PERCENT_OFF discounts exist; audience ALL | NEW (REPEAT_CUSTOMERS is not modelled).
+model Coupon {
+  id              String        @id @default(uuid())
+  shopId          String
+  shop            Shop          @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  externalId      String
+  seq             Int           @unique @default(autoincrement())
+  title           String
+  promoCode       String
+  displayType     String        @default("PROMO_CODE")
+  discountType    String
+  amountOffVnd    Int?
+  percentage      Int?
+  maxDiscountVnd  Int?
+  minSpendVnd     Int?
+  startAt         DateTime
+  endAt           DateTime
+  redemptionLimit Int?
+  redeemedCount   Int           @default(0)
+  audience        String        @default("ALL")
+  deactivated     Boolean       @default(false)
+  createdAt       DateTime
+  updatedAt       DateTime
+  usages          CouponUsage[]
+
+  @@unique([shopId, externalId])
+  @@unique([shopId, promoCode])
+  @@index([shopId, seq])
+}
+
+// One row per (coupon, order): the unique constraint is what makes a retried checkout unable to count twice.
+model CouponUsage {
+  id          String   @id @default(uuid())
+  couponId    String
+  coupon      Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  discountVnd Int
+  createdAt   DateTime
+
+  @@unique([couponId, orderId])
 }

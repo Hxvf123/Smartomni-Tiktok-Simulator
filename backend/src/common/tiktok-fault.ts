@@ -28,7 +28,8 @@ export type FaultKind =
   | 'order_not_found'
   | 'package_not_found'
   | 'package_not_arranged'
-  | 'order_not_shippable';
+  | 'order_not_shippable'
+  | 'coupon_not_found';
 
 const IN_CONTRACT_FIXTURES: FaultKind[] = ['invalid_input', 'token_expired', 'missing_scope', 'bad_signature'];
 

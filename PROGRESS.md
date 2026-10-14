@@ -9,10 +9,12 @@ Working repo: this one (`Smartomni-Tiktok-Simulator`). The SmartOmni platform re
 | 03 Connection | done | done in platform working tree earlier (uncommitted there) | DRAFT |
 | 04 Catalog | done | done in platform working tree earlier (uncommitted there) | DRAFT |
 | 05 Orders/webhooks | backend + UI done | BLOCKED (steps 6-11, see docs/smartomni-requirements/phase-05.md) | PARTIAL |
-| 06 Inventory/outbox | - | - | not started |
-| 07 Fulfillment/returns | - | - | not started |
-| 08 Conversations | - | - | not started |
-| 09 Coupons/loyalty | - | - | not started |
+| 06 Inventory/outbox | done (update API, faults, change log, UI) - commit `1acd209` (merged) | BLOCKED (debit receipt, outbox lease, RabbitMQ; docs/smartomni-requirements/phase-06.md) | PARTIAL |
+| 07a Fulfillment (steps 1-4) | done (packages, tracking, PDF, ship) - commit `cb6b7cf` (merged) | BLOCKED (business API for tracking/label) | PARTIAL |
+| 07b Returns/cancel (steps 5-9) | - | - | not started |
+| 08 Conversations | done (API, webhooks, chat UI, faults) - commit `d535636` (merged) | BLOCKED (inbox, AI gateway test double, complaint lock) | PARTIAL |
+| 09a Coupons (steps 1-5) | done (read API, checkout discount) - commit `e8ee868` (merged) | BLOCKED (voucher lock message, no success email) | PARTIAL |
+| 09b Loyalty (steps 6-11) | - | - | not started |
 | 10 Test/handover | - | - | not started |
 
 ## Outstanding for Phase 05

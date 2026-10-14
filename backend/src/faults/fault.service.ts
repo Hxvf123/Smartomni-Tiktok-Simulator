@@ -49,8 +49,8 @@ export class FaultService {
   }
 
   /** Return the first matching rule and consume one use (atomic for counted rules). */
-  async consume(target: FaultTarget, shopId: string | null, key: string, kinds?: FaultKind[]): Promise<FaultRule | null> {
-    const rules = await this.prisma.faultRule.findMany({
+  async consume(target: FaultTarget, shopId: string | null, key: string, kinds?: FaultKind[], client: Pick<PrismaService, 'faultRule'> = this.prisma): Promise<FaultRule | null> {
+    const rules = await client.faultRule.findMany({
       where: {
         target,
         // REORDER is applied when the event is enqueued, never at delivery
@@ -64,7 +64,7 @@ export class FaultService {
       const matches = !rule.pathMatch || (target === 'WEBHOOK' ? rule.pathMatch === key : key.startsWith(rule.pathMatch));
       if (!matches) continue;
       if (rule.remaining === null) return rule;
-      const r = await this.prisma.faultRule.updateMany({ where: { id: rule.id, remaining: { gt: 0 } }, data: { remaining: { decrement: 1 } } });
+      const r = await client.faultRule.updateMany({ where: { id: rule.id, remaining: { gt: 0 } }, data: { remaining: { decrement: 1 } } });
       if (r.count === 1) return rule;
     }
     return null;
