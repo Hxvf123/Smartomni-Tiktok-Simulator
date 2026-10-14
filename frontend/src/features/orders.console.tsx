@@ -48,9 +48,19 @@ export function OrdersPanel({ shopId }: { shopId: string }) {
       setMsg((e as Error).message);
     }
   }
+  async function loyalty() {
+    try {
+      const r = await api<{ orders: { label: string; orderId: string; status: string }[] }>('/test-admin/scenarios/loyalty-orders', { method: 'POST', body: { shopId } });
+      setMsg(`Created ${r.orders.length} loyalty test orders: ${r.orders.map((o) => `${o.orderId} (${o.status})`).join(', ')}`);
+      list.reload();
+    } catch (e) {
+      setMsg((e as Error).message);
+    }
+  }
   return (
     <div>
       <div className="row-wrap">
+        <button onClick={() => void loyalty()}>Create loyalty test orders (before/after 15 days)</button>
         <button onClick={() => void releaseDue()}>Release due holds</button>
         <span className="muted">Advance the business clock on the Clock tab first to test the hold boundary. Invalid jumps (for example shipping an ON_HOLD order) are refused by the API.</span>
       </div>

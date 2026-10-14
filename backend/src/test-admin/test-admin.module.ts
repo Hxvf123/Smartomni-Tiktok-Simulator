@@ -29,6 +29,7 @@ import { couponStatus } from '../coupons/coupon-rules';
 import { OAuthModule } from '../oauth/oauth.module';
 import { ChatModule } from '../chat/chat.module';
 import { ChatAdminController, ChatAdminGuard } from './chat-admin.controller';
+import { AdminTokenGuard, LoyaltyAdminController } from './loyalty-admin.controller';
 import { OrdersModule } from '../orders/orders.module';
 import { OrdersService } from '../orders/orders.service';
 import { ORDER_STATUSES } from '../orders/order-state';
@@ -375,5 +376,5 @@ export class TestAdminController {
   }
 }
 
-@Module({ imports: [OAuthModule, OrdersModule, ChatModule], controllers: [TestAdminController, ChatAdminController], providers: [TestAdminGuard, ChatAdminGuard, TokenAdminService] })
+@Module({ imports: [OAuthModule, OrdersModule, ChatModule], controllers: [TestAdminController, ChatAdminController, LoyaltyAdminController], providers: [TestAdminGuard, ChatAdminGuard, AdminTokenGuard, TokenAdminService] })
 export class TestAdminModule {}

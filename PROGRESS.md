@@ -14,7 +14,7 @@ Working repo: this one (`Smartomni-Tiktok-Simulator`). The SmartOmni platform re
 | 07b Returns/cancel (steps 5-9) | - | - | not started |
 | 08 Conversations | done (API, webhooks, chat UI, faults) - commit `d535636` (merged) | BLOCKED (inbox, AI gateway test double, complaint lock) | PARTIAL |
 | 09a Coupons (steps 1-5) | done (read API, checkout discount) - commit `e8ee868` (merged) | BLOCKED (voucher lock message, no success email) | PARTIAL |
-| 09b Loyalty (steps 6-11) | - | - | not started |
+| 09b Loyalty (steps 6-11) | done: boundary test data via business clock (`/test-admin/scenarios/loyalty-orders`) | BLOCKED (claim, points, tiers: docs/smartomni-requirements/phase-09.md) | PARTIAL |
 | 10 Test/handover | - | - | not started |
 
 ## Outstanding for Phase 05

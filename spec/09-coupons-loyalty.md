@@ -62,3 +62,11 @@ Baseline: POST /promotion/202406/coupons/search, GET /promotion/202406/coupons/{
 - BLOCKED / chưa làm: phía SmartOmni (khóa API tạo voucher, không email giả thành công, claim/loyalty - xem `docs/smartomni-requirements/phase-09.md`); coupon card trong chat (bước 4) KHÔNG được hỗ trợ cho đến khi Send Message hỗ trợ `COUPON_CARD` trong snapshot (Phase 08); Playwright chưa chạy.
 - Quyết định/blocker: xem `DECISIONS.md` mục `Phase 09a`. Giá trị `claimed_count` = `redeemed_count` (simulator không có khái niệm claim; chưa xác minh); `display_type` mặc định `PROMO_CODE`; mã khuyến mãi 6-12 chữ/số, lưu IN HOA, duy nhất theo shop; chỉ phạm vi FULL_SHOP và đối tượng ALL/NEW.
 - Ngày hoàn thành: chưa (PARTIAL).
+
+### 09b (steps 6-11) - Simulator side only
+
+- Người phụ trách: (chưa gán) - agent Phase 09b, chưa review bởi người. Commit: xem `git log` (`phase-09b`).
+- Đã làm: `POST /test-admin/scenarios/loyalty-orders` (file `backend/src/test-admin/loyalty-admin.controller.ts`, nút trong tab Orders của Test Console) tạo 5 đơn qua state machine thật với Clock nghiệp vụ đóng băng: hoàn tất N+1 ngày, đúng N ngày, N ngày trừ 1 giờ, chỉ DELIVERED, đang ON_HOLD (N mặc định 15). Clock nghiệp vụ được khôi phục; clock xác thực chữ ký không đổi. Các thành phần tiền (`sub_total`, `shipping_fee`, `tax`, `total_amount`) luôn tách riêng trong Get Order Detail để kiểm "không dùng total_amount".
+- Bằng chứng: `backend/test/loyalty-scenarios.e2e-spec.ts` 3 test pass (thời điểm hoàn tất đúng biên, DELIVERED/ON_HOLD không hoàn tất, tiền tách thành phần, clock được khôi phục và API ký vẫn hoạt động, thiếu token admin 401).
+- BLOCKED (repo platform chỉ để tham khảo): bước 6 (lưu dữ liệu đơn cho loyalty), 7 (claim Customer Portal theo tài khoản đã xác thực + tenant), 8 (claim một lần bằng constraint, kiểm 15 ngày), 9 (tính `floor(sub_total / 1000)`, pending reconciliation), 10 (hạng Standard/Silver/Platinum/Diamond), và các tiêu chí tương ứng. Chi tiết yêu cầu: `docs/smartomni-requirements/phase-09.md` mục 09b.
+- Ngày hoàn thành: chưa (PARTIAL).
