@@ -24,6 +24,7 @@ import { BusinessClock, PersistentBusinessClock } from '../clock/clock';
 import { ZodPipe } from '../common/zod.pipe';
 import { APP_CONFIG, AppConfig } from '../config/config';
 import { FaultService } from '../faults/fault.service';
+import { historyOf } from '../demo/inventory.controller';
 import { OAuthModule } from '../oauth/oauth.module';
 import { OrdersModule } from '../orders/orders.module';
 import { OrdersService } from '../orders/orders.service';
@@ -58,7 +59,7 @@ const ClockSet = z.object({ setTo: z.string().datetime().optional(), advanceMs: 
 const FaultCreate = z.object({
   shopId: z.string().min(1).nullable().optional(),
   target: z.enum(['API', 'WEBHOOK']),
-  kind: z.enum(['HTTP_ERROR', 'DELAY', 'DROP', 'DUPLICATE', 'REORDER']),
+  kind: z.enum(['HTTP_ERROR', 'DELAY', 'DROP', 'DUPLICATE', 'REORDER', 'TIMEOUT_BEFORE_WRITE', 'TIMEOUT_AFTER_WRITE', 'APP_ERROR_200']),
   pathMatch: z.string().min(1).nullable().optional(),
   params: z.record(z.unknown()).optional(),
   remaining: z.number().int().positive().nullable().optional(),
@@ -162,6 +163,14 @@ export class TestAdminController {
     if (!scenario) throw new NotFoundException('Unknown scenario for this shop');
     await this.prisma.shop.update({ where: { id: shopId }, data: { activeScenarioId: scenario.id } });
     return { shopId, activeScenarioId: scenario.id, key: scenario.key };
+  }
+
+  // ---- Phase 06: inventory history (read only) ----
+
+  @Get('inventory/history')
+  async inventoryHistory(@Query('shopId') shopId?: string, @Query('limit') limit?: string) {
+    if (!shopId) throw new NotFoundException('shopId is required');
+    return historyOf(this.prisma, shopId, limit);
   }
 
   // ---- Phase 05: orders (state machine control) ----

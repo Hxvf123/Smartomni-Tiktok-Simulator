@@ -5,6 +5,7 @@ import { BusinessClock } from '../clock/clock';
 import { APP_CONFIG, AppConfig } from '../config/config';
 import { PrismaService } from '../prisma/prisma.service';
 import { numericId } from '../seed/seed-data';
+import { logInventory } from '../inventory/inventory-log';
 import { WebhookEmitter } from '../webhooks/webhook-emitter.service';
 import { canTransition, OrderStatus } from './order-state';
 
@@ -138,6 +139,13 @@ export class OrdersService implements OnApplicationBootstrap, OnModuleDestroy {
           const r = await tx.inventoryLevel.updateMany({ where: { skuId: s.id, warehouseId: warehouse.id, quantity: { gte: merged.get(s.externalId)! } }, data: { quantity: { decrement: merged.get(s.externalId)! } } });
           if (r.count !== 1) throw new OrderRuleError('insufficient_stock', `SKU ${s.externalId} just ran out of stock`);
         }
+        await logInventory(
+          tx,
+          skus.map((s) => {
+            const before = levels.find((l) => l.skuId === s.id && l.warehouseId === warehouse.id)?.quantity ?? 0;
+            return { shopId: shop.id, skuId: s.id, warehouseId: warehouse.id, before, after: before - merged.get(s.externalId)!, source: 'ORDER' as const, requestId, note: 'checkout reservation' };
+          }),
+        );
 
         const now = this.clock.now();
         const orderId = randomUUID();
@@ -285,7 +293,9 @@ export class OrdersService implements OnApplicationBootstrap, OnModuleDestroy {
     const perSku = new Map<string, number>();
     for (const l of order.lines) if (l.skuId) perSku.set(l.skuId, (perSku.get(l.skuId) ?? 0) + 1);
     for (const [skuId, qty] of perSku) {
+      const [row] = await tx.$queryRaw<{ quantity: number }[]>`SELECT quantity FROM "InventoryLevel" WHERE "skuId" = ${skuId} AND "warehouseId" = ${order.warehouseId} FOR UPDATE`;
       await tx.inventoryLevel.updateMany({ where: { skuId, warehouseId: order.warehouseId }, data: { quantity: { increment: qty } } });
+      if (row) await logInventory(tx, [{ shopId: order.shopId, skuId, warehouseId: order.warehouseId, before: row.quantity, after: row.quantity + qty, source: 'ORDER', note: `cancel restore ${order.externalId}` }]);
     }
   }
 
