@@ -9,7 +9,8 @@ export type RouterKind = 'TIKTOK' | 'DEMO' | 'TEST_ADMIN' | 'HEALTH';
 export function classifyRouter(path: string): RouterKind {
   if (path === '/demo' || path.startsWith('/demo/')) return 'DEMO';
   if (path === '/test-admin' || path.startsWith('/test-admin/')) return 'TEST_ADMIN';
-  if (path === '/health' || path.startsWith('/health/')) return 'HEALTH';
+  // Swagger UI / OpenAPI JSON are documentation, not API traffic: never logged and never subject to injected faults.
+  if (path === '/health' || path.startsWith('/health/') || path === '/api-docs' || path.startsWith('/api-docs/') || path === '/api-docs-json') return 'HEALTH';
   return 'TIKTOK';
 }
 

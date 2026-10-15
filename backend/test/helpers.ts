@@ -50,7 +50,7 @@ export class FakeTransport extends WebhookTransport {
   }
 }
 
-export async function createApp(opts: { transport?: FakeTransport; time?: FakeTime; env?: Record<string, string> } = {}): Promise<INestApplication> {
+export async function createApp(opts: { transport?: FakeTransport; time?: FakeTime; env?: Record<string, string>; beforeInit?: (app: INestApplication) => void } = {}): Promise<INestApplication> {
   prepareEnv(opts.env);
   let builder = Test.createTestingModule({ imports: [AppModule] });
   if (opts.transport) builder = builder.overrideProvider(WebhookTransport).useValue(opts.transport);
@@ -58,6 +58,7 @@ export async function createApp(opts: { transport?: FakeTransport; time?: FakeTi
   const moduleRef = await builder.compile();
   const app = moduleRef.createNestApplication({ bodyParser: false, logger: false });
   configureApp(app);
+  opts.beforeInit?.(app);
   await app.init();
   // Listen once: supertest otherwise binds a fresh ephemeral port per request, and concurrent requests race (read ECONNRESET).
   await app.listen(0, '127.0.0.1');

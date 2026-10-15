@@ -76,6 +76,16 @@ cd frontend && npm run typecheck && npm run lint && npm test && npm run build
 
 Backend integration tests need a real PostgreSQL (`FOR UPDATE SKIP LOCKED`). `npm test` starts a throw-away embedded PostgreSQL 16 automatically; set `TEST_DATABASE_URL` (database name must contain `simulator`) to use your own instead.
 
+## API documentation (Swagger / OpenAPI)
+
+All 116 HTTP operations (TikTok-shaped, `/demo`, `/test-admin`, `/health`) are documented in OpenAPI 3.0.3.
+
+* **Swagger UI:** http://localhost:8090/api-docs (after `docker compose up --build -d`, or `npm run build && npm start` in `backend/`)
+* **OpenAPI JSON:** http://localhost:8090/api-docs-json, also committed as `docs/openapi.json` (regenerate with `cd backend && npm run build && npm run openapi:export`).
+* The UI is served by the API itself, needs no login and is not written to the HTTP log. Use **Authorize** to enter `x-demo-session` or `x-test-admin-token` for `/demo` and `/test-admin` calls.
+* TikTok-shaped calls need a computed `sign`, which Swagger UI cannot produce; use `docs/curl-samples.md` or the Postman collection for those.
+* The spec is hand-written in `backend/src/openapi/` (routes use zod, not DTO classes). `backend/test/openapi.e2e-spec.ts` fails if a route is added or removed without updating it.
+
 ## Data model (Prisma, `backend/prisma/schema.prisma`)
 
 Seller, Shop, Buyer (belongs to one shop), App (fake app key/secret, redirect URIs), Token (SHA-256 hashes only), Warehouse, Product, Sku, InventoryLevel, Scenario, DemoSession (hashed), HttpRequestLog, WebhookJob, WebhookAttempt, FaultRule, ClockState. Later phases add models with **new** migrations only.
