@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: smartomni-tiktok-simulator-api
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health/ready
+    envVars:
+      - key: PORT
+        value: "8090"
+      - key: DATABASE_URL
+        sync: false
+      - key: TEST_ADMIN_TOKEN
+        generateValue: true
+      - key: SEED_APP_SECRET
+        generateValue: true
+      - key: SEED_APP_KEY
+        value: smartomni-dev-app-key
+      - key: SEED_ON_START
+        value: "true"
+      - key: WEBHOOK_WORKER_ENABLED
+        value: "true"
+      - key: WEBHOOK_REWRITE_LOCALHOST
+        value: "false"
+      - key: PUBLIC_API_BASE_URL
+        fromService:
+          type: web
+          name: smartomni-tiktok-simulator-api
+          envVarKey: RENDER_EXTERNAL_URL

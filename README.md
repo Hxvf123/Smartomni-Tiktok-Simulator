@@ -50,6 +50,8 @@ docker compose ps           # wait until db, api, ui are healthy
 
 ## Local development (without Docker for the app)
 
+For a backend-only free deployment using Render and Neon, see [docs/deploy-render-neon.md](docs/deploy-render-neon.md).
+
 Needs Node 20+ and a PostgreSQL 14+ database whose name contains `simulator` (reset safety rail).
 
 ```bash
