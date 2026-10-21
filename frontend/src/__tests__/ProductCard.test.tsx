@@ -17,7 +17,6 @@ const product: EnrichedProduct = {
   discountPct: 35,
   rating: 4.8,
   sold: 2400,
-  freeShipping: true,
   trending: false,
   imageBg: '#FDE2E4',
 };
@@ -25,19 +24,18 @@ const product: EnrichedProduct = {
 describe('ProductCard', () => {
   afterEach(cleanup);
 
-  it('shows price, discount, free shipping, rating and sold count, linking to the product page', () => {
+  it('shows price, discount, rating and sold count, linking to the product page', () => {
     render(<MemoryRouter><ProductCard product={product} /></MemoryRouter>);
     const link = screen.getByRole('link');
     expect(link.getAttribute('href')).toBe('/product/7500%201');
     expect(screen.getByText('₫129.000')).toBeTruthy();
     expect(screen.getByText('-35%')).toBeTruthy();
-    expect(screen.getByText('Free shipping')).toBeTruthy();
     expect(screen.getByText('4.8')).toBeTruthy();
     expect(screen.getByText('2.4K sold')).toBeTruthy();
   });
 
-  it('hides the discount and free-shipping badges when they do not apply', () => {
-    render(<MemoryRouter><ProductCard product={{ ...product, discountPct: 0, freeShipping: false }} /></MemoryRouter>);
+  it('hides the discount badge when there is none, and never shows a mock free-shipping badge', () => {
+    render(<MemoryRouter><ProductCard product={{ ...product, discountPct: 0 }} /></MemoryRouter>);
     expect(screen.queryByText(/^-\d+%$/)).toBeNull();
     expect(screen.queryByText('Free shipping')).toBeNull();
   });

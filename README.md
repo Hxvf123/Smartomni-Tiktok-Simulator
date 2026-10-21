@@ -105,10 +105,11 @@ What the `/demo` API does not provide yet comes from this folder only:
 
 | File | Provides |
 |---|---|
-| `catalog.ts` | the public catalog shown to guests; mock fields per seeded product (original price, % off, rating, sold, free shipping, trending, image tile color) |
+| `catalog.ts` | the public catalog shown to guests; mock fields per seeded product (original price, % off, rating, sold, trending, image tile color, category; `seedTitle`/`seedShop` link a mock item to the seeded product and its shop) |
 | `enrich.ts` | `enrichProduct(p)`: adds those fields to a real storefront product (by id, then by title, else stable values per id); never changes real title, prices, SKUs or stock |
 | `reviews.ts` | rating summary and reviews on the product page |
-| `identities.ts` | buyer/seller city on the sign-in page |
+| `identities.ts` | buyer/seller city on the sign-in page; the preselected buyer (Trần Văn An, or a buyer of the shop selling the mock product in `?next=`) |
+| `categories.ts` | the Home "Categories" row (`?category=` filter) |
 | `business.ts` | Seller Center "Business overview" numbers |
 
 Mock-driven UI is marked with `MockBadge` (`src/components/ui/mock-badge.tsx`, pink dashed frame + "MOCK"); `DevMock` shows the frame only in development builds. To remove the mocks once the backend has these fields: delete `frontend/src/mocks/`, run `npm run typecheck` in `frontend/`, and replace each import it reports with the real field (or drop the UI that only showed mock data).

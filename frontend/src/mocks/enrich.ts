@@ -31,7 +31,6 @@ function fallback(id: string): Omit<MockProductFields, 'originalPriceVnd'> {
     discountPct: [0, 10, 15, 20, 25, 35][h % 6],
     rating: (45 + ((h >>> 3) % 5)) / 10,
     sold: 50 + ((h >>> 6) % 40) * 50,
-    freeShipping: (h >>> 11) % 3 !== 0,
     trending: (h >>> 13) % 5 === 0,
     imageBg: imageBackgrounds[(h >>> 16) % imageBackgrounds.length],
   };
@@ -45,7 +44,6 @@ export function enrichProduct(p: StorefrontProduct): EnrichedProduct {
     discountPct: mock.discountPct,
     rating: mock.rating,
     sold: mock.sold,
-    freeShipping: mock.freeShipping,
     trending: mock.trending,
     imageBg: mock.imageBg,
     category: mock.category,

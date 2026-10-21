@@ -13,6 +13,13 @@ export const sellerOrderTabs: { key: SellerOrderTab; label: string }[] = [
   { key: 'cancelled', label: 'Cancelled' },
 ];
 
+/** Orders per Manage orders tab; Seller Center home uses the same numbers for its to-do list. */
+export function countByTab(orders: { status: OrderStatus }[]): Record<SellerOrderTab, number> {
+  const counts: Record<SellerOrderTab, number> = { all: orders.length, unpaid: 0, 'to-ship': 0, shipped: 0, completed: 0, cancelled: 0 };
+  for (const o of orders) counts[sellerTabOf(o.status)] += 1;
+  return counts;
+}
+
 export function sellerTabOf(status: OrderStatus): Exclude<SellerOrderTab, 'all'> {
   switch (status) {
     case 'UNPAID':

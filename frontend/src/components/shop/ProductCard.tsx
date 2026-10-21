@@ -31,9 +31,6 @@ export function ProductCard({ product, className }: { product: EnrichedProduct; 
             <span className="rounded bg-buyer-soft px-1 text-xs font-semibold text-buyer">-{product.discountPct}%</span>
           ) : null}
         </div>
-        {product.freeShipping ? (
-          <span className="w-fit rounded bg-free-ship/10 px-1.5 py-px text-[11px] font-semibold text-free-ship">Free shipping</span>
-        ) : null}
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <Star className="size-3.5 fill-star text-star" aria-hidden />
           <span className="font-semibold text-ink">{product.rating.toFixed(1)}</span>

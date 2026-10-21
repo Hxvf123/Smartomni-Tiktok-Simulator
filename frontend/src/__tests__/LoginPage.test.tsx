@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthProvider } from '@/lib/auth';
 import type { Identities } from '@/lib/types';
-import { destination, LoginPage, safeNext } from '@/pages/LoginPage';
+import { destination, LoginPage, preferredBuyerId, safeNext } from '@/pages/LoginPage';
 
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
 
@@ -97,6 +97,46 @@ describe('LoginPage', () => {
     const link = await screen.findByRole('link', { name: 'Open Test Console and run Seed' });
     expect(link.getAttribute('href')).toBe('/console');
     expect((screen.getByRole('button', { name: 'Sign in' }) as HTMLButtonElement).disabled).toBe(true);
+  });
+});
+
+/** Same shape as the seed: two shops, buyers listed out of order. */
+const seedIds: Identities = {
+  sellers: [
+    { id: 'seller_a', name: 'Nguyễn Thị Lan', shops: [{ id: 'shop-a', name: 'Cửa hàng Mộc Lan (demo)' }] },
+    { id: 'seller_b', name: 'Đặng Minh Quân', shops: [{ id: 'shop-b', name: 'Tiệm Gốm Bát Tràng (demo)' }] },
+  ],
+  buyers: [
+    { id: 'buyer_long', name: 'Hoàng Đức Long', shopId: 'shop-b' },
+    { id: 'buyer_ha', name: 'Lê Thu Hà', shopId: 'shop-a' },
+    { id: 'buyer_an', name: 'Trần Văn An', shopId: 'shop-a' },
+  ],
+};
+
+describe('preselected buyer', () => {
+  it('is Trần Văn An without a product in next', () => {
+    expect(preferredBuyerId(seedIds, null)).toBe('buyer_an');
+    expect(preferredBuyerId(seedIds, '/cart')).toBe('buyer_an');
+    expect(preferredBuyerId(seedIds, '/product/7500000000000001')).toBe('buyer_an');
+  });
+
+  it('is a buyer of the shop selling the mock product in next', () => {
+    expect(preferredBuyerId(seedIds, '/product/mock-1')).toBe('buyer_ha');
+    expect(preferredBuyerId(seedIds, '/product/mock-4')).toBe('buyer_long');
+    // no seedShop: the default mock shop (Mộc Lan)
+    expect(preferredBuyerId(seedIds, '/product/mock-10')).toBe('buyer_ha');
+  });
+
+  it('is checked on the sign-in page', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => json(seedIds)));
+    renderLogin('/login?next=%2Fproduct%2Fmock-4');
+    expect(await screen.findByRole('button', { name: 'Sign in as Hoàng Đức Long' })).toBeTruthy();
+    expect(screen.getByRole('radio', { name: /Hoàng Đức Long/ }).getAttribute('aria-checked')).toBe('true');
+    cleanup();
+    renderLogin('/login');
+    expect(await screen.findByRole('button', { name: 'Sign in as Trần Văn An' })).toBeTruthy();
+    cleanup();
+    vi.unstubAllGlobals();
   });
 });
 
