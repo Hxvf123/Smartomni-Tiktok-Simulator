@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ChevronRight, Star, Truck } from 'lucide-react';
 import { RadioGroup as RadioGroupPrimitive } from 'radix-ui';
@@ -14,12 +14,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { MAX_PER_LINE, type CheckoutState } from '@/lib/checkout';
-import { getCart, getMe, getStorefrontProduct, setCartItem } from '@/lib/endpoints';
+import { getCart, getMe, getStorefrontProduct, listStorefrontProducts, setCartItem } from '@/lib/endpoints';
 import { compactCount, shopPrice } from '@/lib/format';
 import type { Sku } from '@/lib/types';
 import { useAsync } from '@/lib/useAsync';
 import { cn } from '@/lib/utils';
-import { enrichProduct, imageBackgrounds, mockCatalog, mockReviewSummary, originalPrice, type EnrichedProduct, type MockReview } from '@/mocks';
+import { enrichProduct, imageBackgrounds, mockCatalog, mockReviewSummary, normalizeTitle, originalPrice, type EnrichedProduct, type MockReview } from '@/mocks';
 
 const soldOut = (s: Sku) => !s.available || s.stock <= 0;
 
@@ -302,19 +302,47 @@ function Notice({ children }: { children: ReactNode }) {
   return <div className="mx-auto mt-10 flex max-w-md flex-col items-center gap-4 rounded-card border border-dashed border-line p-10 text-center">{children}</div>;
 }
 
+type Detail =
+  | { product: EnrichedProduct; shopName?: string }
+  /** A mock product opened by a signed-in buyer: the real product it stands for, if the buyer's shop sells it. */
+  | { realId: string | null; shopName?: string }
+  | null;
+
 export function ProductPage() {
   const { id = '' } = useParams();
   const { buyer } = useAuth();
-  const detail = useAsync<{ product: EnrichedProduct; shopName?: string } | null>(async () => {
-    if (!buyer) {
-      const mock = mockCatalog.find((p) => p.id === id);
-      return mock ? { product: mock, shopName: mock.shopName } : null;
+  const navigate = useNavigate();
+  const detail = useAsync<Detail>(async () => {
+    const mock = mockCatalog.find((p) => p.id === id);
+    if (!buyer) return mock ? { product: mock, shopName: mock.shopName } : null;
+    if (id.startsWith('mock-')) {
+      // A guest link to a mock product: the seeded product with the same title is the real one.
+      const [list, me] = await Promise.all([listStorefrontProducts(buyer), getMe(buyer).catch(() => null)]);
+      const wanted = mock?.seedTitle ? normalizeTitle(mock.seedTitle) : null;
+      const real = wanted ? list.items.find((p) => normalizeTitle(p.title) === wanted) : undefined;
+      return { realId: real?.id ?? null, shopName: me?.shop.name };
     }
     const [r, me] = await Promise.all([getStorefrontProduct(buyer, id), getMe(buyer).catch(() => null)]);
     return { product: enrichProduct(r.product), shopName: me?.shop.name };
   }, [buyer?.sessionToken, id]);
 
-  if (detail.loading && !detail.data) return <PageSkeleton />;
+  const realId = detail.data && 'realId' in detail.data ? detail.data.realId : null;
+  useEffect(() => {
+    if (realId) navigate(`/product/${encodeURIComponent(realId)}`, { replace: true });
+  }, [realId, navigate]);
+
+  if ((detail.loading && !detail.data) || realId) return <PageSkeleton />;
+  if (detail.data && 'realId' in detail.data) {
+    const { shopName } = detail.data;
+    return (
+      <Notice>
+        <p className="text-muted-foreground">This item is not sold in your shop</p>
+        <Button asChild variant="outline">
+          <Link to="/">{shopName ? `See products from ${shopName}` : 'See products from your shop'}</Link>
+        </Button>
+      </Notice>
+    );
+  }
   if (detail.error instanceof ApiError && detail.error.status === 404) {
     return (
       <Notice>

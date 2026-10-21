@@ -1,3 +1,5 @@
+import { SESSION_EXPIRED } from './session';
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -39,6 +41,10 @@ export async function api<T>(path: string, opts: RequestOptions = {}): Promise<T
     data = text;
   }
   if (!res.ok) {
+    // Expired or revoked demo session: SessionExpiryWatcher signs that role out. Test-admin calls never carry one.
+    if (res.status === 401 && opts.demoSession && !path.startsWith('/test-admin')) {
+      window.dispatchEvent(new CustomEvent(SESSION_EXPIRED, { detail: opts.demoSession }));
+    }
     const msg = typeof data === 'object' && data && 'message' in data ? String((data as { message: unknown }).message) : `HTTP ${res.status}`;
     const code = typeof data === 'object' && data && 'code' in data ? String((data as { code: unknown }).code) : undefined;
     throw new ApiError(msg, res.status, requestId, code);

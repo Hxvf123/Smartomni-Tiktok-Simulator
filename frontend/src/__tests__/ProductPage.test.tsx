@@ -59,6 +59,7 @@ describe('ProductPage', () => {
         const body = init?.body ? JSON.parse(String(init.body)) : undefined;
         calls.push({ url, method, body });
         if (url === '/demo/shops/shop-1/storefront/products/7500T') return json({ currency: 'VND', product: tee });
+        if (url === '/demo/shops/shop-1/storefront/products') return json({ currency: 'VND', items: [tee] });
         if (url === '/demo/me') return json({ role: 'BUYER', shop: { id: 'shop-1', name: 'Mộc Lan Shop' }, buyer: { id: 'buyer_1', name: 'An', city: 'HCM' } });
         if (url === '/demo/shops/shop-1/cart' && method === 'GET') {
           return json({ currency: 'VND', items: [{ skuId: 'sku-wm', quantity: 1 }], totalVnd: 129000 });
@@ -134,5 +135,20 @@ describe('ProductPage', () => {
     sessionStorage.setItem('sim.demo-session.BUYER', JSON.stringify(buyer));
     renderProduct('other');
     expect(await screen.findByText('This product is not available in your shop.')).toBeTruthy();
+  });
+
+  it('sends a signed-in buyer from a mock product to the seeded product with the same title', async () => {
+    sessionStorage.setItem('sim.demo-session.BUYER', JSON.stringify(buyer));
+    renderProduct('mock-1');
+    await waitFor(() => expect(screen.getByTestId('location').textContent).toBe('/product/7500T'));
+    expect(await screen.findByRole('heading', { name: 'Áo thun cotton basic' })).toBeTruthy();
+  });
+
+  it('says a mock product is not sold in the buyer shop when no seeded product matches', async () => {
+    sessionStorage.setItem('sim.demo-session.BUYER', JSON.stringify(buyer));
+    renderProduct('mock-2');
+    expect(await screen.findByText('This item is not sold in your shop')).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'See products from Mộc Lan Shop' }).getAttribute('href')).toBe('/');
+    expect(screen.getByTestId('location').textContent).toBe('/product/mock-2');
   });
 });
