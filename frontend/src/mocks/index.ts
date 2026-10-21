@@ -8,3 +8,4 @@ export * from './enrich';
 export * from './reviews';
 export * from './identities';
 export * from './business';
+export * from './categories';

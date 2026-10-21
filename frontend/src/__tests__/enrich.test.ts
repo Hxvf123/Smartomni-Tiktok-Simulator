@@ -27,6 +27,7 @@ describe('enrichProduct', () => {
     expect(p.rating).toBe(4.9);
     expect(p.sold).toBe(1300);
     expect(p.freeShipping).toBe(true);
+    expect(p.category).toBe('sports-outdoor');
   });
 
   it('gives unknown products stable values derived from their id', () => {

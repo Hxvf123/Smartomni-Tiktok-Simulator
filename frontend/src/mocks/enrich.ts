@@ -48,6 +48,7 @@ export function enrichProduct(p: StorefrontProduct): EnrichedProduct {
     freeShipping: mock.freeShipping,
     trending: mock.trending,
     imageBg: mock.imageBg,
+    category: mock.category,
     originalPriceVnd: originalPrice(p.minPriceVnd, mock.discountPct),
   };
 }

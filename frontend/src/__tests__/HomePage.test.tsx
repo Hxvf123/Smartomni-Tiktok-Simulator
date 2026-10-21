@@ -1,9 +1,9 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthProvider } from '@/lib/auth';
 import type { DemoSession, StorefrontProduct } from '@/lib/types';
-import { mockCatalog } from '@/mocks';
+import { mockCatalog, mockCategories } from '@/mocks';
 import { HomePage } from '@/pages/shop/HomePage';
 
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
@@ -22,6 +22,11 @@ const real = (id: string, title: string): StorefrontProduct => ({
 });
 const storefront = [real('750001', 'Bình giữ nhiệt 500ml'), ...Array.from({ length: 11 }, (_, i) => real(`7501${i}`, `Real item ${i + 1}`))];
 
+function Location() {
+  const l = useLocation();
+  return <output data-testid="location">{l.pathname + l.search}</output>;
+}
+
 const renderHome = (path = '/') =>
   render(
     <MemoryRouter initialEntries={[path]}>
@@ -29,6 +34,7 @@ const renderHome = (path = '/') =>
         <Routes>
           <Route path="/" element={<HomePage />} />
         </Routes>
+        <Location />
       </AuthProvider>
     </MemoryRouter>,
   );
@@ -85,6 +91,32 @@ describe('HomePage', () => {
     renderHome('/?q=BINH');
     const results = await screen.findByRole('region', { name: 'Results for “BINH” (1)' });
     expect(within(results).getByRole('link').textContent).toContain('Bình giữ nhiệt 500ml');
+  });
+
+  it('shows the categories row and filters the products by category', async () => {
+    renderHome();
+    const row = await screen.findByRole('region', { name: 'Categories' });
+    expect(within(row).getAllByRole('link')).toHaveLength(mockCategories.length);
+    fireEvent.click(within(row).getByRole('link', { name: 'Phones & Electronics' }));
+    expect(screen.getByTestId('location').textContent).toBe('/?category=phones-electronics');
+    const results = await screen.findByRole('region', { name: 'Phones & Electronics (1)' });
+    expect(within(results).getAllByRole('link', { name: /Minimal phone case/ })).toHaveLength(1);
+    expect(within(results).getAllByRole('link', { name: /sold/ })).toHaveLength(1); // one product card
+    expect(within(row).getByRole('link', { name: 'Phones & Electronics' }).getAttribute('aria-current')).toBe('true');
+
+    // clicking the active category again clears the filter
+    fireEvent.click(within(row).getByRole('link', { name: 'Phones & Electronics' }));
+    expect(screen.getByTestId('location').textContent).toBe('/');
+    expect(await screen.findByRole('region', { name: 'Best sellers' })).toBeTruthy();
+  });
+
+  it('combines a category with a search and shows an empty category', async () => {
+    renderHome('/?q=tea&category=kitchenware');
+    const results = await screen.findByRole('region', { name: 'Results for “tea” in Kitchenware (1)' });
+    expect(within(results).getByRole('link', { name: 'All categories' }).getAttribute('href')).toBe('/?q=tea');
+    cleanup();
+    renderHome('/?category=shoes');
+    expect(await screen.findByText('No products in this category yet.')).toBeTruthy();
   });
 
   it('offers to clear a search with no results', async () => {

@@ -1,14 +1,16 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { CategoryRow } from '@/components/shop/CategoryRow';
 import { ProductCard, ProductCardSkeleton } from '@/components/shop/ProductCard';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { MockBadge } from '@/components/ui/mock-badge';
 import { useAuth } from '@/lib/auth';
 import { listStorefrontProducts } from '@/lib/endpoints';
-import { useAsync } from '@/lib/useAsync';
-import { enrichProduct, mockCatalog, normalizeTitle, type EnrichedProduct } from '@/mocks';
+import { useAsync, type AsyncResult } from '@/lib/useAsync';
+import { useHorizontalScroll } from '@/lib/useHorizontalScroll';
+import { categoryBySlug, enrichProduct, mockCatalog, normalizeTitle, type EnrichedProduct } from '@/mocks';
 
 const GRID = 'grid grid-cols-2 gap-x-3 gap-y-5 md:grid-cols-3 lg:grid-cols-5';
 const BEST_SELLERS_PAGE = 10;
@@ -48,19 +50,7 @@ function ArrowButton({ dir, disabled, onClick }: { dir: 'prev' | 'next'; disable
 
 /** One row of cards (5 / 3 / 2 visible) scrolled a page at a time with the arrow buttons. */
 function DealsRow({ items, mock }: { items: EnrichedProduct[]; mock: boolean }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [edges, setEdges] = useState({ start: true, end: true });
-  const update = useCallback(() => {
-    const el = ref.current;
-    if (!el) return;
-    setEdges({ start: el.scrollLeft <= 1, end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 1 });
-  }, []);
-  useEffect(() => {
-    update();
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
-  }, [update, items]);
-  const page = (dir: 1 | -1) => ref.current?.scrollBy?.({ left: dir * ref.current.clientWidth, behavior: 'smooth' });
+  const { ref, edges, update, page } = useHorizontalScroll<HTMLDivElement>([items]);
 
   return (
     <Section
@@ -105,17 +95,32 @@ function BestSellers({ items, mock }: { items: EnrichedProduct[]; mock: boolean 
   );
 }
 
-function SearchResults({ items, q, mock }: { items: EnrichedProduct[]; q: string; mock: boolean }) {
-  const found = search(items, q);
+/** Search (?q=) and/or category (?category=) results, filtered client-side. */
+function Results({ items, q, category, mock }: { items: EnrichedProduct[]; q: string; category: string | null; mock: boolean }) {
+  const cat = categoryBySlug(category);
+  const inCategory = cat ? items.filter((p) => p.category === cat.slug) : items;
+  const found = q ? search(inCategory, q) : inCategory;
+  const title = q ? `Results for “${q}”${cat ? ` in ${cat.name}` : ''} (${found.length})` : `${cat?.name ?? 'All products'} (${found.length})`;
   return (
-    <Section id="results" title={`Results for “${q}” (${found.length})`} mock={mock}>
+    <Section
+      id="results"
+      title={title}
+      mock={mock}
+      action={
+        cat ? (
+          <Button asChild variant="outline" size="sm" className="bg-white">
+            <Link to={q ? `/?q=${encodeURIComponent(q)}` : '/'}>All categories</Link>
+          </Button>
+        ) : null
+      }
+    >
       {found.length ? (
         <div className={GRID}>{found.map((p) => <ProductCard key={p.id} product={p} />)}</div>
       ) : (
         <div className="flex flex-col items-center gap-3 rounded-card border border-dashed border-line py-12 text-center">
-          <p className="text-muted-foreground">No products match “{q}”.</p>
+          <p className="text-muted-foreground">{q ? `No products match “${q}”.` : 'No products in this category yet.'}</p>
           <Button asChild variant="outline" className="bg-white">
-            <Link to="/">Clear search</Link>
+            <Link to="/">{q ? 'Clear search' : 'Back to all products'}</Link>
           </Button>
         </div>
       )}
@@ -127,13 +132,23 @@ export function HomePage() {
   const { buyer } = useAuth();
   const [params] = useSearchParams();
   const q = params.get('q')?.trim() ?? '';
+  const category = categoryBySlug(params.get('category')) ? params.get('category') : null;
   const products = useAsync<EnrichedProduct[]>(
     () => (buyer ? listStorefrontProducts(buyer).then((r) => r.items.map(enrichProduct)) : Promise.resolve(mockCatalog)),
     [buyer?.sessionToken],
   );
   const mock = !buyer;
 
-  if (products.loading && !products.data) {
+  return (
+    <>
+      <CategoryRow />
+      <Products state={products} q={q} category={category} mock={mock} />
+    </>
+  );
+}
+
+function Products({ state, q, category, mock }: { state: AsyncResult<EnrichedProduct[]>; q: string; category: string | null; mock: boolean }) {
+  if (state.loading && !state.data) {
     return (
       <Section id="loading" title="Deals on 4★+ products for you" mock={false}>
         <div className={GRID} role="status" aria-label="Loading products">
@@ -142,12 +157,12 @@ export function HomePage() {
       </Section>
     );
   }
-  if (products.error && !products.data) {
+  if (state.error && !state.data) {
     return (
-      <Alert variant="destructive" className="mt-2">
+      <Alert variant="destructive" className="mt-6">
         <AlertDescription>
-          <p>Could not load products: {products.error.message}</p>
-          <Button variant="outline" size="sm" className="mt-1" onClick={products.reload}>
+          <p>Could not load products: {state.error.message}</p>
+          <Button variant="outline" size="sm" className="mt-1" onClick={state.reload}>
             Try again
           </Button>
         </AlertDescription>
@@ -155,11 +170,11 @@ export function HomePage() {
     );
   }
 
-  const items = products.data ?? [];
+  const items = state.data ?? [];
   if (!items.length) {
     return <p className="mt-10 text-center text-muted-foreground">This shop has no products for sale yet.</p>;
   }
-  if (q) return <SearchResults items={items} q={q} mock={mock} />;
+  if (q || category) return <Results items={items} q={q} category={category} mock={mock} />;
   const dealItems = deals(items);
   return (
     <>
