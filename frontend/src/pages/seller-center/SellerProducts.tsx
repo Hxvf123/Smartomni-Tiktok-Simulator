@@ -370,7 +370,7 @@ function Products({ seller }: { seller: DemoSession }) {
         </Button>
       </div>
       <Tabs value={tab} onValueChange={setTab} className="gap-4">
-        <TabsList variant="line" className="h-10 justify-start gap-2 border-b border-line-soft">
+        <TabsList variant="line" className="h-10 max-w-full justify-start gap-2 overflow-x-auto overflow-y-hidden border-b border-line-soft [scrollbar-width:none]">
           <TabsTrigger value="products" className="flex-none px-3 after:bg-teal data-[state=active]:font-semibold data-[state=active]:text-teal">
             Products
           </TabsTrigger>
