@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ChevronRight, Star, Truck } from 'lucide-react';
+import { ChevronRight, Star } from 'lucide-react';
 import { RadioGroup as RadioGroupPrimitive } from 'radix-ui';
 import { toast } from 'sonner';
 import { loginUrl } from '@/components/RequireRole';
@@ -227,11 +227,6 @@ function BuyBox({ product, shopName }: { product: EnrichedProduct; shopName?: st
         {product.discountPct > 0 ? <span className="text-sm text-muted-2 line-through">{shopPrice(originalPrice(price, product.discountPct))}</span> : null}
       </div>
       <div className="flex flex-wrap gap-2">
-        {product.freeShipping ? (
-          <Badge className="rounded bg-free-ship/10 text-free-ship">
-            <Truck /> Free shipping
-          </Badge>
-        ) : null}
         {product.trending ? <Badge className="rounded bg-ink text-white">Trending</Badge> : null}
       </div>
       <h1 className="text-xl font-semibold leading-snug">{product.title}</h1>

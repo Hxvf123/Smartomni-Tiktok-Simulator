@@ -9,7 +9,7 @@ import { useSellerContext } from '@/layouts/SellerLayout';
 import { useAuth } from '@/lib/auth';
 import { getCatalog, getCoupons, getShop, listAftersale, listConversations, listOrders } from '@/lib/endpoints';
 import { compactCount, shopPrice } from '@/lib/format';
-import { OPEN_AFTERSALE } from '@/lib/sellerOrders';
+import { countByTab, OPEN_AFTERSALE } from '@/lib/sellerOrders';
 import type { Aftersale, Conversation, DemoSession, Order } from '@/lib/types';
 import { useAsync, type AsyncResult } from '@/lib/useAsync';
 import { cn } from '@/lib/utils';
@@ -25,6 +25,7 @@ export function greeting(now: Date): string {
 
 export interface SellerTodo {
   toPay: number;
+  onHold: number;
   toShip: number;
   inTransit: number;
   returns: number;
@@ -33,11 +34,13 @@ export interface SellerTodo {
 
 /** To-do counts from real orders, aftersale requests and conversations; null when that source is not loaded. */
 export function sellerTodo(orders?: Order[], aftersale?: Aftersale[], conversations?: Conversation[]): { [K in keyof SellerTodo]: number | null } {
-  const count = (statuses: string[]) => (orders ? orders.filter((o) => statuses.includes(o.status)).length : null);
+  const tabs = orders ? countByTab(orders) : null;
   return {
-    toPay: count(['UNPAID']),
-    toShip: count(['AWAITING_SHIPMENT', 'AWAITING_COLLECTION']),
-    inTransit: count(['IN_TRANSIT', 'PARTIALLY_SHIPPING']),
+    toPay: tabs?.unpaid ?? null,
+    // part of To ship, shown on its own because these orders cannot be shipped yet
+    onHold: orders ? orders.filter((o) => o.status === 'ON_HOLD').length : null,
+    toShip: tabs?.['to-ship'] ?? null,
+    inTransit: tabs?.shipped ?? null,
     returns: aftersale ? aftersale.filter((r) => OPEN_AFTERSALE.includes(r.status)).length : null,
     unread: conversations ? conversations.reduce((n, c) => n + c.unread, 0) : null,
   };
@@ -214,6 +217,7 @@ function Home({ seller }: { seller: DemoSession }) {
   const todo = sellerTodo(orders.data?.items, aftersale.data?.items, chats.data?.items);
   const tiles: { label: string; count: number | null; to: string; source: AsyncResult<unknown> }[] = [
     { label: 'To pay', count: todo.toPay, to: '/seller-center/orders?tab=unpaid', source: orders },
+    { label: 'On hold', count: todo.onHold, to: '/seller-center/orders?tab=to-ship', source: orders },
     { label: 'To ship', count: todo.toShip, to: '/seller-center/orders?tab=to-ship', source: orders },
     { label: 'In transit', count: todo.inTransit, to: '/seller-center/orders?tab=shipped', source: orders },
     { label: 'Returns', count: todo.returns, to: '/seller-center/returns?status=open', source: aftersale },
@@ -229,7 +233,7 @@ function Home({ seller }: { seller: DemoSession }) {
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="flex min-w-0 flex-col gap-5">
           <Panel title="To-do list" label="To-do list">
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
               {tiles.map((t) => (
                 <TodoTile key={t.label} label={t.label} count={t.count} to={t.to} loading={t.source.loading && !t.source.data} />
               ))}

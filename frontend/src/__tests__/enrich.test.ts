@@ -26,7 +26,6 @@ describe('enrichProduct', () => {
     const p = enrichProduct(product('7500000000000099', 'BÌNH GIỮ NHIỆT 500ML'));
     expect(p.rating).toBe(4.9);
     expect(p.sold).toBe(1300);
-    expect(p.freeShipping).toBe(true);
     expect(p.category).toBe('sports-outdoor');
   });
 

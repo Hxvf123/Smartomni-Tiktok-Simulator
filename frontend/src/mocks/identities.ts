@@ -19,3 +19,9 @@ const cityByName: Record<string, string> = {
 
 /** City shown next to a demo identity on the sign-in page, or undefined when unknown. */
 export const identityCity = (name: string): string | undefined => cityByName[normalizeTitle(name)];
+
+/** Buyer preselected on the sign-in page (seed buyer of "Cửa hàng Mộc Lan"). */
+export const defaultBuyerName = 'Trần Văn An';
+
+/** Seed shop that sells the mock catalog items without a `seedShop`. */
+export const defaultMockShop = 'Cửa hàng Mộc Lan (demo)';

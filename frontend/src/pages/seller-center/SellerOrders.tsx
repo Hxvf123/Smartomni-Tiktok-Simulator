@@ -11,7 +11,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/lib/auth';
 import { getFulfillment, listOrders } from '@/lib/endpoints';
 import { shopPrice } from '@/lib/format';
-import { hasPackage, sellerOrderTabs, sellerTabOf, type SellerOrderTab } from '@/lib/sellerOrders';
+import { countByTab, hasPackage, sellerOrderTabs, sellerTabOf, type SellerOrderTab } from '@/lib/sellerOrders';
 import type { DemoSession, Order } from '@/lib/types';
 import { useAsync } from '@/lib/useAsync';
 import { normalizeTitle } from '@/mocks';
@@ -87,7 +87,7 @@ function Orders({ seller }: { seller: DemoSession }) {
   const orders = useAsync(() => listOrders(seller), [seller.sessionToken, seller.shopId], POLL_MS);
 
   const all = [...(orders.data?.items ?? [])].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  const count = (t: SellerOrderTab) => (t === 'all' ? all.length : all.filter((o) => sellerTabOf(o.status) === t).length);
+  const counts = countByTab(all);
   const shown = all.filter((o) => (tab === 'all' || sellerTabOf(o.status) === tab) && matchesOrder(o, q));
 
   return (
@@ -98,7 +98,7 @@ function Orders({ seller }: { seller: DemoSession }) {
           <TabsList variant="line" className="h-12 w-full justify-start gap-2 overflow-x-auto overflow-y-hidden rounded-none border-b border-line-soft px-4 [scrollbar-width:none]">
             {sellerOrderTabs.map((t) => (
               <TabsTrigger key={t.key} value={t.key} className="flex-none px-3 after:bg-teal data-[state=active]:font-semibold data-[state=active]:text-teal">
-                {t.label} ({count(t.key)})
+                {t.label} ({counts[t.key]})
               </TabsTrigger>
             ))}
           </TabsList>

@@ -11,7 +11,7 @@ import { useAuth } from '@/lib/auth';
 import { getIdentities } from '@/lib/endpoints';
 import type { Identities, Role, SignInIdentity } from '@/lib/types';
 import { useAsync } from '@/lib/useAsync';
-import { identityCity, mockCatalog } from '@/mocks';
+import { defaultBuyerName, defaultMockShop, identityCity, mockCatalog, normalizeTitle } from '@/mocks';
 
 interface Account {
   key: string;
@@ -41,6 +41,22 @@ function nextLabel(next: string): string {
   if (next.startsWith('/account')) return 'your orders';
   if (next.startsWith('/seller-center')) return 'Seller Center';
   return 'the page you were on';
+}
+
+/**
+ * Buyer to preselect: for a mock product in `next`, the first buyer of the seed shop that sells it
+ * (so the product page can open the real product); otherwise the default demo buyer.
+ */
+export function preferredBuyerId(ids: Identities, next: string | null): string | undefined {
+  const productId = next ? /^\/product\/([^/?#]+)/.exec(next)?.[1] : undefined;
+  const mock = productId ? mockCatalog.find((p) => p.id === decodeURIComponent(productId)) : undefined;
+  if (mock) {
+    const wanted = normalizeTitle(mock.seedShop ?? defaultMockShop);
+    const shop = ids.sellers.flatMap((s) => s.shops).find((x) => normalizeTitle(x.name) === wanted);
+    const buyer = shop && ids.buyers.find((b) => b.shopId === shop.id);
+    if (buyer) return buyer.id;
+  }
+  return ids.buyers.find((b) => normalizeTitle(b.name) === normalizeTitle(defaultBuyerName))?.id;
 }
 
 function toAccounts(ids: Identities): Record<Role, Account[]> {
@@ -137,7 +153,9 @@ export function LoginPage() {
   const navigate = useNavigate();
 
   const accounts = ids.data ? toAccounts(ids.data) : { BUYER: [], SELLER: [] };
-  const selectedKey = picked[tab] ?? accounts[tab][0]?.key;
+  const preferred = ids.data ? preferredBuyerId(ids.data, next) : undefined;
+  const fallback = tab === 'BUYER' && preferred ? `buyer:${preferred}` : accounts[tab][0]?.key;
+  const selectedKey = picked[tab] ?? fallback;
   const selected = accounts[tab].find((a) => a.key === selectedKey);
 
   const submit = async () => {
