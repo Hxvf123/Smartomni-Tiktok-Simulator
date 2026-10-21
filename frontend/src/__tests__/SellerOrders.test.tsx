@@ -30,7 +30,7 @@ const order = (id: string, status: OrderStatus, hour: number, buyer = 'Lê Thu H
 
 const orders = [
   order('o1', 'UNPAID', 1),
-  order('o2', 'ON_HOLD', 2),
+  order('o2', 'ON_HOLD', 2, 'Lê Thu Hà', { releaseAt: '2026-10-21T05:35:00.000Z' }),
   order('o3', 'AWAITING_SHIPMENT', 3, 'Trần Văn An'),
   order('o4', 'AWAITING_COLLECTION', 4),
   order('o5', 'IN_TRANSIT', 5, 'Lê Thu Hà', { paidAt: '2026-10-21T05:05:00.000Z' }),
@@ -153,7 +153,8 @@ describe('Seller Center orders', () => {
     await waitFor(() => expect(within(row('o6')).getByText('SIM-o6')).toBeTruthy());
     expect(buttons(row('o1'))).toEqual(['Cancel order']);
     expect(buttons(row('o2'))).toEqual(['Cancel order']);
-    expect(within(row('o2')).getByText('On hold: cannot ship yet')).toBeTruthy();
+    expect(within(row('o2')).getByText(/^On hold until \d{2}\/\d{2}, \d{2}:\d{2}$/)).toBeTruthy();
+    expect(within(row('o2')).getByRole('link', { name: 'Skip the wait: Test Console → Orders → Release due holds' }).getAttribute('href')).toBe('/console');
     expect(buttons(row('o3'))).toEqual(['Arrange shipment', 'Cancel order']);
     expect(buttons(row('o4'))).toEqual(['Print label', 'Simulate carrier']);
     expect(buttons(row('o5'))).toEqual(['Print label', 'Simulate carrier']);

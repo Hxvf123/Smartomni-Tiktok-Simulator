@@ -18,11 +18,12 @@ test.beforeAll(async ({ baseURL }) => {
 const ORDERS = '/seller-center/orders';
 const sellerRow = (page: Page) => page.getByRole('row', { name: `Order ${orderId}` });
 
-test('an ON_HOLD order shows "cannot ship yet" and the API refuses to arrange shipment', async ({ page, request }) => {
+test('an ON_HOLD order shows when the hold ends and the API refuses to arrange shipment', async ({ page, request }) => {
   await signInAs(page, 'SELLER', SELLER_A, ORDERS);
   const row = sellerRow(page);
   await expect(row.getByText('On hold', { exact: true })).toBeVisible();
-  await expect(row.getByText('On hold: cannot ship yet')).toBeVisible();
+  await expect(row.getByText(/^On hold until /)).toBeVisible();
+  await expect(row.getByRole('link', { name: /Release due holds/ })).toBeVisible();
   await expect(row.getByRole('button', { name: 'Arrange shipment' })).toHaveCount(0);
   await shot(page, 'phase07a-on-hold');
 

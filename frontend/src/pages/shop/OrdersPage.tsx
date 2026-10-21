@@ -13,7 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/lib/auth';
 import { cancelOrder, getFulfillment, getMe, listAftersale, listOrders, payOrder, requestCancellation, requestReturn } from '@/lib/endpoints';
-import { shopPrice } from '@/lib/format';
+import { holdTime, shopPrice } from '@/lib/format';
 import type { Aftersale, DemoSession, Order, OrderStatus, ReturnRequest } from '@/lib/types';
 import { useAsync } from '@/lib/useAsync';
 import { cn } from '@/lib/utils';
@@ -98,12 +98,13 @@ const statusLabel: Record<OrderStatus, string> = {
   CANCELLED: 'Cancelled',
 };
 
-function hint(o: Order): string {
+/** One-line status explanation on the order card. */
+export function hint(o: Order): string {
   switch (o.status) {
     case 'UNPAID':
       return 'Pay to send your order to the seller.';
     case 'ON_HOLD':
-      return 'Payment received. The order is being confirmed.';
+      return o.releaseAt ? `Confirming payment · ready to ship after ${holdTime(o.releaseAt)}` : 'Payment received. The order is being confirmed.';
     case 'AWAITING_SHIPMENT':
       return o.buyerRequestedCancel ? 'Cancellation requested, waiting for the seller.' : 'The seller is preparing your order.';
     case 'AWAITING_COLLECTION':

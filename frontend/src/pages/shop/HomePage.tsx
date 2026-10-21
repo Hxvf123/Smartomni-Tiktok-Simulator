@@ -27,7 +27,7 @@ export const search = (items: EnrichedProduct[], q: string) => {
 function Section({ id, title, mock, action, children }: { id: string; title: ReactNode; mock: boolean; action?: ReactNode; children: ReactNode }) {
   return (
     <section aria-labelledby={id} className="mt-8 first:mt-2">
-      <div className="mb-3 flex items-center gap-3">
+      <div className="mb-3 flex flex-wrap items-center gap-3">
         <h2 id={id} className="text-xl font-bold tracking-tight text-ink">
           {title}
         </h2>

@@ -44,7 +44,7 @@ function Returns({ seller }: { seller: DemoSession }) {
       <p className="text-sm text-muted-foreground">A return does not change the order status. Stock is not added back here: the SmartOmni side restocks through its own receipt.</p>
       <SellerCard>
         <Tabs value={tab} onValueChange={(v) => setParams(v === 'open' ? { status: 'open' } : { status: 'all' }, { replace: true })}>
-          <TabsList variant="line" className="h-12 w-full justify-start gap-2 rounded-none border-b border-line-soft px-4">
+          <TabsList variant="line" className="h-12 w-full justify-start gap-2 overflow-x-auto overflow-y-hidden rounded-none border-b border-line-soft px-4 [scrollbar-width:none]">
             <TabsTrigger value="open" className="flex-none px-3 after:bg-teal data-[state=active]:font-semibold data-[state=active]:text-teal">
               Open ({open.length})
             </TabsTrigger>

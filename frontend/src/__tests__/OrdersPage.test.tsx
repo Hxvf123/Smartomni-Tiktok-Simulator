@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthProvider } from '@/lib/auth';
 import type { DemoSession, Order, OrderStatus } from '@/lib/types';
-import { actionsFor, OrdersPage, tabOf } from '@/pages/shop/OrdersPage';
+import { actionsFor, hint, OrdersPage, tabOf } from '@/pages/shop/OrdersPage';
 
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
 
@@ -70,6 +70,12 @@ describe('tab and action rules', () => {
       CANCELLED: 'cancelled',
     };
     for (const [status, tab] of Object.entries(expected)) expect(tabOf(status as OrderStatus)).toBe(tab);
+  });
+
+  it('tells the buyer when an ON_HOLD order can ship', () => {
+    const held = order('h', 'ON_HOLD', '2026-10-21T05:00:00.000Z', { releaseAt: '2026-10-21T05:30:00.000Z' });
+    expect(hint(held)).toMatch(/^Confirming payment · ready to ship after \d{2}\/\d{2}, \d{2}:\d{2}$/);
+    expect(hint({ ...held, releaseAt: null })).toBe('Payment received. The order is being confirmed.');
   });
 
   it('offers the buyer actions per status', () => {

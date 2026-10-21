@@ -7,6 +7,8 @@ export type { DemoSession };
 export const sessionKey = (role: string) => `sim.demo-session.${role}`;
 /** Fired on window when a legacy page signs in or out, so AuthProvider can pick the change up. */
 export const SESSION_CHANGED = 'sim:demo-session-changed';
+/** Fired on window by api() when a request made with a demo session gets 401; `detail` is the session token. */
+export const SESSION_EXPIRED = 'sim:demo-session-expired';
 
 export function load(role: string): DemoSession | null {
   try {

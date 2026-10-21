@@ -159,7 +159,7 @@ function Detail({ seller, id }: { seller: DemoSession; id: string }) {
           Order <span className="font-mono">{order.id}</span>
         </h1>
         <OrderStatusBadge status={order.status} />
-        <OrderActions seller={seller} orderId={order.id} status={order.status} hasTracking={Boolean(pkg?.trackingNumber)} onChanged={refresh} className="ml-auto" />
+        <OrderActions seller={seller} orderId={order.id} status={order.status} releaseAt={order.releaseAt} hasTracking={Boolean(pkg?.trackingNumber)} onChanged={refresh} className="ml-auto" />
       </div>
 
       <StepBar progress={orderProgress(order, history)} cancelReason={order.cancelReason} />

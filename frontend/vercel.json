@@ -7,6 +7,6 @@
     { "source": "/demo/:path*", "destination": "https://smartomni-tiktok-simulator-api.onrender.com/demo/:path*" },
     { "source": "/health/:path*", "destination": "https://smartomni-tiktok-simulator-api.onrender.com/health/:path*" },
     { "source": "/test-admin/:path*", "destination": "/api/test-admin?__path=:path*" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/((?!assets/).*)", "destination": "/index.html" }
   ]
 }

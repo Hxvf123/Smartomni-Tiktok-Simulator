@@ -68,6 +68,7 @@ function OrderRow({ seller, order, onChanged }: { seller: DemoSession; order: Or
           seller={seller}
           orderId={order.id}
           status={order.status}
+          releaseAt={order.releaseAt}
           hasTracking={Boolean(pkg?.trackingNumber)}
           onChanged={() => {
             onChanged();
@@ -94,7 +95,7 @@ function Orders({ seller }: { seller: DemoSession }) {
       <h1 className="text-2xl font-bold">Manage orders</h1>
       <div className="rounded-card bg-white shadow-xs ring-1 ring-line-soft">
         <Tabs value={tab} onValueChange={(v) => setParams(v === 'all' ? {} : { tab: v }, { replace: true })}>
-          <TabsList variant="line" className="h-12 w-full justify-start gap-2 rounded-none border-b border-line-soft px-4">
+          <TabsList variant="line" className="h-12 w-full justify-start gap-2 overflow-x-auto overflow-y-hidden rounded-none border-b border-line-soft px-4 [scrollbar-width:none]">
             {sellerOrderTabs.map((t) => (
               <TabsTrigger key={t.key} value={t.key} className="flex-none px-3 after:bg-teal data-[state=active]:font-semibold data-[state=active]:text-teal">
                 {t.label} ({count(t.key)})
