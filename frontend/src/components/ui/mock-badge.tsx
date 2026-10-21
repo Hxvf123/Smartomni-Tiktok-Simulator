@@ -32,3 +32,9 @@ export function MockBadge({ children, className }: Props) {
     </div>
   );
 }
+
+/** Frames mock-driven content with <MockBadge> in development builds only; production shows the content as is. */
+export function DevMock({ children, className }: { children: ReactNode; className?: string }) {
+  if (!import.meta.env.DEV) return <>{children}</>;
+  return <MockBadge className={className}>{children}</MockBadge>;
+}

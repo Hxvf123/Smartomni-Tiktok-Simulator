@@ -1,0 +1,138 @@
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { AuthProvider } from '@/lib/auth';
+import type { DemoSession, StorefrontProduct } from '@/lib/types';
+import { ProductPage } from '@/pages/shop/ProductPage';
+
+const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+
+const future = new Date(Date.now() + 3600_000).toISOString();
+const buyer: DemoSession = { sessionToken: 'tok-b', role: 'BUYER', shopId: 'shop-1', buyerId: 'buyer_1', expiresAt: future };
+const tee: StorefrontProduct = {
+  id: '7500T',
+  title: 'Áo thun cotton basic',
+  description: 'Cotton 100%',
+  imageUrl: '/demo/media/products/t.svg',
+  minPriceVnd: 129000,
+  maxPriceVnd: 135000,
+  skus: [
+    { id: 'sku-wm', name: 'Trắng / M', attributeName: 'Màu / Size', priceVnd: 129000, available: true, stock: 2 },
+    { id: 'sku-bm', name: 'Đen / M', attributeName: 'Màu / Size', priceVnd: 135000, available: true, stock: 9 },
+  ],
+};
+
+function Location() {
+  const l = useLocation();
+  return <output data-testid="location">{l.pathname + l.search}</output>;
+}
+let lastState: unknown;
+function StateProbe() {
+  lastState = useLocation().state;
+  return null;
+}
+
+const renderProduct = (id: string) =>
+  render(
+    <MemoryRouter initialEntries={[`/product/${id}`]}>
+      <AuthProvider>
+        <Routes>
+          <Route path="/product/:id" element={<ProductPage />} />
+          <Route path="/checkout" element={<StateProbe />} />
+          <Route path="*" element={null} />
+        </Routes>
+        <Location />
+      </AuthProvider>
+    </MemoryRouter>,
+  );
+
+describe('ProductPage', () => {
+  const calls: { url: string; method: string; body?: unknown }[] = [];
+  beforeEach(() => {
+    calls.length = 0;
+    lastState = undefined;
+    sessionStorage.clear();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        const method = init?.method ?? 'GET';
+        const body = init?.body ? JSON.parse(String(init.body)) : undefined;
+        calls.push({ url, method, body });
+        if (url === '/demo/shops/shop-1/storefront/products/7500T') return json({ currency: 'VND', product: tee });
+        if (url === '/demo/me') return json({ role: 'BUYER', shop: { id: 'shop-1', name: 'Mộc Lan Shop' }, buyer: { id: 'buyer_1', name: 'An', city: 'HCM' } });
+        if (url === '/demo/shops/shop-1/cart' && method === 'GET') {
+          return json({ currency: 'VND', items: [{ skuId: 'sku-wm', quantity: 1 }], totalVnd: 129000 });
+        }
+        if (url === '/demo/shops/shop-1/cart/items') return json({ currency: 'VND', items: [], totalVnd: 0 });
+        return json({ message: 'Not found' }, 404);
+      }),
+    );
+  });
+  afterEach(() => {
+    cleanup();
+    vi.unstubAllGlobals();
+  });
+
+  it('changes the price with the selected SKU', async () => {
+    renderProduct('mock-1');
+    expect((await screen.findByTestId('price')).textContent).toBe('₫129.000');
+    expect(screen.getByRole('radio', { name: 'White / M' }).getAttribute('aria-checked')).toBe('true');
+    fireEvent.click(screen.getByRole('radio', { name: 'Black / M' }));
+    expect(screen.getByTestId('price').textContent).toBe('₫135.000');
+    expect(screen.getByText('12 available')).toBeTruthy();
+  });
+
+  it('does not let a sold-out SKU be selected', async () => {
+    renderProduct('mock-1');
+    const soldOut = await screen.findByRole('radio', { name: 'White / L' });
+    expect((soldOut as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.click(soldOut);
+    expect(soldOut.getAttribute('aria-checked')).toBe('false');
+    expect(screen.getByRole('radio', { name: 'White / M' }).getAttribute('aria-checked')).toBe('true');
+  });
+
+  it('sends a guest who adds to cart to sign in and come back', async () => {
+    renderProduct('mock-1');
+    fireEvent.click(await screen.findByRole('button', { name: 'Add to cart' }));
+    expect(screen.getByTestId('location').textContent).toBe('/login?next=%2Fproduct%2Fmock-1');
+    expect(calls).toEqual([]);
+  });
+
+  it('asks a guest to sign in for a real product id', async () => {
+    renderProduct('7500T');
+    expect(await screen.findByText('Sign in to view this product.')).toBeTruthy();
+  });
+
+  it('adds to a buyer cart on top of what is already there, with the stepper capped by stock', async () => {
+    sessionStorage.setItem('sim.demo-session.BUYER', JSON.stringify(buyer));
+    renderProduct('7500T');
+    expect(await screen.findByRole('radio', { name: 'Trắng / M' })).toBeTruthy();
+    expect(await screen.findByText('Mộc Lan Shop', { selector: 'span.font-semibold' })).toBeTruthy();
+    const plus = screen.getByRole('button', { name: 'Increase quantity' }) as HTMLButtonElement;
+    fireEvent.click(plus);
+    expect((screen.getByRole('spinbutton', { name: 'Quantity' }) as HTMLInputElement).value).toBe('2');
+    expect(plus.disabled).toBe(true); // stock is 2
+    fireEvent.click(screen.getByRole('button', { name: 'Add to cart' }));
+    await waitFor(() => expect(calls.some((c) => c.method === 'PUT')).toBe(true));
+    // 1 already in the cart + 2 chosen
+    expect(calls.filter((c) => c.url.includes('/cart'))).toEqual([
+      { url: '/demo/shops/shop-1/cart', method: 'GET', body: undefined },
+      { url: '/demo/shops/shop-1/cart/items', method: 'PUT', body: { skuId: 'sku-wm', quantity: 3 } },
+    ]);
+  });
+
+  it('Buy now adds the line and opens checkout with it preselected', async () => {
+    sessionStorage.setItem('sim.demo-session.BUYER', JSON.stringify(buyer));
+    renderProduct('7500T');
+    fireEvent.click(await screen.findByRole('radio', { name: 'Đen / M' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Buy now' }));
+    await waitFor(() => expect(screen.getByTestId('location').textContent).toBe('/checkout'));
+    expect(lastState).toEqual({ buyNow: { skuId: 'sku-bm', quantity: 1 } });
+  });
+
+  it('shows a not-available message when the product is not in the buyer shop', async () => {
+    sessionStorage.setItem('sim.demo-session.BUYER', JSON.stringify(buyer));
+    renderProduct('other');
+    expect(await screen.findByText('This product is not available in your shop.')).toBeTruthy();
+  });
+});
