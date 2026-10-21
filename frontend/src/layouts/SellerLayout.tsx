@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate, useOutletContext } from 'react-router-dom';
 import { ClipboardList, Headset, LayoutDashboard, Megaphone, Package, Store, type LucideIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -144,6 +144,13 @@ function SellerMenu({ owner }: { owner: SellerIdentity | undefined }) {
   );
 }
 
+/** What SellerLayout hands to the Seller Center pages (read with useSellerContext). */
+export interface SellerContext {
+  sellerName: string | undefined;
+}
+
+export const useSellerContext = () => useOutletContext<SellerContext>();
+
 /** Seller Center shell for /seller-center/*. Teal theme via .theme-seller. */
 export function SellerLayout() {
   const { seller } = useAuth();
@@ -166,7 +173,7 @@ export function SellerLayout() {
       <div className="flex">
         <SideMenu />
         <main className="min-w-0 flex-1 p-6">
-          <Outlet />
+          <Outlet context={{ sellerName: owner?.name } satisfies SellerContext} />
         </main>
       </div>
     </div>
