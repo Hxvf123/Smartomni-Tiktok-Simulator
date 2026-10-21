@@ -70,6 +70,14 @@ describe('CheckoutPage', () => {
         if (url === '/demo/shops/shop-1/cart' && method === 'GET') return json(cart);
         if (url === '/demo/shops/shop-1/storefront/products') return json({ currency: 'VND', items: [] });
         if (url === '/demo/me') return json({ role: 'BUYER', shop: { id: 'shop-1', name: 'Mộc Lan Shop' }, buyer: { id: 'buyer_1', name: 'Trần Văn An', city: 'Hồ Chí Minh' } });
+        if (url === '/demo/shops/shop-1/coupons') {
+          return json({
+            items: [
+              { id: 'v1', title: 'Ten off', promoCode: 'SALE10', status: 'ONGOING', discountText: '10% off', minSpendVnd: 100000 },
+              { id: 'v2', title: 'Old', promoCode: 'OLD2020', status: 'EXPIRED', discountText: '5% off', minSpendVnd: null },
+            ],
+          });
+        }
         if (url === '/demo/shops/shop-1/checkout') {
           if (checkoutError) return json(checkoutError, 400);
           return json({ replayed: false, order: order('UNPAID') }, 201);
@@ -158,6 +166,16 @@ describe('CheckoutPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Place order' }));
     await screen.findByText('Order placed · UNPAID');
     expect(posts('/checkout')[0].body?.recipient).toEqual({ name: 'Trần Văn An', phone: '0911222333', addressLine: '3 Hai Bà Trưng', district: 'Hoàn Kiếm', city: 'Hà Nội', postalCode: null });
+  });
+
+  it('offers the ongoing vouchers as chips and upper-cases a typed code', async () => {
+    renderCheckout();
+    const chips = await screen.findByRole('group', { name: 'Available vouchers' });
+    expect(within(chips).getAllByRole('button').map((b) => b.textContent)).toEqual(['SALE1010% off']);
+    fireEvent.click(within(chips).getByRole('button'));
+    expect((screen.getByLabelText('Voucher code') as HTMLInputElement).value).toBe('SALE10');
+    fireEvent.change(screen.getByLabelText('Voucher code'), { target: { value: 'e2eoff50' } });
+    expect((screen.getByLabelText('Voucher code') as HTMLInputElement).value).toBe('E2EOFF50');
   });
 
   it('uses the available cart lines when opened without a selection', async () => {

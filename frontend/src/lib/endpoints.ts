@@ -105,3 +105,5 @@ export const getConversationMessages = (s: DemoSession, conversationId: string) 
   api<{ conversation: Conversation; items: ChatMessage[] }>(shop(s, `/chat/conversations/${id(conversationId)}/messages`), auth(s));
 export const sendConversationMessage = (s: DemoSession, conversationId: string, text: string) =>
   api(shop(s, `/chat/conversations/${id(conversationId)}/messages`), { method: 'POST', body: { text }, ...auth(s) });
+/** Buyer without a conversation yet: writes to the shop (creates the conversation). */
+export const sendShopMessage = (s: DemoSession, text: string) => api(shop(s, '/chat/messages'), { method: 'POST', body: { text }, ...auth(s) });

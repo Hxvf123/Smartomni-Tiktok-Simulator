@@ -33,5 +33,3 @@ pre { margin:0; max-height:300px; overflow:auto; background:#f2f4f7; padding:8px
 .state-loading { background:#eef4ff; } .state-error { background:#fef3f2; color:var(--bad); } .state-empty { background:#f2f4f7; color:var(--muted); }
 label.inline, label { display:inline-flex; gap:6px; align-items:center; }
 @media (max-width: 600px) { main { padding:12px; } }
-button[aria-checked="true"] { border-color:var(--accent); background:#eef4ff; font-weight:600; }
-article.card img { display:block; border-radius:6px; margin-bottom:8px; }

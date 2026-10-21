@@ -54,7 +54,7 @@ export function tabOf(status: OrderStatus): Exclude<OrderTab, 'all'> {
 export type OrderAction = 'pay' | 'cancel' | 'request-cancel' | 'track' | 'return';
 
 /**
- * Buyer actions per status (same rules as src/features/orders.buyer.tsx and aftersale.buyer.tsx):
+ * Buyer actions per status (same rules as the former /buyer Orders and Returns tabs):
  * UNPAID/ON_HOLD cancel at once; AWAITING_SHIPMENT asks the seller (aftersale cancellation) unless already asked;
  * shipped orders can be tracked; DELIVERED/COMPLETED can request a return.
  */

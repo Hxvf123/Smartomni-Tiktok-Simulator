@@ -12,7 +12,7 @@ import { OPEN_AFTERSALE } from '@/lib/sellerOrders';
 import type { Aftersale, DemoSession } from '@/lib/types';
 import { useAsync } from '@/lib/useAsync';
 
-/** Same kind labels as src/features/aftersale.seller.tsx. */
+/** Same kind labels as the former /seller Returns tab. */
 const kindLabel = (r: Aftersale) => (r.kind === 'RETURN' ? (r.type === 'RETURN_AND_REFUND' ? 'Return and refund' : 'Refund only') : r.type === 'CANCEL' ? 'Cancel (seller/system)' : 'Buyer cancellation');
 
 function Returns({ seller }: { seller: DemoSession }) {

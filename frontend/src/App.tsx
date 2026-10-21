@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useParams } from 'react-router-dom';
 import { ComingSoon } from './components/ComingSoon';
 import { RequireRole } from './components/RequireRole';
 import { Toaster } from './components/ui/sonner';
@@ -8,10 +8,8 @@ import { SellerLayout } from './layouts/SellerLayout';
 import { ShopLayout } from './layouts/ShopLayout';
 import { AuthProvider } from './lib/auth';
 import { AuthorizePage } from './pages/AuthorizePage';
-import { BuyerPage } from './pages/BuyerPage';
 import { ConsolePage } from './pages/ConsolePage';
 import { LoginPage } from './pages/LoginPage';
-import { SellerPage } from './pages/SellerPage';
 import { SellerHome } from './pages/seller-center/SellerHome';
 import { SellerOrderDetail } from './pages/seller-center/SellerOrderDetail';
 import { SellerMessages } from './pages/seller-center/SellerMessages';
@@ -21,9 +19,16 @@ import { SellerReturns } from './pages/seller-center/SellerReturns';
 import { SellerVouchers } from './pages/seller-center/SellerVouchers';
 import { CartPage } from './pages/shop/CartPage';
 import { CheckoutPage } from './pages/shop/CheckoutPage';
+import { MessagesPage } from './pages/shop/MessagesPage';
 import { HomePage } from './pages/shop/HomePage';
 import { OrdersPage } from './pages/shop/OrdersPage';
 import { ProductPage } from './pages/shop/ProductPage';
+
+/** Old marketplace product links (/buyer/product/<id>, e.g. from SmartOmni) open the new product page. */
+function LegacyProductLink() {
+  const { id = '' } = useParams();
+  return <Navigate to={`/product/${encodeURIComponent(id)}`} replace />;
+}
 
 export function App() {
   return (
@@ -38,6 +43,7 @@ export function App() {
               <Route path="cart" element={<CartPage />} />
               <Route path="checkout" element={<CheckoutPage />} />
               <Route path="account/orders" element={<OrdersPage />} />
+              <Route path="account/messages" element={<MessagesPage />} />
             </Route>
           </Route>
           <Route path="login" element={<LoginPage />} />
@@ -61,11 +67,14 @@ export function App() {
             <Route path="shop" element={<ComingSoon title="Shop" />} />
           </Route>
 
-          {/* Legacy simulator pages, kept until Step 13 */}
+          {/* links to the removed /buyer and /seller pages */}
+          <Route path="buyer/product/:id" element={<LegacyProductLink />} />
+          <Route path="buyer/*" element={<Navigate to="/" replace />} />
+          <Route path="seller/*" element={<Navigate to="/seller-center" replace />} />
+
+          {/* Test Console and the OAuth consent page keep the simulator layout */}
           <Route element={<LegacyLayout />}>
             <Route path="seller/authorize" element={<AuthorizePage />} />
-            <Route path="seller/*" element={<SellerPage />} />
-            <Route path="buyer/*" element={<BuyerPage />} />
             <Route path="console/*" element={<ConsolePage />} />
             <Route path="*" element={<div className="state state-empty">Page not found.</div>} />
           </Route>

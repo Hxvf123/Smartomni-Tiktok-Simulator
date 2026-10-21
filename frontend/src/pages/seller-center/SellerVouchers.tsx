@@ -15,7 +15,7 @@ import type { DemoSession } from '@/lib/types';
 import { useAsync } from '@/lib/useAsync';
 import { cn } from '@/lib/utils';
 
-/** Form rules and request body from src/features/coupons.seller.tsx. */
+/** Form rules and request body from the former /seller Coupons tab. */
 const isWhole = (v: string): boolean => /^\d+$/.test(v) && Number(v) >= 1;
 export const emptyVoucher = { title: '', promoCode: '', kind: 'AMOUNT_OFF', value: '', cap: '', minSpend: '', days: '7', limit: '', audience: 'ALL' };
 export type VoucherForm = typeof emptyVoucher;

@@ -1,6 +1,6 @@
 import type { OrderStatus } from './types';
 
-/** Seller Center order rules, taken from src/features/orders.seller.tsx and fulfillment.seller.tsx. */
+/** Seller Center order rules, taken from the former /seller Orders and Shipping tabs. */
 
 export type SellerOrderTab = 'all' | 'unpaid' | 'to-ship' | 'shipped' | 'completed' | 'cancelled';
 
@@ -50,7 +50,7 @@ export function sellerActionsFor(status: OrderStatus, hasTracking: boolean): Sel
   return actions;
 }
 
-/** Aftersale statuses waiting for the seller (same list as src/features/aftersale.seller.tsx). */
+/** Aftersale statuses waiting for the seller (same list as the former /seller Returns tab). */
 export const OPEN_AFTERSALE = ['RETURN_OR_REFUND_REQUEST_PENDING', 'BUYER_SHIPPED_ITEM', 'CANCELLATION_REQUEST_PENDING'];
 
 /** What "Simulate carrier" does next. */

@@ -3,7 +3,7 @@
  * `.grid` class for the whole document. This layer sits after "legacy" and before "utilities" and puts those
  * elements back to their preflight values everywhere EXCEPT inside the legacy `.app` layout, so new pages and
  * Radix portals (rendered at <body> level) start clean. Zero specificity; utilities still win.
- * Delete together with styles.css when the legacy pages are removed (Step 13).
+ * Delete together with styles.css if the Test Console and consent page move to the new UI.
  */
 :where(button, input, select, textarea):not(:where(.app *)) {
   font: inherit;
@@ -15,7 +15,6 @@
   border-radius: 0;
   background-color: transparent;
 }
-:where(button[aria-checked="true"]):not(:where(.app *)) { font-weight: inherit; }
 :where(h1, h2, h3):not(:where(.app *)) { font-size: inherit; margin: 0; }
 :where(main):not(:where(.app *)) { padding: 0; max-width: none; margin: 0; }
 :where(table):not(:where(.app *)) { width: auto; }

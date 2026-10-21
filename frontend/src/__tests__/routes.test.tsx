@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { App } from '../App';
@@ -33,10 +33,26 @@ describe('routes', () => {
     vi.unstubAllGlobals();
   });
 
-  it('keeps the legacy topbar on legacy routes', async () => {
-    renderAt('/seller');
+  it('keeps the simulator topbar on the OAuth consent page, with links to the new UI', async () => {
+    renderAt('/seller/authorize?app_key=k&state=s');
     expect(screen.getByText('TikTok Shop Simulator')).toBeTruthy();
     expect(await screen.findByText('Choose a demo seller')).toBeTruthy();
+    const nav = screen.getByRole('banner');
+    expect(within(nav).getByRole('link', { name: 'Tiptop Shop' }).getAttribute('href')).toBe('/');
+    expect(within(nav).getByRole('link', { name: 'Seller Center' }).getAttribute('href')).toBe('/seller-center');
+    expect(within(nav).getByRole('link', { name: 'Test Console' }).getAttribute('href')).toBe('/console');
+  });
+
+  it('sends links of the removed /buyer and /seller pages to the new UI', () => {
+    renderAt('/buyer/product/sim-product-a-tee');
+    expect(screen.getByTestId('location').textContent).toBe('/product/sim-product-a-tee');
+    cleanup();
+    renderAt('/buyer/orders/123');
+    expect(screen.getByTestId('location').textContent).toBe('/');
+    cleanup();
+    sessionStorage.setItem('sim.demo-session.SELLER', JSON.stringify(sellerSession));
+    renderAt('/seller/coupons');
+    expect(screen.getByTestId('location').textContent).toBe('/seller-center');
   });
 
   it('renders the new shop layout without the legacy topbar', async () => {

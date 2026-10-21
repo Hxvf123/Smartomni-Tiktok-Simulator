@@ -14,10 +14,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import type { CheckoutState } from '@/lib/checkout';
-import { checkout, getCart, getMe, listStorefrontProducts, payOrder, setCartItem } from '@/lib/endpoints';
+import { checkout, getCart, getCoupons, getMe, listStorefrontProducts, payOrder, setCartItem } from '@/lib/endpoints';
 import { shopPrice } from '@/lib/format';
 import type { CartItem, DemoSession, Order, OrderAmounts, Recipient } from '@/lib/types';
 import { useAsync } from '@/lib/useAsync';
+import { cn } from '@/lib/utils';
 import { enrichProduct, imageBackgrounds, type EnrichedProduct } from '@/mocks';
 
 const MESSAGE_MAX = 500;
@@ -156,6 +157,8 @@ interface Line extends CartItem {
 function Checkout({ buyer }: { buyer: DemoSession }) {
   const navigate = useNavigate();
   const wanted = (useLocation().state as CheckoutState | null)?.items;
+  // vouchers the buyer can type (the former /buyer/coupons list)
+  const vouchers = useAsync(() => getCoupons(buyer).catch(() => null), [buyer.sessionToken]);
   const data = useAsync(async () => {
     const [cart, products, me] = await Promise.all([getCart(buyer), listStorefrontProducts(buyer).catch(() => null), getMe(buyer).catch(() => null)]);
     return { cart, products: products?.items.map(enrichProduct) ?? [], me };
@@ -362,10 +365,35 @@ function Checkout({ buyer }: { buyer: DemoSession }) {
               placeholder="Enter a voucher code"
               aria-invalid={errors.coupon ? true : undefined}
               aria-describedby={errors.coupon ? 'coupon-error' : undefined}
-              onChange={(e) => setCoupon(e.target.value)}
-              className="max-w-xs uppercase"
+              onChange={(e) => setCoupon(e.target.value.toUpperCase())}
+              className="max-w-xs"
             />
             {errors.coupon ? <FieldError id="coupon-error">{errors.coupon}</FieldError> : null}
+            {!placed && vouchers.data?.items.some((v) => v.status === 'ONGOING' && v.promoCode) ? (
+              <div className="mt-3 flex flex-col gap-2">
+                <span className="text-xs font-semibold text-muted-foreground">Available vouchers</span>
+                <div className="flex flex-wrap gap-2" role="group" aria-label="Available vouchers">
+                  {vouchers.data.items
+                    .filter((v) => v.status === 'ONGOING' && v.promoCode)
+                    .map((v) => (
+                      <button
+                        key={v.id}
+                        type="button"
+                        aria-pressed={coupon === v.promoCode}
+                        title={v.minSpendVnd != null ? `Min spend ${shopPrice(v.minSpendVnd)}` : undefined}
+                        onClick={() => setCoupon(coupon === v.promoCode ? '' : (v.promoCode ?? ''))}
+                        className={cn(
+                          'flex cursor-pointer flex-col items-start rounded-lg border border-dashed px-3 py-1.5 text-left',
+                          coupon === v.promoCode ? 'border-buyer bg-buyer-soft' : 'border-line hover:bg-surface-2',
+                        )}
+                      >
+                        <span className="font-mono text-xs font-bold">{v.promoCode}</span>
+                        <span className="text-[11px] text-muted-foreground">{v.discountText}</span>
+                      </button>
+                    ))}
+                </div>
+              </div>
+            ) : null}
           </Card>
         </div>
 

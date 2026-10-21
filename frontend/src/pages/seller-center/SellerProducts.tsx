@@ -17,7 +17,7 @@ import type { Catalog, CatalogProduct, CatalogSku, DemoSession } from '@/lib/typ
 import { useAsync } from '@/lib/useAsync';
 import { cn } from '@/lib/utils';
 
-/** Rules from src/components/SellerCatalog.tsx. */
+/** Rules from the former /seller catalog (SellerCatalog). */
 const STATUSES = ['DRAFT', 'ACTIVATE', 'SELLER_DEACTIVATED'];
 export const isWholeVnd = (v: string): boolean => /^\d+$/.test(v) && Number(v) >= 1;
 const LOW_STOCK = 5;

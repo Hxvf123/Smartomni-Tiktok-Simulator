@@ -1,4 +1,4 @@
-import { expect, request as pwRequest, test } from '@playwright/test';
+import { expect, Page, request as pwRequest, test } from '@playwright/test';
 import { BUYER_A, demoSession, placePaidOrder, resetAll, SELLER_A, shot, signInAs } from './helpers';
 
 /** Phase 07a UI: an ON_HOLD order cannot be shipped; after the hold the seller ships, the buyer follows tracking, the label PDF downloads. */
@@ -15,12 +15,13 @@ test.beforeAll(async ({ baseURL }) => {
   await api.dispose();
 });
 
+const ORDERS = '/seller-center/orders';
+const sellerRow = (page: Page) => page.getByRole('row', { name: `Order ${orderId}` });
+
 test('an ON_HOLD order shows "cannot ship yet" and the API refuses to arrange shipment', async ({ page, request }) => {
-  await page.goto('/seller');
-  await signInAs(page, SELLER_A);
-  await page.getByRole('link', { name: 'Shipping' }).click();
-  const row = page.getByRole('row').filter({ hasText: orderId });
-  await expect(row.getByText('ON_HOLD', { exact: true })).toBeVisible();
+  await signInAs(page, 'SELLER', SELLER_A, ORDERS);
+  const row = sellerRow(page);
+  await expect(row.getByText('On hold', { exact: true })).toBeVisible();
   await expect(row.getByText('On hold: cannot ship yet')).toBeVisible();
   await expect(row.getByRole('button', { name: 'Arrange shipment' })).toHaveCount(0);
   await shot(page, 'phase07a-on-hold');
@@ -37,50 +38,47 @@ test('after the hold the seller arranges shipment and the buyer sees tracking pr
   const released = await request.post('/test-admin/orders/release-due', { data: {} });
   expect((await released.json()).released).toContain(orderId);
 
-  await page.goto('/seller/shipping');
-  await signInAs(page, SELLER_A);
-  await page.getByRole('link', { name: 'Shipping' }).click();
-  const row = page.getByRole('row').filter({ hasText: orderId });
-  await expect(row.getByText('AWAITING_SHIPMENT', { exact: true })).toBeVisible();
+  await signInAs(page, 'SELLER', SELLER_A, ORDERS);
+  const row = sellerRow(page);
+  await expect(row.getByText('To ship', { exact: true })).toBeVisible();
   await row.getByRole('button', { name: 'Arrange shipment' }).click();
-  await expect(row.getByText('AWAITING_COLLECTION', { exact: true })).toBeVisible();
-  await expect(row.getByRole('cell').nth(3)).toHaveText(/^SIM\d+/); // fake tracking number
-  await row.getByRole('button', { name: 'Carrier collected' }).click();
-  await expect(row.getByText('IN_TRANSIT', { exact: true })).toBeVisible();
+  await expect(row.getByText('Awaiting collection', { exact: true })).toBeVisible();
+  await expect(row.getByRole('cell').nth(3)).toHaveText(/SIM\d+/); // Package column: fake tracking number
+  await row.getByRole('button', { name: 'Simulate carrier' }).click(); // carrier collects
+  await expect(row.getByText('In transit', { exact: true })).toBeVisible();
   await shot(page, 'phase07a-seller-in-transit');
 
-  await page.goto('/buyer/tracking');
-  await signInAs(page, BUYER_A);
-  await page.getByRole('link', { name: 'Tracking' }).click();
-  const card = page.getByLabel(`tracking ${orderId}`);
-  await expect(card.getByText('IN_TRANSIT', { exact: true })).toBeVisible();
-  await expect(card.getByText(/tracking SIM\d+/)).toBeVisible();
-  await expect(card.getByRole('listitem').first()).toBeVisible();
-  const before = await card.getByRole('listitem').count();
+  await signInAs(page, 'BUYER', BUYER_A, '/account/orders');
+  const card = page.getByRole('article', { name: `Order ${orderId}` });
+  await expect(card.getByText('In transit', { exact: true })).toBeVisible();
+  await card.getByRole('button', { name: 'Track' }).click();
+  const panel = page.getByRole('region', { name: 'Tracking' });
+  await expect(panel.getByText(/^SIM\d+$/)).toBeVisible();
+  const timeline = panel.getByRole('list', { name: 'Tracking timeline' });
+  await expect(timeline.getByRole('listitem').first()).toBeVisible();
+  const before = await timeline.getByRole('listitem').count();
 
-  // seller delivers; buyer timeline grows
-  await page.goto('/seller/shipping');
-  await signInAs(page, SELLER_A);
-  await page.getByRole('link', { name: 'Shipping' }).click();
-  await page.getByRole('row').filter({ hasText: orderId }).getByRole('button', { name: 'Mark delivered' }).click();
-  await expect(page.getByRole('row').filter({ hasText: orderId }).getByText('DELIVERED', { exact: true })).toBeVisible();
-  await page.goto('/buyer/tracking');
-  await expect(page.getByLabel(`tracking ${orderId}`).getByText('DELIVERED', { exact: true })).toBeVisible();
-  // the status pill renders before the timeline items are fetched: wait for the timeline instead of reading the count once
-  await expect.poll(() => page.getByLabel(`tracking ${orderId}`).getByRole('listitem').count()).toBeGreaterThan(before);
+  // seller delivers (the seller session is still in this tab); the buyer timeline grows
+  await page.goto(ORDERS);
+  await sellerRow(page).getByRole('button', { name: 'Simulate carrier' }).click(); // delivered
+  await expect(sellerRow(page).getByText('Delivered', { exact: true })).toBeVisible();
+  await page.goto('/account/orders');
+  await expect(card.getByText('Delivered', { exact: true })).toBeVisible();
+  await card.getByRole('button', { name: 'Track' }).click();
+  // the badge renders before the timeline is fetched: wait for the timeline instead of reading the count once
+  await expect.poll(() => timeline.getByRole('listitem').count()).toBeGreaterThan(before);
   await shot(page, 'phase07a-buyer-delivered');
   await request.put('/test-admin/clock', { data: { reset: true } });
 });
 
-test('the shipping label link downloads a PDF stamped as test data', async ({ page, request }) => {
-  await page.goto('/seller/shipping');
-  await signInAs(page, SELLER_A);
-  await page.getByRole('link', { name: 'Shipping' }).click();
-  const row = page.getByRole('row').filter({ hasText: orderId });
-  await row.getByRole('button', { name: 'Shipping label' }).click();
-  const link = row.getByRole('link', { name: 'Open PDF (test data)' });
-  await expect(link).toBeVisible();
-  const href = (await link.getAttribute('href'))!;
+test('Print label serves a PDF stamped as test data', async ({ page, request }) => {
+  await signInAs(page, 'SELLER', SELLER_A, ORDERS);
+  // the button opens a tab and points it at the PDF url returned by shipping-label; read that url from the response
+  const [response] = await Promise.all([
+    page.waitForResponse((r) => r.url().endsWith(`/orders/${orderId}/shipping-label`)),
+    sellerRow(page).getByRole('button', { name: 'Print label' }).click(),
+  ]);
+  const href = (await response.json()).url as string;
   expect(href).toMatch(/\.pdf$/);
   const pdf = await request.get(href);
   expect(pdf.status()).toBe(200);

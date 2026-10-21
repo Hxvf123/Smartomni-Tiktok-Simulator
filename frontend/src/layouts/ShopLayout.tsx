@@ -149,6 +149,9 @@ function BuyerMenu({ buyer }: { buyer: DemoSession }) {
         <DropdownMenuItem asChild>
           <Link to="/account/orders">My orders</Link>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/account/messages">Messages</Link>
+        </DropdownMenuItem>
         <DropdownMenuItem
           onSelect={async () => {
             await signOut('BUYER');

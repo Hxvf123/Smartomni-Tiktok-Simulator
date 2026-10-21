@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
-import { InventoryHistoryView } from '../features/inventory.seller';
+import { InventoryHistoryView } from '../features/inventory.console';
 
 afterEach(cleanup);
 
