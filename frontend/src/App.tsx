@@ -15,6 +15,7 @@ import { SellerPage } from './pages/SellerPage';
 import { CartPage } from './pages/shop/CartPage';
 import { CheckoutPage } from './pages/shop/CheckoutPage';
 import { HomePage } from './pages/shop/HomePage';
+import { OrdersPage } from './pages/shop/OrdersPage';
 import { ProductPage } from './pages/shop/ProductPage';
 
 export function App() {
@@ -29,7 +30,7 @@ export function App() {
             <Route element={<RequireRole role="BUYER" />}>
               <Route path="cart" element={<CartPage />} />
               <Route path="checkout" element={<CheckoutPage />} />
-              <Route path="account/orders" element={<ComingSoon title="My orders" />} />
+              <Route path="account/orders" element={<OrdersPage />} />
             </Route>
           </Route>
           <Route path="login" element={<LoginPage />} />
