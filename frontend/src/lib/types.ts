@@ -21,6 +21,13 @@ export interface Identities {
 /** Body of POST /demo/sessions. */
 export type SignInIdentity = { role: 'SELLER'; sellerId: string; shopId?: string } | { role: 'BUYER'; buyerId: string };
 
+/** GET /demo/me. `buyer` is null for SELLER sessions. */
+export interface Me {
+  role: Role;
+  shop: { id: string; name: string; region: string; currency: string; status: string };
+  buyer: { id: string; name: string; city: string } | null;
+}
+
 export interface Shop {
   id: string;
   name: string;

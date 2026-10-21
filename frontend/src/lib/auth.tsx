@@ -1,6 +1,6 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { createSession, endSession } from './endpoints';
-import { load, sessionKey } from './session';
+import { load, SESSION_CHANGED, sessionKey } from './session';
 import type { DemoSession, Role, SignInIdentity } from './types';
 
 /**
@@ -42,6 +42,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     BUYER: loadValid('BUYER'),
     SELLER: loadValid('SELLER'),
   }));
+
+  useEffect(() => {
+    const reload = () => setSessions({ BUYER: loadValid('BUYER'), SELLER: loadValid('SELLER') });
+    window.addEventListener(SESSION_CHANGED, reload);
+    return () => window.removeEventListener(SESSION_CHANGED, reload);
+  }, []);
 
   const put = useCallback((role: Role, s: DemoSession | null) => {
     store(role, s);

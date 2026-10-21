@@ -10,6 +10,7 @@ import type {
   DemoSession,
   Fulfillment,
   Identities,
+  Me,
   Order,
   OrderHistoryEntry,
   ReturnRequest,
@@ -29,6 +30,7 @@ const auth = (s: DemoSession) => ({ demoSession: s.sessionToken });
 // Sessions
 export const getIdentities = () => api<Identities>('/demo/identities');
 export const createSession = (identity: SignInIdentity) => api<DemoSession>('/demo/sessions', { method: 'POST', body: identity });
+export const getMe = (s: DemoSession) => api<Me>('/demo/me', auth(s));
 export const endSession = (s: DemoSession) => api<void>('/demo/sessions/current', { method: 'DELETE', ...auth(s) });
 
 // Shop (seller)

@@ -1,6 +1,7 @@
 import { act, cleanup, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AuthProvider, useAuth, type AuthValue } from '@/lib/auth';
+import { SESSION_CHANGED } from '@/lib/session';
 import type { DemoSession } from '@/lib/types';
 
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
@@ -66,6 +67,15 @@ describe('AuthProvider', () => {
     expect(sessionStorage.getItem('sim.demo-session.BUYER')).toBeNull();
     expect(sessionStorage.getItem('sim.demo-session.SELLER')).not.toBeNull();
     expect(screen.getByText('buyer:none seller:shop-1')).toBeTruthy();
+  });
+
+  it('picks up a sign-in made by a legacy page', () => {
+    renderAuth();
+    act(() => {
+      sessionStorage.setItem('sim.demo-session.BUYER', JSON.stringify(buyerSession));
+      window.dispatchEvent(new Event(SESSION_CHANGED));
+    });
+    expect(screen.getByText('buyer:buyer_1 seller:none')).toBeTruthy();
   });
 
   it('signs out locally even when the API call fails', async () => {

@@ -1,4 +1,12 @@
-import { NavLink, Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
+import { ComingSoon } from './components/ComingSoon';
+import { RequireRole } from './components/RequireRole';
+import { Toaster } from './components/ui/sonner';
+import { TooltipProvider } from './components/ui/tooltip';
+import { LegacyLayout } from './layouts/LegacyLayout';
+import { SellerLayout } from './layouts/SellerLayout';
+import { ShopLayout } from './layouts/ShopLayout';
+import { AuthProvider } from './lib/auth';
 import { AuthorizePage } from './pages/AuthorizePage';
 import { BuyerPage } from './pages/BuyerPage';
 import { ConsolePage } from './pages/ConsolePage';
@@ -6,25 +14,51 @@ import { SellerPage } from './pages/SellerPage';
 
 export function App() {
   return (
-    <div className="app">
-      <header className="topbar">
-        <div className="brand">TikTok Shop Simulator <span className="badge">local / fake data</span></div>
-        <nav>
-          <NavLink to="/seller">Seller</NavLink>
-          <NavLink to="/buyer">Buyer</NavLink>
-          <NavLink to="/console">Test Console</NavLink>
-        </nav>
-      </header>
-      <main>
+    <AuthProvider>
+      <TooltipProvider>
         <Routes>
-          <Route path="/" element={<Navigate to="/console" replace />} />
-          <Route path="/seller/authorize" element={<AuthorizePage />} />
-          <Route path="/seller/*" element={<SellerPage />} />
-          <Route path="/buyer/*" element={<BuyerPage />} />
-          <Route path="/console/*" element={<ConsolePage />} />
-          <Route path="*" element={<div className="state state-empty">Page not found.</div>} />
+          {/* Tiptop Shop (buyer) */}
+          <Route element={<ShopLayout />}>
+            <Route index element={<ComingSoon title="Home" />} />
+            <Route path="product/:id" element={<ComingSoon title="Product" />} />
+            <Route element={<RequireRole role="BUYER" />}>
+              <Route path="cart" element={<ComingSoon title="Cart" />} />
+              <Route path="checkout" element={<ComingSoon title="Checkout" />} />
+              <Route path="account/orders" element={<ComingSoon title="My orders" />} />
+            </Route>
+          </Route>
+          <Route path="login" element={<div className="min-h-screen bg-surface-2 p-6 font-sans"><ComingSoon title="Sign in" /></div>} />
+
+          {/* Seller Center */}
+          <Route
+            path="seller-center"
+            element={
+              <RequireRole role="SELLER">
+                <SellerLayout />
+              </RequireRole>
+            }
+          >
+            <Route index element={<ComingSoon title="Seller Center home" />} />
+            <Route path="orders" element={<ComingSoon title="Manage orders" />} />
+            <Route path="orders/:id" element={<ComingSoon title="Order detail" />} />
+            <Route path="returns" element={<ComingSoon title="Returns & refunds" />} />
+            <Route path="products" element={<ComingSoon title="Products" />} />
+            <Route path="vouchers" element={<ComingSoon title="Vouchers" />} />
+            <Route path="messages" element={<ComingSoon title="Messages" />} />
+            <Route path="shop" element={<ComingSoon title="Shop" />} />
+          </Route>
+
+          {/* Legacy simulator pages, kept until Step 13 */}
+          <Route element={<LegacyLayout />}>
+            <Route path="seller/authorize" element={<AuthorizePage />} />
+            <Route path="seller/*" element={<SellerPage />} />
+            <Route path="buyer/*" element={<BuyerPage />} />
+            <Route path="console/*" element={<ConsolePage />} />
+            <Route path="*" element={<div className="state state-empty">Page not found.</div>} />
+          </Route>
         </Routes>
-      </main>
-    </div>
+        <Toaster position="top-center" />
+      </TooltipProvider>
+    </AuthProvider>
   );
 }

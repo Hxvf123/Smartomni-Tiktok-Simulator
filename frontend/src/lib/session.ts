@@ -5,6 +5,8 @@ export type { DemoSession };
 
 /** sessionStorage key shared by the legacy pages and the new AuthProvider. */
 export const sessionKey = (role: string) => `sim.demo-session.${role}`;
+/** Fired on window when a legacy page signs in or out, so AuthProvider can pick the change up. */
+export const SESSION_CHANGED = 'sim:demo-session-changed';
 
 export function load(role: string): DemoSession | null {
   try {
@@ -26,6 +28,7 @@ export function useDemoSession(role: 'SELLER' | 'BUYER') {
       } catch {
         /* storage unavailable: keep in memory only */
       }
+      window.dispatchEvent(new Event(SESSION_CHANGED));
       setSession(s);
     },
     [role],
