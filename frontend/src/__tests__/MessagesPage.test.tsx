@@ -1,0 +1,73 @@
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { AuthProvider } from '@/lib/auth';
+import type { DemoSession } from '@/lib/types';
+import { MessagesPage } from '@/pages/shop/MessagesPage';
+
+const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+
+const future = new Date(Date.now() + 3600_000).toISOString();
+const buyer: DemoSession = { sessionToken: 'tok-b', role: 'BUYER', shopId: 'shop-1', buyerId: 'buyer_1', expiresAt: future };
+const base = '/demo/shops/shop-1';
+const msg = (id: string, role: string, text: string) => ({ id, index: 1, type: 'TEXT', role, roleLabel: role === 'BUYER' ? 'Buyer' : 'Shop', nickname: 'x', at: future, text, supported: true });
+const conversation = { id: 'c1', externalId: 'e1', buyerNickname: 'An', agentJoined: false, canSendMessage: true, unread: 0, latest: null, updatedAt: future };
+
+describe('Buyer messages', () => {
+  const calls: { url: string; method: string; body?: unknown }[] = [];
+  let conversations: unknown[];
+  beforeEach(() => {
+    calls.length = 0;
+    conversations = [];
+    sessionStorage.clear();
+    sessionStorage.setItem('sim.demo-session.BUYER', JSON.stringify(buyer));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        const method = init?.method ?? 'GET';
+        calls.push({ url, method, body: init?.body ? JSON.parse(String(init.body)) : undefined });
+        if (method === 'POST') return json({}, 201);
+        if (url === `${base}/chat/conversations`) return json({ supportedTypes: ['TEXT'], unsupported: 'IMAGE, VIDEO', items: conversations });
+        if (url === `${base}/chat/conversations/c1/messages`) return json({ conversation, items: [msg('m1', 'BUYER', 'Is size L back?'), msg('m2', 'SHOP', 'Yes, today.')] });
+        return json({ message: 'nope' }, 404);
+      }),
+    );
+  });
+  afterEach(() => {
+    cleanup();
+    vi.unstubAllGlobals();
+  });
+
+  const renderPage = () =>
+    render(
+      <MemoryRouter>
+        <AuthProvider>
+          <MessagesPage />
+        </AuthProvider>
+      </MemoryRouter>,
+    );
+
+  it('starts a conversation with the shop through POST chat/messages', async () => {
+    renderPage();
+    expect(await screen.findByRole('note')).toHaveProperty('textContent', 'Supported message types: TEXT. Not simulated: IMAGE, VIDEO.');
+    const thread = screen.getByRole('region', { name: 'Chat thread' });
+    expect(within(thread).getByText('Say hello to start a conversation.')).toBeTruthy();
+    const send = within(thread).getByRole('button', { name: 'Send' }) as HTMLButtonElement;
+    fireEvent.change(within(thread).getByRole('textbox', { name: 'Message' }), { target: { value: '   ' } });
+    expect(send.disabled).toBe(true);
+    fireEvent.change(within(thread).getByRole('textbox', { name: 'Message' }), { target: { value: 'Hello shop' } });
+    fireEvent.click(send);
+    await waitFor(() => expect(calls.filter((c) => c.method === 'POST')).toEqual([{ url: `${base}/chat/messages`, method: 'POST', body: { text: 'Hello shop' } }]));
+  });
+
+  it('shows the conversation, own messages on the right, and replies in it', async () => {
+    conversations = [conversation];
+    renderPage();
+    const thread = await screen.findByRole('region', { name: 'Chat thread' });
+    const items = await within(thread).findAllByRole('listitem');
+    expect(items.map((li) => li.className.includes('self-end'))).toEqual([true, false]);
+    fireEvent.change(within(thread).getByRole('textbox', { name: 'Message' }), { target: { value: 'Thanks' } });
+    fireEvent.click(within(thread).getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(calls.filter((c) => c.method === 'POST')).toEqual([{ url: `${base}/chat/conversations/c1/messages`, method: 'POST', body: { text: 'Thanks' } }]));
+  });
+});

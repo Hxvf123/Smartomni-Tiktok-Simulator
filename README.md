@@ -9,7 +9,7 @@ Status: phases 01-09 are implemented on the simulator side (contracts, foundatio
 | Path | Purpose |
 |---|---|
 | `backend/` | NestJS + TypeScript + Prisma API (port 8090) |
-| `frontend/` | React + TypeScript + Vite UI (port 3090): Seller, Buyer, Test Console |
+| `frontend/` | React + TypeScript + Vite UI (port 3090): Tiptop Shop (buyer), Seller Center, Test Console |
 | `docker-compose.yml` | db (internal only), api, ui; named volumes for DB, media and PDF |
 | `contracts/`, `docs/` | Owned by Phase 01 (API contracts and documentation) |
 
@@ -78,6 +78,67 @@ cd frontend && npm run typecheck && npm run lint && npm test && npm run build
 
 Backend integration tests need a real PostgreSQL (`FOR UPDATE SKIP LOCKED`). `npm test` starts a throw-away embedded PostgreSQL 16 automatically; set `TEST_DATABASE_URL` (database name must contain `simulator`) to use your own instead.
 
+## Frontend (Tiptop Shop UI)
+
+React 18 + Vite, Tailwind CSS v4 and shadcn/ui (`frontend/src/components/ui/`). All UI text is English. Sign-in is the demo sign-in of `/demo/sessions` (no password); the session of each role is kept in `sessionStorage` (`sim.demo-session.BUYER` / `.SELLER`), so a tab can hold a buyer and a seller at the same time.
+
+| Route | Page | Who |
+|---|---|---|
+| `/` | Home: "Deals on 4★+ products", "Best sellers", search (`?q=`, client-side) | everyone (guests see the mock catalog) |
+| `/product/:id` | Product: variants (SKU), quantity, Add to cart / Buy now, ratings and reviews | everyone (real products need a buyer session) |
+| `/login` | Sign in as a demo buyer or seller (`?next=` return path, `&role=seller`) | everyone |
+| `/cart`, `/checkout` | Cart (optimistic quantities) and checkout with simulated payment | buyer |
+| `/account/orders`, `/account/messages` | My orders (tabs, tracking, cancel, return) and chat with the shop | buyer |
+| `/seller-center` | Seller Center home: to-do counts, business overview (mock), shop, latest orders | seller |
+| `/seller-center/orders`, `/orders/:id` | Manage orders (arrange shipment, print label, simulate carrier, cancel) and order detail | seller |
+| `/seller-center/returns`, `/products`, `/vouchers`, `/messages` | Returns & refunds, products + stock history, vouchers, buyer chat | seller |
+| `/console` | Test Console (unchanged) | developers |
+| `/seller/authorize` | OAuth consent page for SmartOmni (unchanged) | seller |
+
+Buyer-only and seller-only routes send a guest to `/login?next=...`. Links to the removed pages still work: `/buyer/product/<id>` opens `/product/<id>`, other `/buyer/*` paths open `/`, other `/seller/*` paths open `/seller-center`.
+
+Code layout: `src/pages/shop/` (buyer pages), `src/pages/seller-center/`, `src/layouts/` (`ShopLayout`, `SellerLayout`, `LegacyLayout` for the console and consent page), `src/lib/endpoints.ts` (one function per `/demo` endpoint, on top of `api()`), `src/lib/types.ts`, `src/lib/auth.tsx` (`AuthProvider` / `useAuth`). The console still uses `src/styles.css`, loaded in a CSS layer so it cannot leak into the new pages.
+
+### Mock data (`frontend/src/mocks/`)
+
+What the `/demo` API does not provide yet comes from this folder only:
+
+| File | Provides |
+|---|---|
+| `catalog.ts` | the public catalog shown to guests; mock fields per seeded product (original price, % off, rating, sold, free shipping, trending, image tile color) |
+| `enrich.ts` | `enrichProduct(p)`: adds those fields to a real storefront product (by id, then by title, else stable values per id); never changes real title, prices, SKUs or stock |
+| `reviews.ts` | rating summary and reviews on the product page |
+| `identities.ts` | buyer/seller city on the sign-in page |
+| `business.ts` | Seller Center "Business overview" numbers |
+
+Mock-driven UI is marked with `MockBadge` (`src/components/ui/mock-badge.tsx`, pink dashed frame + "MOCK"); `DevMock` shows the frame only in development builds. To remove the mocks once the backend has these fields: delete `frontend/src/mocks/`, run `npm run typecheck` in `frontend/`, and replace each import it reports with the real field (or drop the UI that only showed mock data).
+
+### Deploy the frontend to Vercel
+
+The API runs on Render (`render.yaml`, `https://smartomni-tiktok-simulator-api.onrender.com`); Vercel only serves the UI. `frontend/vercel.json` keeps every call same-origin, like nginx in Docker:
+
+| Path | Goes to |
+|---|---|
+| `/demo/*`, `/health/*` | rewritten straight to the Render API |
+| `/test-admin/*` | the Vercel Function `frontend/api/test-admin.ts`, which adds `x-test-admin-token` from its env and forwards method, query and body to `API_ORIGIN/test-admin/...`; status, body, `content-type` and `x-request-id` come back unchanged |
+| everything else | `/index.html` (SPA routes) |
+
+1. Vercel: **Add New Project**, import this repository, set **Root Directory** to `frontend`. Framework, build command (`npm run build`) and output (`dist`) come from `vercel.json`.
+2. Environment variables (Settings > Environment Variables, then redeploy):
+
+   | Name | Required | Value |
+   |---|---|---|
+   | `TEST_ADMIN_TOKEN` | yes | the same value as `TEST_ADMIN_TOKEN` of the Render service (Render > Environment). Without it `/test-admin/*` returns 500. |
+   | `API_ORIGIN` | no | API base URL for the function; default `https://smartomni-tiktok-simulator-api.onrender.com` |
+
+3. Check: `https://<project>.vercel.app/health/ready` answers, `/` lists products after signing in, and the Test Console (`/console`) loads its status.
+
+Notes:
+* Do not prefix these variables with `VITE_`: Vite would put them in the browser bundle. The token is only read by the function at request time.
+* The Render URL is written in `vercel.json` (rewrites cannot read env variables). If the API moves, change both `vercel.json` and `API_ORIGIN`.
+* Anyone who can open the Vercel site can call `/test-admin/*` through the function (reset, clock, faults), exactly like port 3090 in Docker. Keep the deployment for demos, or protect it with Vercel Deployment Protection.
+* The free Render plan sleeps when idle: the first request after a pause can take about a minute.
+
 ## API documentation (Swagger / OpenAPI)
 
 All 116 HTTP operations (TikTok-shaped, `/demo`, `/test-admin`, `/health`) are documented in OpenAPI 3.0.3.
@@ -118,7 +179,7 @@ Every request (except health probes and console polling reads) is stored in `Htt
 
 ## Test Console
 
-Status (DB, worker, clock, queue, seed), Shop & scenario, Reset (two-step), Clock, HTTP log (request-ID filter), Webhooks (history, replay, queue a test event), Faults, plus feature tabs (Orders, Inventory, Fulfillment, Chat, Coupons, Aftersale). Seller and Buyer have matching tabs. Tabs are drop-in files `frontend/src/features/<name>.{buyer,seller,console}.tsx`; every list has loading, error and empty states.
+Status (DB, worker, clock, queue, seed), Shop & scenario, Reset (two-step), Clock, HTTP log (request-ID filter), Webhooks (history, replay, queue a test event), Faults, plus feature tabs (Orders, Inventory, Fulfillment, Chat, Coupons, Aftersale). Tabs are drop-in files `frontend/src/features/<name>.console.tsx`; every list has loading, error and empty states. The buyer and seller sides of the same features are the Tiptop Shop and Seller Center pages (see Frontend).
 
 ## Phase 03: authorization and token lifecycle (simulator side)
 
@@ -143,11 +204,11 @@ Failures return the error-envelope shape `{code:-1,message,request_id,simulator_
 * `status` filter values come from the OAS (`ALL`, `DRAFT`, `PENDING`, `FAILED`, `ACTIVATE`, `SELLER_DEACTIVATED`, `PLATFORM_DEACTIVATED`, `FREEZE`, `DELETED`); `ALL` includes every status (whether real TikTok hides `DELETED` under `ALL` is unverified). Unsupported filters are rejected with a 400 test fault, never ignored.
 * Prices are strings in VND (`price.sale_price`), per SKU. Warehouse ids (`inventory[].warehouse_id`) match `GET /logistics/202309/warehouses` `id`.
 * Product writes exist only as `/demo` endpoints: the contract lists no verified product-write operation.
-* Buyer product link: `http://localhost:3090/buyer/product/<marketplace product id>` (opens in the Buyer session's shop; a product of another shop shows "not available").
+* Buyer product link: `http://localhost:3090/product/<marketplace product id>` (opens in the buyer session's shop; a product of another shop shows "not available"). Old `/buyer/product/<id>` links redirect there.
 
 ## Orders and webhooks (Phase 05)
 
-* Buyer (UI `/buyer`): product page (`/buyer/product/<marketplace product id>`) -> cart -> checkout (idempotent per `checkoutKey`) -> fake payment -> order history. Money is computed by the backend per component (product total, seller/platform discount, shipping, tax); the OAS has no line quantity, so each purchased unit is one line item.
+* Buyer (UI): product page (`/product/<marketplace product id>`) -> cart (`/cart`) -> checkout (`/checkout`, idempotent per `checkoutKey`) -> simulated payment -> My orders (`/account/orders`). Money is computed by the backend per component (product total, seller/platform discount, shipping, tax); the OAS has no line quantity, so each purchased unit is one line item.
 * State machine (simulator model, unverified): `UNPAID -> ON_HOLD -> AWAITING_SHIPMENT -> AWAITING_COLLECTION -> IN_TRANSIT -> DELIVERED -> COMPLETED`, `CANCELLED` from the early states. An ON_HOLD order cannot be shipped; DELIVERED is not COMPLETED. The hold lasts `ORDER_HOLD_MINUTES` (30, business clock) and is released by a timer or `POST /test-admin/orders/release-due`.
 * Read API: `POST /order/202309/orders/search` (keyset `page_token`, `sort_field`, `sort_order`, filters with `*_ge` inclusive / `*_lt` exclusive) and `GET /order/202507/orders?ids=a,b` (max 50). `recipient_address` is absent for UNPAID/ON_HOLD, as in the OAS.
 * Events API: `GET/PUT/DELETE /event/202309/webhooks` (scope `sim.event.manage`). Only subscribed topics are delivered. Emitted topics: `ORDER_STATUS_CHANGE` (type 1), `PACKAGE_UPDATE`, `RETURN_STATUS_CHANGE`, `CANCELLATION_STATUS_CHANGE`, `NEW_MESSAGE`, `NEW_CONVERSATION`; payload fields and numeric `type` values other than 1 are UNVERIFIED.
@@ -179,14 +240,14 @@ Failures return the error-envelope shape `{code:-1,message,request_id,simulator_
 
 ## Browser tests (Playwright)
 
-`e2e/` drives the running Docker stack through the UI (Buyer checkout, Seller, Test Console, chat, coupons, fulfillment, aftersale, restart persistence). It never runs against production.
+`e2e/` drives the running Docker stack through the UI (Tiptop Shop checkout, Seller Center, Test Console, chat, coupons, fulfillment, aftersale, restart persistence). Tests sign in through `/login` (`signInAs(page, role, name, next)` in `e2e/tests/helpers.ts`) and reset + re-seed the demo data at the start of each file. It never runs against production.
 
 ```bash
 docker compose up --build -d      # from the repo root, with a filled-in .env
 cd e2e && npm ci && npx playwright install chromium && npx playwright test
 ```
 
-Set `E2E_UI_URL` / `E2E_API_URL` for non-default ports. Screenshots go to `e2e/test-results/shots/` (git-ignored).
+Set `E2E_UI_URL` / `E2E_API_URL` for non-default ports. `phase10-persistence` signs TikTok-shaped calls with the fake seed secret `fake_app_secret_local`, so the stack's `.env` needs `SEED_APP_SECRET=fake_app_secret_local` for that file; it also restarts the `api` and `db` containers. Screenshots go to `e2e/test-results/shots/` (git-ignored).
 
 ## Troubleshooting
 

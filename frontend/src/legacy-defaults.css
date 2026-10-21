@@ -1,0 +1,14 @@
+/*
+ * Browser defaults that Tailwind's preflight resets and styles.css never set, restored for the legacy
+ * pages only (everything rendered inside the old `.app` layout). Zero specificity via :where(), and loaded
+ * before styles.css in the same layer, so any styles.css rule still wins.
+ * Delete together with styles.css if the Test Console and consent page move to the new UI.
+ */
+:where(.app) :where(h1, h2, h3, h4) { font-weight: bold; }
+:where(.app) :where(h2) { margin: 0.83em 0; }
+:where(.app) :where(p) { margin: 1em 0; }
+:where(.app) :where(ul, ol) { margin: 1em 0; padding-left: 40px; }
+:where(.app) :where(ul) { list-style: disc; }
+:where(.app) :where(ol) { list-style: decimal; }
+:where(.app) :where(a) { color: LinkText; text-decoration: underline; }
+:where(.app) :where(code, pre) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }

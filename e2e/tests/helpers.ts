@@ -1,4 +1,4 @@
-import { APIRequestContext, expect, Page, request as pwRequest } from '@playwright/test';
+import { APIRequestContext, Page, request as pwRequest } from '@playwright/test';
 
 /** Wipes and re-seeds the simulator (through the UI proxy, which injects the admin token server-side). */
 export async function resetAll(baseURL: string | undefined): Promise<void> {
@@ -11,13 +11,17 @@ export async function resetAll(baseURL: string | undefined): Promise<void> {
   await api.dispose();
 }
 
-/** Signs in by name; a no-op when this tab already holds a session for the role (sessions live in sessionStorage). */
-export async function signInAs(page: Page, name: string): Promise<void> {
-  const signOut = page.getByRole('button', { name: 'Sign out' });
-  const entry = page.getByRole('listitem').filter({ hasText: name }).getByRole('button', { name: 'Sign in' });
-  await expect(signOut.or(entry)).toBeVisible();
-  if (await signOut.isVisible()) return;
-  await entry.click();
+/**
+ * Signs in on the Tiptop Shop sign-in page (/login) and waits until the app has brought the user to `next`.
+ * Every call creates a fresh demo session for that role in this tab (sessions live in sessionStorage, one per role).
+ */
+export async function signInAs(page: Page, role: 'BUYER' | 'SELLER', name: string, next: string): Promise<void> {
+  await page.goto(`/login?next=${encodeURIComponent(next)}${role === 'SELLER' ? '&role=seller' : ''}`);
+  await page.getByRole('tab', { name: role === 'BUYER' ? 'Buyer' : 'Seller' }).click();
+  // the radio's accessible name is "<name> <shop · city>"; a string name matches as a substring
+  await page.getByRole('radio', { name }).click();
+  await page.getByRole('button', { name: `Sign in as ${name}` }).click();
+  await page.waitForURL((url) => url.pathname + url.search === next);
 }
 
 export interface DemoSession {

@@ -1,4 +1,5 @@
 import { expect, request as pwRequest, test } from '@playwright/test';
+import { BUYER_A, SELLER_A, signInAs } from './helpers';
 
 /**
  * Phase 05 UI flow: marketplace product link -> Buyer sign-in -> pick SKU -> cart -> checkout -> fake payment ->
@@ -18,52 +19,47 @@ test.beforeAll(async ({ baseURL }) => {
 });
 
 let orderId = '';
-
-async function signInAs(page: import('@playwright/test').Page, name: string) {
-  await page.getByRole('listitem').filter({ hasText: name }).getByRole('button', { name: 'Sign in' }).click();
-}
+const TEE = '/product/sim-product-a-tee';
 
 test('a marketplace product link opens the right product for a buyer and the SKU picker selects the variant', async ({ page }) => {
+  // the old /buyer link still works and lands on the product page, which asks a guest to sign in
   await page.goto('/buyer/product/sim-product-a-tee');
-  await signInAs(page, 'Trần Văn An');
-  await expect(page.getByRole('heading', { name: 'Shopping at Cửa hàng Mộc Lan (demo)' })).toBeVisible();
-  const detail = page.getByLabel('product detail');
-  await expect(detail.getByRole('heading', { name: 'Áo thun cotton basic' })).toBeVisible();
-  await detail.getByRole('radio', { name: 'Đen / M' }).click();
-  await expect(detail.getByText(/Selected: .*Đen \/ M.*135\.000/)).toBeVisible();
-  await expect(detail.getByRole('radio', { name: 'Đen / M' })).toHaveAttribute('aria-checked', 'true');
-  await expect(detail.getByRole('radio', { name: 'Trắng / M' })).toHaveAttribute('aria-checked', 'false');
+  await expect(page).toHaveURL(new RegExp(`${TEE}$`));
+  await expect(page.getByText('Sign in to view this product.')).toBeVisible();
+  await signInAs(page, 'BUYER', BUYER_A, TEE);
+  await expect(page.getByText('Sold by')).toContainText('Cửa hàng Mộc Lan (demo)');
+  await expect(page.getByRole('heading', { level: 1, name: 'Áo thun cotton basic' })).toBeVisible();
+  await page.getByRole('radio', { name: 'Đen / M' }).click();
+  await expect(page.getByTestId('price')).toHaveText('₫135.000');
+  await expect(page.getByRole('radio', { name: 'Đen / M' })).toHaveAttribute('aria-checked', 'true');
+  await expect(page.getByRole('radio', { name: 'Trắng / M' })).toHaveAttribute('aria-checked', 'false');
 });
 
 test('buyer adds two units to the cart, checks out and pays with the fake payment', async ({ page }) => {
-  await page.goto('/buyer/product/sim-product-a-tee');
-  await signInAs(page, 'Trần Văn An');
-  const detail = page.getByLabel('product detail');
-  await detail.getByRole('radio', { name: 'Trắng / M' }).click();
-  await detail.getByLabel('quantity').fill('2');
-  await detail.getByRole('button', { name: 'Add to cart' }).click();
-  await expect(detail.getByText('Added 2 × Trắng / M to your cart.')).toBeVisible();
-  await page.getByRole('link', { name: 'Cart' }).first().click();
-  await expect(page.getByText('Items total:')).toContainText('258.000');
-  await page.getByRole('button', { name: 'Checkout' }).click();
-  const placed = page.getByLabel('order placed');
-  await expect(placed.getByText('UNPAID')).toBeVisible();
-  await expect(placed.getByText(/Total:/)).toContainText('283.000'); // 258.000 items + 25.000 shipping
-  orderId = (await placed.getByRole('heading').innerText()).replace('Order ', '').trim();
-  await placed.getByRole('button', { name: 'Pay now (fake payment)' }).click();
-  await expect(placed.getByText('ON_HOLD')).toBeVisible();
-  await placed.getByRole('link', { name: 'View order' }).click();
-  const od = page.getByLabel('order detail');
-  await expect(od.getByText('ON_HOLD').first()).toBeVisible();
-  await expect(od.getByText('UNPAID → ON_HOLD')).toBeVisible();
+  await signInAs(page, 'BUYER', BUYER_A, TEE);
+  await page.getByRole('radio', { name: 'Trắng / M' }).click();
+  await page.getByRole('spinbutton', { name: 'Quantity' }).fill('2');
+  await page.getByRole('button', { name: 'Add to cart' }).click();
+  await expect(page.getByText('Added to cart')).toBeVisible();
+  await page.getByRole('link', { name: 'Cart', exact: true }).click();
+  await expect(page.getByTestId('total')).toHaveText('₫258.000');
+  await page.getByRole('button', { name: 'Check out (1)' }).click();
+  await page.getByRole('button', { name: 'Place order' }).click();
+  const placed = page.locator('[role="status"]', { hasText: 'Order placed' });
+  await expect(placed).toContainText('Order placed · UNPAID');
+  await expect(page.getByTestId('total')).toHaveText('₫283.000'); // 258.000 items + 25.000 shipping
+  orderId = (await placed.locator('.font-mono').innerText()).trim();
+  await page.getByRole('button', { name: 'Pay now (simulated)' }).click();
+  await page.waitForURL('**/account/orders');
+  await expect(page.getByRole('article', { name: `Order ${orderId}` }).getByText('Confirming', { exact: true })).toBeVisible(); // ON_HOLD
 });
 
 test('seller sees the order; the Test Console refuses to ship an ON_HOLD order then releases it', async ({ page, request }) => {
-  await page.goto('/seller');
-  await signInAs(page, 'Nguyễn Thị Lan');
-  await page.getByRole('link', { name: 'Orders' }).click();
-  await expect(page.getByRole('cell', { name: orderId })).toBeVisible();
-  await expect(page.getByRole('row', { name: new RegExp(orderId) }).getByText('ON_HOLD')).toBeVisible();
+  await signInAs(page, 'SELLER', SELLER_A, '/seller-center/orders');
+  const sellerRow = page.getByRole('row', { name: `Order ${orderId}` });
+  await expect(sellerRow.getByText('On hold', { exact: true })).toBeVisible();
+  await page.goto(`/seller-center/orders/${orderId}`);
+  await expect(page.getByRole('region', { name: 'Status history' })).toContainText('Unpaid → On hold');
 
   await page.goto('/console');
   await page.getByRole('tab', { name: 'Orders' }).click();

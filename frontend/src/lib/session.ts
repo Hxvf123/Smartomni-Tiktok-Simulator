@@ -1,18 +1,16 @@
 import { useCallback, useState } from 'react';
+import type { DemoSession } from './types';
 
-export interface DemoSession {
-  sessionToken: string;
-  role: 'SELLER' | 'BUYER';
-  shopId: string;
-  buyerId: string | null;
-  expiresAt: string;
-}
+export type { DemoSession };
 
-const key = (role: string) => `sim.demo-session.${role}`;
+/** sessionStorage key shared by the legacy pages and the new AuthProvider. */
+export const sessionKey = (role: string) => `sim.demo-session.${role}`;
+/** Fired on window when a legacy page signs in or out, so AuthProvider can pick the change up. */
+export const SESSION_CHANGED = 'sim:demo-session-changed';
 
-function load(role: string): DemoSession | null {
+export function load(role: string): DemoSession | null {
   try {
-    const raw = sessionStorage.getItem(key(role));
+    const raw = sessionStorage.getItem(sessionKey(role));
     return raw ? (JSON.parse(raw) as DemoSession) : null;
   } catch {
     return null;
@@ -25,11 +23,12 @@ export function useDemoSession(role: 'SELLER' | 'BUYER') {
   const save = useCallback(
     (s: DemoSession | null) => {
       try {
-        if (s) sessionStorage.setItem(key(role), JSON.stringify(s));
-        else sessionStorage.removeItem(key(role));
+        if (s) sessionStorage.setItem(sessionKey(role), JSON.stringify(s));
+        else sessionStorage.removeItem(sessionKey(role));
       } catch {
         /* storage unavailable: keep in memory only */
       }
+      window.dispatchEvent(new Event(SESSION_CHANGED));
       setSession(s);
     },
     [role],

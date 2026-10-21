@@ -1,0 +1,85 @@
+/*
+ * Layer order: the legacy stylesheet (old /buyer, /seller, /console pages) sits above Tailwind's preflight
+ * (so old pages keep their look) but below components/utilities (so new pages are not overridden by it).
+ */
+@layer theme, base, legacy, legacy-isolation, components, utilities;
+
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "./legacy-defaults.css" layer(legacy);
+@import "./styles.css" layer(legacy);
+@import "./legacy-isolation.css" layer(legacy-isolation);
+
+/* Legacy pages use class="inline" on labels (inline-flex in styles.css); don't let Tailwind's `inline` utility override it. */
+@source not inline("inline");
+
+/*
+ * Runtime variables only for what a theme class swaps (.theme-seller).
+ * shadcn's other raw variables (--muted, --card, --accent, ...) are NOT declared on :root because
+ * styles.css already uses those names with other meanings; their values go straight into @theme below.
+ */
+:root {
+  --primary: #e11d48;
+  --primary-foreground: #ffffff;
+  --ring: #e11d48;
+  --radius: 8px;
+}
+
+.theme-seller {
+  --primary: #00807c;
+  --primary-foreground: #ffffff;
+  --ring: #00807c;
+}
+
+@theme inline {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Tiptop Shop tokens */
+  --color-ink: #161823;
+  --color-buyer: #e11d48;
+  --color-buyer-soft: #fff0f3;
+  --color-buyer-ink: #b0123a;
+  --color-teal: #00807c;
+  --color-teal-soft: #e6f4f3;
+  --color-free-ship: #0b7f79;
+  --color-star: #f5a400;
+  --color-muted-2: #6b6d73;
+  --color-line: #d9dadc;
+  --color-line-soft: #ededef;
+  --color-surface: #f1f1f2;
+  --color-surface-2: #f4f4f5;
+
+  /* shadcn semantic colors (neutral base, mapped to the tokens above) */
+  --color-background: #ffffff;
+  --color-foreground: #161823;
+  --color-card: #ffffff;
+  --color-card-foreground: #161823;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #161823;
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: #f1f1f2;
+  --color-secondary-foreground: #161823;
+  --color-muted: #f1f1f2;
+  --color-muted-foreground: #5e6066;
+  --color-accent: #f4f4f5;
+  --color-accent-foreground: #161823;
+  --color-destructive: #dc2626;
+  --color-border: #d9dadc;
+  --color-input: #d9dadc;
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: 12px;
+  --radius-card: 12px;
+  --radius-pill: 999px;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+}

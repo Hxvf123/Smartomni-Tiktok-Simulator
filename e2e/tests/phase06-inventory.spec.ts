@@ -9,19 +9,18 @@ test.beforeAll(async ({ baseURL }) => {
 });
 
 test('seller sets a SKU stock to 0 in both warehouses and the Inventory tab shows before/after', async ({ page }) => {
-  await page.goto('/seller');
-  await signInAs(page, SELLER_A);
-  const row = page.getByRole('row').filter({ hasText: 'BAG-NVY' });
+  await signInAs(page, 'SELLER', SELLER_A, '/seller-center/products');
+  const row = page.getByRole('row', { name: 'SKU BAG-NVY' });
   await expect(row).toBeVisible();
   for (const [wh, before] of [['Kho Hà Nội', '20'], ['Kho TP.HCM', '10']] as const) {
-    const input = row.getByLabel(`stock BAG-NVY ${wh}`);
+    const input = row.getByLabel(`Stock of BAG-NVY in ${wh}`);
     await expect(input).toHaveValue(before);
     await input.fill('0');
   }
   await row.getByRole('button', { name: 'Set' }).nth(1).click(); // the second "Set" in the row is the stock one
-  await expect(row.getByLabel('stock BAG-NVY Kho Hà Nội')).toHaveValue('0');
+  await expect(row.getByLabel('Stock of BAG-NVY in Kho Hà Nội')).toHaveValue('0');
 
-  await page.getByRole('link', { name: 'Inventory' }).click();
+  await page.getByRole('tab', { name: 'Stock history' }).click();
   await expect(page.getByRole('heading', { name: 'Stock changes (before / after)' })).toBeVisible();
   const hn = page.getByRole('row').filter({ hasText: 'BAG-NVY' }).filter({ hasText: 'Kho Hà Nội' });
   await expect(hn.getByRole('cell').nth(3)).toHaveText('20'); // before
@@ -34,12 +33,10 @@ test('seller sets a SKU stock to 0 in both warehouses and the Inventory tab show
 });
 
 test('the buyer sees the sold-out SKU disabled while another variant stays selectable', async ({ page }) => {
-  await page.goto('/buyer/product/sim-product-a-bag');
-  await signInAs(page, BUYER_A);
-  const detail = page.getByLabel('product detail');
-  const sold = detail.getByRole('radio', { name: 'Xanh navy (sold out)' });
+  await signInAs(page, 'BUYER', BUYER_A, '/product/sim-product-a-bag');
+  const sold = page.getByRole('radio', { name: 'Xanh navy', exact: true });
   await expect(sold).toBeDisabled();
-  const ok = detail.getByRole('radio', { name: 'Màu tự nhiên' });
+  const ok = page.getByRole('radio', { name: 'Màu tự nhiên', exact: true });
   await expect(ok).toBeEnabled();
   await ok.click();
   await expect(ok).toHaveAttribute('aria-checked', 'true');

@@ -1,0 +1,258 @@
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { AuthProvider } from '@/lib/auth';
+import type { DemoSession } from '@/lib/types';
+import { SellerMessages } from '@/pages/seller-center/SellerMessages';
+import { SellerProducts } from '@/pages/seller-center/SellerProducts';
+import { SellerReturns } from '@/pages/seller-center/SellerReturns';
+import { emptyVoucher, SellerVouchers, voucherBody, voucherValid } from '@/pages/seller-center/SellerVouchers';
+
+const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+
+const future = new Date(Date.now() + 24 * 3600_000).toISOString();
+const seller: DemoSession = { sessionToken: 'tok-s', role: 'SELLER', shopId: 'shop-1', buyerId: null, expiresAt: future };
+const base = '/demo/shops/shop-1';
+
+const request = (id: string, status: string) => ({
+  id,
+  orderId: `ord-${id}`,
+  kind: 'RETURN',
+  type: 'REFUND',
+  status,
+  reason: 'DAMAGED_ITEM',
+  role: 'BUYER',
+  rejectReason: null,
+  returnTrackingNumber: null,
+  buyer: { id: 'b', name: 'Trần Văn An' },
+  refund: { subtotalVnd: 129000, shippingVnd: 0, totalVnd: 129000 },
+  createdAt: future,
+  updatedAt: future,
+  items: [{ skuId: 's', productName: 'Tee', skuName: 'M', quantity: 1 }],
+});
+
+const sku = (row: string, sellerSku: string, quantity: number) => ({
+  id: row,
+  externalId: `ext-${row}`,
+  sellerSku,
+  name: sellerSku.slice(-1),
+  attributeName: 'Size',
+  priceVnd: 129000,
+  status: 'NORMAL',
+  stock: [{ warehouseId: 'w1', warehouseName: 'Kho HN', quantity }],
+  totalStock: quantity,
+});
+const catalog = {
+  currency: 'VND',
+  warehouses: [{ externalId: 'w1', name: 'Kho HN' }],
+  items: [
+    { id: 'row-p1', externalId: 'P1', title: 'Basic tee', description: '', status: 'ACTIVATE', isNotForSale: false, skus: [sku('row-s1', 'TEE-M', 3)] },
+    { id: 'row-p2', externalId: 'P2', title: 'Mug', description: '', status: 'ACTIVATE', isNotForSale: false, skus: [sku('row-s2', 'MUG-B', 40)] },
+  ],
+};
+
+const message = (id: string, role: string, text: string) => ({ id, index: 1, type: 'TEXT', role, roleLabel: role === 'BUYER' ? 'Buyer' : 'Shop', nickname: 'x', at: future, text, supported: true });
+const conversation = (id: string, name: string, unread: number, canSendMessage = true) => ({
+  id,
+  externalId: `ext-${id}`,
+  buyerNickname: name,
+  agentJoined: false,
+  canSendMessage,
+  unread,
+  latest: message(`${id}-m1`, 'BUYER', `Hello from ${name}`),
+  updatedAt: future,
+});
+
+const calls: { url: string; method: string; body?: unknown }[] = [];
+beforeEach(() => {
+  calls.length = 0;
+  sessionStorage.clear();
+  sessionStorage.setItem('sim.demo-session.SELLER', JSON.stringify(seller));
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async (url: string, init?: RequestInit) => {
+      const method = init?.method ?? 'GET';
+      const body = init?.body ? JSON.parse(String(init.body)) : undefined;
+      calls.push({ url, method, body });
+      if (method !== 'GET') return json({}, method === 'DELETE' ? 200 : 201);
+      if (url === `${base}/aftersale`) {
+        return json({
+          items: [request('r1', 'RETURN_OR_REFUND_REQUEST_PENDING'), request('r2', 'BUYER_SHIPPED_ITEM'), request('r3', 'RETURN_OR_REFUND_REQUEST_COMPLETE')],
+          requestReasons: [],
+          rejectReasons: [
+            { name: 'ITEM_AS_DESCRIBED', text: 'The item matches its description' },
+            { name: 'OTHER', text: 'Other reason' },
+          ],
+        });
+      }
+      if (url === `${base}/catalog`) return json(catalog);
+      if (url === `${base}/inventory/history`) return json({ changes: [], attempts: [] });
+      if (url === `${base}/coupons`) {
+        return json({ items: [{ id: 'c1', title: 'Ten off', promoCode: 'SALE10', status: 'ONGOING', discountType: 'PERCENT_OFF', amountOffVnd: null, percentage: 10, maxDiscountVnd: 30000, discountText: '10% off (max 30000 VND)', minSpendVnd: 100000, startAt: future, endAt: future, redemptionLimit: 100, redeemedCount: 3, audience: 'ALL' }] });
+      }
+      if (url === `${base}/chat/conversations`) {
+        return json({ supportedTypes: ['TEXT'], unsupported: 'IMAGE, VIDEO', items: [conversation('c1', 'An', 2), conversation('c2', 'Mai', 0, false)] });
+      }
+      const thread = /\/chat\/conversations\/(c\d)\/messages$/.exec(url);
+      if (thread) {
+        const c = thread[1] === 'c1' ? conversation('c1', 'An', 2) : conversation('c2', 'Mai', 0, false);
+        return json({ conversation: c, items: [message('m1', 'BUYER', `Hello from ${c.buyerNickname}`), message('m2', 'SHOP', 'Hi, how can we help?')] });
+      }
+      return json({ message: 'nope' }, 404);
+    }),
+  );
+});
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
+
+const renderAt = (path: string) =>
+  render(
+    <MemoryRouter initialEntries={[path]}>
+      <AuthProvider>
+        <Routes>
+          <Route path="/seller-center/returns" element={<SellerReturns />} />
+          <Route path="/seller-center/products" element={<SellerProducts />} />
+          <Route path="/seller-center/vouchers" element={<SellerVouchers />} />
+          <Route path="/seller-center/messages" element={<SellerMessages />} />
+        </Routes>
+      </AuthProvider>
+    </MemoryRouter>,
+  );
+const writes = () => calls.filter((c) => c.method !== 'GET');
+const requestRows = () => screen.getAllByRole('row').map((r) => r.getAttribute('aria-label')).filter(Boolean);
+
+describe('Seller Center returns', () => {
+  it('lists open requests and approves or rejects them with the legacy calls', async () => {
+    renderAt('/seller-center/returns?status=open');
+    expect(await screen.findByRole('tab', { name: 'Open (2)' })).toBeTruthy();
+    expect(screen.getByRole('tab', { name: 'All (3)' })).toBeTruthy();
+    expect(requestRows()).toEqual(['Request r1', 'Request r2']);
+    const r2 = screen.getByRole('row', { name: 'Request r2' });
+    expect(within(r2).getByRole('button', { name: 'Accept package' })).toBeTruthy();
+
+    fireEvent.click(within(screen.getByRole('row', { name: 'Request r1' })).getByRole('button', { name: 'Approve' }));
+    await waitFor(() => expect(writes()).toEqual([{ url: `${base}/aftersale/r1/approve`, method: 'POST', body: {} }]));
+
+    fireEvent.change(within(r2).getByRole('combobox', { name: 'Reject reason for r2' }), { target: { value: 'OTHER' } });
+    fireEvent.click(within(r2).getByRole('button', { name: 'Reject' }));
+    await waitFor(() => expect(writes()[1]).toEqual({ url: `${base}/aftersale/r2/reject`, method: 'POST', body: { reason: 'OTHER' } }));
+
+    fireEvent.mouseDown(screen.getByRole('tab', { name: 'All (3)' }));
+    expect(requestRows()).toEqual(['Request r1', 'Request r2', 'Request r3']);
+  });
+});
+
+describe('Seller Center products', () => {
+  const card = (externalId: string) => screen.getByRole('region', { name: `Product ${externalId}` });
+
+  it('edits price, stock and status of a SKU and adds a variant', async () => {
+    renderAt('/seller-center/products');
+    const row = within(await screen.findByRole('region', { name: 'Product P1' })).getByRole('row', { name: 'SKU TEE-M' });
+    const [setPrice, setStock] = within(row).getAllByRole('button', { name: 'Set' });
+
+    fireEvent.change(within(row).getByLabelText('Price of TEE-M'), { target: { value: '135000' } });
+    fireEvent.click(setPrice);
+    await waitFor(() => expect(writes()).toContainEqual({ url: `${base}/catalog/skus/row-s1`, method: 'PATCH', body: { priceVnd: 135000 } }));
+
+    fireEvent.change(within(row).getByLabelText('Stock of TEE-M in Kho HN'), { target: { value: '7' } });
+    fireEvent.click(setStock);
+    await waitFor(() => expect(writes()).toContainEqual({ url: `${base}/catalog/skus/row-s1`, method: 'PATCH', body: { stock: { w1: 7 } } }));
+
+    fireEvent.click(within(row).getByRole('button', { name: 'Deactivate' }));
+    await waitFor(() => expect(writes()).toContainEqual({ url: `${base}/catalog/skus/row-s1`, method: 'PATCH', body: { status: 'DEACTIVATED' } }));
+
+    const add = within(card('P1')).getByRole('form', { name: 'Add variant to P1' });
+    fireEvent.change(within(add).getByLabelText('New seller SKU'), { target: { value: 'TEE-L' } });
+    fireEvent.change(within(add).getByLabelText('New variant name'), { target: { value: 'L' } });
+    fireEvent.change(within(add).getByLabelText('New variant price'), { target: { value: '139000' } });
+    fireEvent.click(within(add).getByRole('button', { name: 'Add variant' }));
+    await waitFor(() => expect(writes()).toContainEqual({ url: `${base}/catalog/products/row-p1/skus`, method: 'POST', body: { sellerSku: 'TEE-L', name: 'L', priceVnd: 139000 } }));
+  });
+
+  it('creates a product and deletes one only after confirming', async () => {
+    renderAt('/seller-center/products');
+    await screen.findByRole('region', { name: 'Product P1' });
+    fireEvent.click(screen.getByRole('button', { name: 'New product' }));
+    const dialog = await screen.findByRole('dialog', { name: 'New product' });
+    const create = within(dialog).getByRole('button', { name: 'Create product' }) as HTMLButtonElement;
+    fireEvent.change(within(dialog).getByLabelText('Title'), { target: { value: 'Linen hat' } });
+    fireEvent.change(within(dialog).getByLabelText('Seller SKU'), { target: { value: 'HAT-1' } });
+    fireEvent.change(within(dialog).getByLabelText('First variant'), { target: { value: 'Beige' } });
+    fireEvent.change(within(dialog).getByLabelText('Price (VND)'), { target: { value: '12.5' } });
+    expect(create.disabled).toBe(true);
+    fireEvent.change(within(dialog).getByLabelText('Price (VND)'), { target: { value: '159000' } });
+    fireEvent.click(create);
+    await waitFor(() =>
+      expect(writes()).toEqual([{ url: `${base}/catalog/products`, method: 'POST', body: { title: 'Linen hat', description: '', skus: [{ sellerSku: 'HAT-1', name: 'Beige', priceVnd: 159000 }] } }]),
+    );
+
+    fireEvent.click(within(card('P2')).getByRole('button', { name: 'Delete' }));
+    expect(writes()).toHaveLength(1);
+    fireEvent.click(within(await screen.findByRole('dialog', { name: 'Delete product?' })).getByRole('button', { name: 'Delete product' }));
+    await waitFor(() => expect(writes()[1]).toEqual({ url: `${base}/catalog/products/row-p2`, method: 'DELETE', body: undefined }));
+  });
+
+  it('shows only low-stock products with ?filter=low-stock', async () => {
+    renderAt('/seller-center/products?filter=low-stock');
+    expect(await screen.findByRole('region', { name: 'Product P1' })).toBeTruthy();
+    expect(screen.queryByRole('region', { name: 'Product P2' })).toBeNull();
+  });
+});
+
+describe('Seller Center vouchers', () => {
+  it('validates and builds the coupon body like the legacy form', () => {
+    const f = { ...emptyVoucher, title: 'Ten off', promoCode: 'SALE2026', kind: 'PERCENT_OFF', value: '10', cap: '30000', days: '7' };
+    expect(voucherValid(f)).toBe(true);
+    expect(voucherValid({ ...f, promoCode: 'SALE' })).toBe(false);
+    expect(voucherValid({ ...f, value: '101' })).toBe(false);
+    expect(voucherBody(f, Date.UTC(2026, 9, 21))).toEqual({
+      title: 'Ten off',
+      promoCode: 'SALE2026',
+      discount: { type: 'PERCENT_OFF', percentage: 10, maxDiscountVnd: 30000 },
+      endAt: '2026-10-28T00:00:00.000Z',
+      audience: 'ALL',
+    });
+  });
+
+  it('deactivates and creates vouchers', async () => {
+    renderAt('/seller-center/vouchers');
+    const row = await screen.findByRole('row', { name: 'Voucher SALE10' });
+    fireEvent.click(within(row).getByRole('button', { name: 'Deactivate' }));
+    await waitFor(() => expect(writes()).toEqual([{ url: `${base}/coupons/c1`, method: 'PATCH', body: { deactivated: true } }]));
+
+    fireEvent.click(screen.getByRole('button', { name: 'New voucher' }));
+    const dialog = await screen.findByRole('dialog', { name: 'New voucher' });
+    fireEvent.change(within(dialog).getByLabelText('Title'), { target: { value: 'Welcome' } });
+    fireEvent.change(within(dialog).getByLabelText('Code'), { target: { value: 'hello2026' } });
+    fireEvent.change(within(dialog).getByLabelText('Amount off (VND)'), { target: { value: '20000' } });
+    fireEvent.change(within(dialog).getByLabelText('Audience'), { target: { value: 'NEW' } });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Create voucher' }));
+    await waitFor(() => expect(writes()).toHaveLength(2));
+    expect(writes()[1]).toMatchObject({ url: `${base}/coupons`, method: 'POST', body: { title: 'Welcome', promoCode: 'HELLO2026', discount: { type: 'AMOUNT_OFF', amountVnd: 20000 }, audience: 'NEW' } });
+  });
+});
+
+describe('Seller Center messages', () => {
+  it('filters unread conversations, opens one and sends a text', async () => {
+    renderAt('/seller-center/messages?filter=unread');
+    const list = await screen.findByRole('list', { name: 'Conversations' });
+    expect(within(list).getAllByRole('button').map((b) => b.textContent)).toEqual(['AAnHello from An2 unread']);
+
+    fireEvent.click(within(list).getByRole('button'));
+    const thread = screen.getByRole('region', { name: 'Chat thread' });
+    expect(await within(thread).findByText('Hi, how can we help?')).toBeTruthy();
+    fireEvent.change(within(thread).getByRole('textbox', { name: 'Message' }), { target: { value: 'Size L is back' } });
+    fireEvent.click(within(thread).getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(writes()).toEqual([{ url: `${base}/chat/conversations/c1/messages`, method: 'POST', body: { text: 'Size L is back' } }]));
+  });
+
+  it('locks the reply box when the shop cannot send messages', async () => {
+    renderAt('/seller-center/messages');
+    fireEvent.click(within(await screen.findByRole('list', { name: 'Conversations' })).getByRole('button', { name: /Mai/ }));
+    const thread = screen.getByRole('region', { name: 'Chat thread' });
+    expect(await within(thread).findByText(/can_send_message = false/)).toBeTruthy();
+    expect((within(thread).getByRole('textbox', { name: 'Message' }) as HTMLInputElement).disabled).toBe(true);
+  });
+});

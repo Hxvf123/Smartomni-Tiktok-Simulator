@@ -9,66 +9,67 @@ test.beforeAll(async ({ baseURL }) => {
 });
 
 async function createCoupon(page: Page, title: string, code: string, valueVnd: string, minSpend = '') {
-  await page.getByLabel('coupon title').fill(title);
-  await page.getByLabel('coupon promo code').fill(code);
-  await page.getByLabel('discount value').fill(valueVnd);
-  if (minSpend) await page.getByLabel('minimum spend').fill(minSpend);
-  await page.getByRole('button', { name: 'Create coupon' }).click();
-  await expect(page.getByRole('row').filter({ hasText: code })).toBeVisible();
+  await page.getByRole('button', { name: 'New voucher' }).click();
+  const dialog = page.getByRole('dialog', { name: 'New voucher' });
+  await dialog.getByLabel('Title').fill(title);
+  await dialog.getByLabel('Code').fill(code);
+  await dialog.getByLabel('Amount off (VND)').fill(valueVnd);
+  if (minSpend) await dialog.getByLabel('Minimum spend VND (optional)').fill(minSpend);
+  await dialog.getByRole('button', { name: 'Create voucher' }).click();
+  await expect(page.getByRole('row', { name: `Voucher ${code}` })).toBeVisible();
 }
 
-async function addTwoWhiteTees(page: Page) {
-  await page.goto('/buyer/product/sim-product-a-tee');
-  await signInAs(page, BUYER_A);
-  const detail = page.getByLabel('product detail');
-  await detail.getByRole('radio', { name: 'Trắng / M' }).click();
-  await detail.getByLabel('quantity').fill('2');
-  await detail.getByRole('button', { name: 'Add to cart' }).click();
-  await expect(detail.getByText('Added 2 × Trắng / M to your cart.')).toBeVisible();
-  await page.getByRole('link', { name: 'Cart' }).first().click();
-  await expect(page.getByText('Items total:')).toContainText('258.000');
+/** Buyer puts 2 x Trắng / M (129.000) in the cart and opens checkout from the cart. */
+async function checkoutTwoWhiteTees(page: Page) {
+  await signInAs(page, 'BUYER', BUYER_A, '/product/sim-product-a-tee');
+  await page.getByRole('radio', { name: 'Trắng / M' }).click();
+  await page.getByRole('spinbutton', { name: 'Quantity' }).fill('2');
+  await page.getByRole('button', { name: 'Add to cart' }).click();
+  await expect(page.getByText('Added to cart')).toBeVisible();
+  await page.goto('/cart');
+  await expect(page.getByTestId('total')).toHaveText('₫258.000');
+  await page.getByRole('button', { name: 'Check out (1)' }).click();
+  await page.waitForURL('**/checkout');
 }
 
 test('seller creates coupons; the buyer applies one at checkout and the order total reflects the discount', async ({ page }) => {
-  await page.goto('/seller/coupons');
-  await signInAs(page, SELLER_A);
-  await page.getByRole('link', { name: 'Coupons' }).click();
+  await signInAs(page, 'SELLER', SELLER_A, '/seller-center/vouchers');
   await createCoupon(page, 'E2E 50k off', 'E2EOFF50', '50000');
   await createCoupon(page, 'E2E big spender', 'E2EMIN1M', '10000', '1000000');
   await createCoupon(page, 'E2E to deactivate', 'E2EOLD99', '5000');
-  await expect(page.getByRole('row').filter({ hasText: 'E2EOFF50' }).getByText('ONGOING')).toBeVisible();
-  await page.getByRole('row').filter({ hasText: 'E2EOLD99' }).getByRole('button', { name: 'Deactivate' }).click();
-  await expect(page.getByRole('row').filter({ hasText: 'E2EOLD99' }).getByText('DEACTIVATED')).toBeVisible();
+  await expect(page.getByRole('row', { name: 'Voucher E2EOFF50' }).getByText('Ongoing')).toBeVisible();
+  await page.getByRole('row', { name: 'Voucher E2EOLD99' }).getByRole('button', { name: 'Deactivate' }).click();
+  await expect(page.getByRole('row', { name: 'Voucher E2EOLD99' }).getByText('Deactivated')).toBeVisible();
   await shot(page, 'phase09a-seller-coupons');
 
-  await addTwoWhiteTees(page);
-  await page.getByLabel('coupon code').fill('e2eoff50'); // the input upper-cases
-  await expect(page.getByLabel('coupon code')).toHaveValue('E2EOFF50');
-  await page.getByRole('button', { name: 'Checkout' }).click();
-  const placed = page.getByLabel('order placed');
-  await expect(placed.getByText('UNPAID')).toBeVisible();
+  await checkoutTwoWhiteTees(page);
+  await page.getByLabel('Voucher code').fill('e2eoff50'); // the input upper-cases
+  await expect(page.getByLabel('Voucher code')).toHaveValue('E2EOFF50');
+  await page.getByRole('button', { name: 'Place order' }).click();
+  await expect(page.getByText('Order placed · UNPAID')).toBeVisible();
   // 2 x 129.000 = 258.000 - 50.000 coupon = 208.000 items; + 25.000 shipping = 233.000
-  await expect(placed.getByText(/Total:/)).toContainText('233.000');
-  await expect(placed.getByText(/items .*208\.000/)).toBeVisible();
+  await expect(page.getByTestId('total')).toHaveText('₫233.000');
+  await expect(page.getByText('-₫50.000')).toBeVisible();
   await shot(page, 'phase09a-buyer-discounted');
-  await placed.getByRole('button', { name: 'Pay now (fake payment)' }).click();
-  await expect(placed.getByText('ON_HOLD')).toBeVisible();
+  await page.getByRole('button', { name: 'Pay now (simulated)' }).click();
+  await page.waitForURL('**/account/orders');
 });
 
 test('unknown, deactivated and under-minimum coupons are refused with a visible error and no order is created', async ({ page }) => {
-  await addTwoWhiteTees(page);
+  await checkoutTwoWhiteTees(page);
   for (const code of ['NOPE1234', 'E2EOLD99', 'E2EMIN1M']) {
-    await page.getByLabel('coupon code').fill(code);
-    await page.getByRole('button', { name: 'Checkout' }).click();
-    const alert = page.getByRole('alert');
+    await page.getByLabel('Voucher code').fill(code);
+    await page.getByRole('button', { name: 'Place order' }).click();
+    // the error is shown right under the voucher field
+    const alert = page.getByRole('region', { name: 'Voucher' }).getByRole('alert');
     await expect(alert).toBeVisible();
     await expect(alert).not.toBeEmpty();
-    await expect(page.getByLabel('order placed')).toHaveCount(0);
+    await expect(page.getByText(/Order placed/)).toHaveCount(0);
     await shot(page, `phase09a-error-${code}`);
   }
-  // the cart is untouched, so a valid retry without a code still works
-  await page.getByLabel('coupon code').fill('');
-  await expect(page.getByText('Items total:')).toContainText('258.000');
+  // no order was created, so the cart is untouched
+  await page.goto('/cart');
+  await expect(page.getByTestId('total')).toHaveText('₫258.000');
 });
 
 test('no voucher-creation operation is exposed: the router answers 404 and the UI says coupons are demo data', async ({ page, request }) => {
@@ -77,9 +78,7 @@ test('no voucher-creation operation is exposed: the router answers 404 and the U
     const res = await request.fetch(`${process.env.E2E_API_URL ?? 'http://localhost:8090'}${path}`, { method, data: { title: 'x' } });
     expect(res.status(), `${method} ${path}`).toBe(404);
   }
-  await page.goto('/seller/coupons');
-  await signInAs(page, SELLER_A);
-  await page.getByRole('link', { name: 'Coupons' }).click();
-  await expect(page.getByText('Coupons are Seller-created demo data.')).toBeVisible();
+  await signInAs(page, 'SELLER', SELLER_A, '/seller-center/vouchers');
+  await expect(page.getByText('Vouchers are seller-created demo data.')).toBeVisible();
   await expect(page.locator('main').getByText(/TikTok|OpenAPI/i)).toHaveCount(0);
 });
