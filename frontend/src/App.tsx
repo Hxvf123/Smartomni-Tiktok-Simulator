@@ -10,6 +10,7 @@ import { AuthProvider } from './lib/auth';
 import { AuthorizePage } from './pages/AuthorizePage';
 import { BuyerPage } from './pages/BuyerPage';
 import { ConsolePage } from './pages/ConsolePage';
+import { LoginPage } from './pages/LoginPage';
 import { SellerPage } from './pages/SellerPage';
 
 export function App() {
@@ -27,7 +28,7 @@ export function App() {
               <Route path="account/orders" element={<ComingSoon title="My orders" />} />
             </Route>
           </Route>
-          <Route path="login" element={<div className="min-h-screen bg-surface-2 p-6 font-sans"><ComingSoon title="Sign in" /></div>} />
+          <Route path="login" element={<LoginPage />} />
 
           {/* Seller Center */}
           <Route

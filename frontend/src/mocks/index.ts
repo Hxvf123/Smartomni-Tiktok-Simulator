@@ -6,3 +6,4 @@
 export * from './catalog';
 export * from './enrich';
 export * from './reviews';
+export * from './identities';
