@@ -3,6 +3,8 @@ export class ApiError extends Error {
     message: string,
     public status: number,
     public requestId?: string,
+    /** Domain rule code from a `{code, message}` error body, e.g. coupon_expired or insufficient_stock. */
+    public code?: string,
   ) {
     super(message);
   }
@@ -38,7 +40,8 @@ export async function api<T>(path: string, opts: RequestOptions = {}): Promise<T
   }
   if (!res.ok) {
     const msg = typeof data === 'object' && data && 'message' in data ? String((data as { message: unknown }).message) : `HTTP ${res.status}`;
-    throw new ApiError(msg, res.status, requestId);
+    const code = typeof data === 'object' && data && 'code' in data ? String((data as { code: unknown }).code) : undefined;
+    throw new ApiError(msg, res.status, requestId, code);
   }
   return data as T;
 }

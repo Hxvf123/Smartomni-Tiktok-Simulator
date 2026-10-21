@@ -13,6 +13,7 @@ import { ConsolePage } from './pages/ConsolePage';
 import { LoginPage } from './pages/LoginPage';
 import { SellerPage } from './pages/SellerPage';
 import { CartPage } from './pages/shop/CartPage';
+import { CheckoutPage } from './pages/shop/CheckoutPage';
 import { HomePage } from './pages/shop/HomePage';
 import { ProductPage } from './pages/shop/ProductPage';
 
@@ -27,7 +28,7 @@ export function App() {
             <Route path="product/:id" element={<ProductPage />} />
             <Route element={<RequireRole role="BUYER" />}>
               <Route path="cart" element={<CartPage />} />
-              <Route path="checkout" element={<ComingSoon title="Checkout" />} />
+              <Route path="checkout" element={<CheckoutPage />} />
               <Route path="account/orders" element={<ComingSoon title="My orders" />} />
             </Route>
           </Route>

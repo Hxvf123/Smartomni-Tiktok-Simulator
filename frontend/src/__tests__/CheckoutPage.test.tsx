@@ -1,0 +1,180 @@
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { AuthProvider } from '@/lib/auth';
+import type { CheckoutState } from '@/lib/checkout';
+import type { DemoSession, Order } from '@/lib/types';
+import { CheckoutPage, validateRecipient } from '@/pages/shop/CheckoutPage';
+
+const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+
+const future = new Date(Date.now() + 3600_000).toISOString();
+const buyer: DemoSession = { sessionToken: 'tok-b', role: 'BUYER', shopId: 'shop-1', buyerId: 'buyer_1', expiresAt: future };
+
+const cart = {
+  currency: 'VND',
+  items: [
+    { skuId: 'sku-a', productId: 'p-tee', productTitle: 'Áo thun cotton basic', skuName: 'Trắng / M', sellerSku: 'TEE', quantity: 2, unitPriceVnd: 129000, lineTotalVnd: 258000, available: true },
+    { skuId: 'sku-b', productId: 'p-mug', productTitle: 'Cốc sứ vẽ tay', skuName: 'Họa tiết xanh', sellerSku: 'MUG', quantity: 1, unitPriceVnd: 89000, lineTotalVnd: 89000, available: true },
+  ],
+  totalVnd: 347000,
+};
+
+const order = (status: Order['status']): Order => ({
+  id: '576000111',
+  status,
+  createdAt: future,
+  updatedAt: future,
+  paidAt: null,
+  releaseAt: null,
+  cancelReason: null,
+  buyerRequestedCancel: false,
+  recipient: { name: 'Trần Văn An', phone: '0900000001', addressLine: '12 Lê Lợi', district: 'Quận 1', city: 'Hồ Chí Minh' },
+  buyer: { id: 'buyer_1', name: 'Trần Văn An' },
+  amounts: { currency: 'VND', productTotalVnd: 129000, sellerDiscountVnd: 12900, platformDiscountVnd: 0, subTotalVnd: 116100, shippingFeeVnd: 25000, taxVnd: 0, totalVnd: 141100 },
+  items: [{ skuId: 'sku-a', productId: 'p-tee', productName: 'Áo thun cotton basic', skuName: 'Trắng / M', sellerSku: 'TEE', unitPriceVnd: 129000, quantity: 1 }],
+});
+
+function Location() {
+  const l = useLocation();
+  return <output data-testid="location">{l.pathname}</output>;
+}
+
+const renderCheckout = (state: CheckoutState | null = { items: [{ skuId: 'sku-a', quantity: 1 }] }) =>
+  render(
+    <MemoryRouter initialEntries={[{ pathname: '/checkout', state }]}>
+      <AuthProvider>
+        <Routes>
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="*" element={null} />
+        </Routes>
+        <Location />
+      </AuthProvider>
+    </MemoryRouter>,
+  );
+
+describe('CheckoutPage', () => {
+  const calls: { url: string; method: string; body?: Record<string, unknown> }[] = [];
+  let checkoutError: { code: string; message: string } | null;
+  beforeEach(() => {
+    calls.length = 0;
+    checkoutError = null;
+    sessionStorage.clear();
+    sessionStorage.setItem('sim.demo-session.BUYER', JSON.stringify(buyer));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string, init?: RequestInit) => {
+        const method = init?.method ?? 'GET';
+        const body = init?.body ? JSON.parse(String(init.body)) : undefined;
+        calls.push({ url, method, body });
+        if (url === '/demo/shops/shop-1/cart' && method === 'GET') return json(cart);
+        if (url === '/demo/shops/shop-1/storefront/products') return json({ currency: 'VND', items: [] });
+        if (url === '/demo/me') return json({ role: 'BUYER', shop: { id: 'shop-1', name: 'Mộc Lan Shop' }, buyer: { id: 'buyer_1', name: 'Trần Văn An', city: 'Hồ Chí Minh' } });
+        if (url === '/demo/shops/shop-1/checkout') {
+          if (checkoutError) return json(checkoutError, 400);
+          return json({ replayed: false, order: order('UNPAID') }, 201);
+        }
+        if (url === '/demo/shops/shop-1/cart/items') return json(cart);
+        if (url === '/demo/shops/shop-1/orders/576000111/pay') return json({ replayed: false, order: order('ON_HOLD') }, 201);
+        return json({ message: 'nope' }, 404);
+      }),
+    );
+  });
+  afterEach(() => {
+    cleanup();
+    vi.unstubAllGlobals();
+  });
+
+  const posts = (path: string) => calls.filter((c) => c.method === 'POST' && c.url === `/demo/shops/shop-1${path}`);
+
+  it('places the order, shows the real amounts, then pays and opens My orders', async () => {
+    renderCheckout();
+    const items = await screen.findByRole('list', { name: 'Items' });
+    expect(within(items).getAllByRole('listitem')).toHaveLength(1);
+    expect(screen.getByTestId('total').textContent).toBe('₫129.000');
+
+    fireEvent.change(screen.getByLabelText('Message to seller'), { target: { value: 'Please wrap it' } });
+    fireEvent.change(screen.getByLabelText('Voucher code'), { target: { value: 'SALE10' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Place order' }));
+
+    expect(await screen.findByText('Order placed · UNPAID')).toBeTruthy();
+    expect(screen.getByTestId('total').textContent).toBe('₫141.100');
+    expect(screen.getByText('-₫12.900')).toBeTruthy();
+    expect(screen.getByText('₫25.000')).toBeTruthy();
+    const [placed] = posts('/checkout');
+    expect(placed.body).toMatchObject({ items: [{ skuId: 'sku-a', quantity: 1 }], buyerMessage: 'Please wrap it', couponCode: 'SALE10' });
+    expect(String(placed.body?.checkoutKey).length).toBeGreaterThanOrEqual(8);
+    expect(placed.body).not.toHaveProperty('recipient');
+    // 2 in the cart, 1 bought
+    await waitFor(() => expect(calls).toContainEqual({ url: '/demo/shops/shop-1/cart/items', method: 'PUT', body: { skuId: 'sku-a', quantity: 1 } }));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pay now (simulated)' }));
+    await waitFor(() => expect(screen.getByTestId('location').textContent).toBe('/account/orders'));
+    expect(posts('/orders/576000111/pay')).toHaveLength(1);
+  });
+
+  it('shows a voucher error under the voucher field and retries with the same checkout key', async () => {
+    checkoutError = { code: 'coupon_expired', message: 'This voucher has expired' };
+    renderCheckout();
+    fireEvent.change(await screen.findByLabelText('Voucher code'), { target: { value: 'OLD' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Place order' }));
+    const error = await screen.findByText('This voucher has expired');
+    expect(screen.getByLabelText('Voucher code').getAttribute('aria-describedby')).toBe(error.id);
+    expect(screen.queryByText(/Order placed/)).toBeNull();
+
+    checkoutError = null;
+    fireEvent.change(screen.getByLabelText('Voucher code'), { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Place order' }));
+    expect(await screen.findByText('Order placed · UNPAID')).toBeTruthy();
+    const [first, second] = posts('/checkout');
+    expect(second.body?.checkoutKey).toBe(first.body?.checkoutKey);
+    expect(second.body).not.toHaveProperty('couponCode');
+  });
+
+  it('shows a stock error under the items', async () => {
+    checkoutError = { code: 'insufficient_stock', message: 'Not enough stock for Trắng / M' };
+    renderCheckout();
+    fireEvent.click(await screen.findByRole('button', { name: 'Place order' }));
+    const error = await screen.findByText('Not enough stock for Trắng / M');
+    expect(within(screen.getByRole('region', { name: 'Mộc Lan Shop' })).getByText('Not enough stock for Trắng / M')).toBe(error);
+  });
+
+  it('sends a recipient entered in the Change dialog, after validating it', async () => {
+    renderCheckout();
+    fireEvent.click(await screen.findByRole('button', { name: 'Change' }));
+    const dialog = await screen.findByRole('dialog');
+    fireEvent.change(within(dialog).getByLabelText('Phone'), { target: { value: '12' } });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save address' }));
+    expect(within(dialog).getByText('At least 5 characters.')).toBeTruthy();
+
+    fireEvent.change(within(dialog).getByLabelText('Phone'), { target: { value: '0911222333' } });
+    fireEvent.change(within(dialog).getByLabelText('Address line'), { target: { value: '3 Hai Bà Trưng' } });
+    fireEvent.change(within(dialog).getByLabelText('District'), { target: { value: 'Hoàn Kiếm' } });
+    fireEvent.change(within(dialog).getByLabelText('City'), { target: { value: 'Hà Nội' } });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save address' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(screen.getByTestId('address').textContent).toContain('3 Hai Bà Trưng, Hoàn Kiếm, Hà Nội');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Place order' }));
+    await screen.findByText('Order placed · UNPAID');
+    expect(posts('/checkout')[0].body?.recipient).toEqual({ name: 'Trần Văn An', phone: '0911222333', addressLine: '3 Hai Bà Trưng', district: 'Hoàn Kiếm', city: 'Hà Nội', postalCode: null });
+  });
+
+  it('uses the available cart lines when opened without a selection', async () => {
+    renderCheckout(null);
+    const items = await screen.findByRole('list', { name: 'Items' });
+    expect(within(items).getAllByRole('listitem')).toHaveLength(2);
+    expect(screen.getByTestId('total').textContent).toBe('₫347.000');
+  });
+});
+
+describe('validateRecipient', () => {
+  it('applies the checkout schema limits', () => {
+    expect(validateRecipient({ name: 'A', phone: '12345', addressLine: 'x', district: 'y', city: 'z' })).toEqual({});
+    expect(validateRecipient({ name: ' ', phone: '1234', addressLine: 'x', district: 'y', city: 'z', postalCode: '1'.repeat(21) })).toEqual({
+      name: 'Required.',
+      phone: 'At least 5 characters.',
+      postalCode: 'At most 20 characters.',
+    });
+  });
+});
