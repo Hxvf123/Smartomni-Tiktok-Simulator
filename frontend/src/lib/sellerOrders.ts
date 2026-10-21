@@ -50,5 +50,8 @@ export function sellerActionsFor(status: OrderStatus, hasTracking: boolean): Sel
   return actions;
 }
 
+/** Aftersale statuses waiting for the seller (same list as src/features/aftersale.seller.tsx). */
+export const OPEN_AFTERSALE = ['RETURN_OR_REFUND_REQUEST_PENDING', 'BUYER_SHIPPED_ITEM', 'CANCELLATION_REQUEST_PENDING'];
+
 /** What "Simulate carrier" does next. */
 export const advanceHint = (status: OrderStatus) => (status === 'AWAITING_COLLECTION' ? 'Carrier collects the parcel' : 'Parcel is delivered');

@@ -3,13 +3,16 @@ import type {
   AftersaleList,
   Aftersale,
   Cart,
-  CatalogProduct,
+  Catalog,
+  ChatMessage,
   CheckoutRequest,
   Conversation,
+  Conversations,
   Coupon,
   DemoSession,
   Fulfillment,
   Identities,
+  InventoryHistory,
   Me,
   Order,
   OrderHistoryEntry,
@@ -35,9 +38,9 @@ export const endSession = (s: DemoSession) => api<void>('/demo/sessions/current'
 
 // Shop (seller)
 export const getShop = (s: DemoSession) => api<Shop>(shop(s), auth(s));
-export const getCatalog = (s: DemoSession) => api<{ currency: string; items: CatalogProduct[] }>(shop(s, '/catalog'), auth(s));
+export const getCatalog = (s: DemoSession) => api<Catalog>(shop(s, '/catalog'), auth(s));
 export const getCoupons = (s: DemoSession) => api<{ items: Coupon[] }>(shop(s, '/coupons'), auth(s));
-export const listConversations = (s: DemoSession) => api<{ items: Conversation[] }>(shop(s, '/chat/conversations'), auth(s));
+export const listConversations = (s: DemoSession) => api<Conversations>(shop(s, '/chat/conversations'), auth(s));
 
 // Storefront (buyer)
 export const listStorefrontProducts = (s: DemoSession) =>
@@ -77,3 +80,28 @@ export const requestReturn = (s: DemoSession, body: ReturnRequest) =>
   api<{ request: Aftersale }>(shop(s, '/aftersale/returns'), { method: 'POST', body, ...auth(s) });
 export const requestCancellation = (s: DemoSession, orderId: string, reason?: string) =>
   api<{ request: Aftersale }>(shop(s, '/aftersale/cancellations'), { method: 'POST', body: { orderId, ...(reason ? { reason } : {}) }, ...auth(s) });
+
+// Seller Center writes (same paths and bodies as the legacy SellerCatalog, aftersale/coupons/chat/inventory seller tabs)
+type Body = Record<string, unknown>;
+export const createProduct = (s: DemoSession, body: Body) => api(shop(s, '/catalog/products'), { method: 'POST', body, ...auth(s) });
+/** `productRowId` is CatalogProduct.id. */
+export const patchProduct = (s: DemoSession, productRowId: string, body: Body) =>
+  api(shop(s, `/catalog/products/${id(productRowId)}`), { method: 'PATCH', body, ...auth(s) });
+export const deleteProduct = (s: DemoSession, productRowId: string) => api(shop(s, `/catalog/products/${id(productRowId)}`), { method: 'DELETE', ...auth(s) });
+export const addSku = (s: DemoSession, productRowId: string, body: Body) =>
+  api(shop(s, `/catalog/products/${id(productRowId)}/skus`), { method: 'POST', body, ...auth(s) });
+/** `skuRowId` is CatalogSku.id; body is one of { priceVnd } | { stock: { [warehouseExternalId]: n } } | { status }. */
+export const patchSku = (s: DemoSession, skuRowId: string, body: Body) => api(shop(s, `/catalog/skus/${id(skuRowId)}`), { method: 'PATCH', body, ...auth(s) });
+export const getInventoryHistory = (s: DemoSession) => api<InventoryHistory>(shop(s, '/inventory/history'), auth(s));
+
+export const approveAftersale = (s: DemoSession, requestId: string) => api(shop(s, `/aftersale/${id(requestId)}/approve`), { method: 'POST', body: {}, ...auth(s) });
+export const rejectAftersale = (s: DemoSession, requestId: string, reason: string) =>
+  api(shop(s, `/aftersale/${id(requestId)}/reject`), { method: 'POST', body: { reason }, ...auth(s) });
+
+export const createCoupon = (s: DemoSession, body: Body) => api(shop(s, '/coupons'), { method: 'POST', body, ...auth(s) });
+export const patchCoupon = (s: DemoSession, couponId: string, body: Body) => api(shop(s, `/coupons/${id(couponId)}`), { method: 'PATCH', body, ...auth(s) });
+
+export const getConversationMessages = (s: DemoSession, conversationId: string) =>
+  api<{ conversation: Conversation; items: ChatMessage[] }>(shop(s, `/chat/conversations/${id(conversationId)}/messages`), auth(s));
+export const sendConversationMessage = (s: DemoSession, conversationId: string, text: string) =>
+  api(shop(s, `/chat/conversations/${id(conversationId)}/messages`), { method: 'POST', body: { text }, ...auth(s) });

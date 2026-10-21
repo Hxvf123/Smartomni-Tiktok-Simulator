@@ -14,7 +14,11 @@ import { LoginPage } from './pages/LoginPage';
 import { SellerPage } from './pages/SellerPage';
 import { SellerHome } from './pages/seller-center/SellerHome';
 import { SellerOrderDetail } from './pages/seller-center/SellerOrderDetail';
+import { SellerMessages } from './pages/seller-center/SellerMessages';
 import { SellerOrders } from './pages/seller-center/SellerOrders';
+import { SellerProducts } from './pages/seller-center/SellerProducts';
+import { SellerReturns } from './pages/seller-center/SellerReturns';
+import { SellerVouchers } from './pages/seller-center/SellerVouchers';
 import { CartPage } from './pages/shop/CartPage';
 import { CheckoutPage } from './pages/shop/CheckoutPage';
 import { HomePage } from './pages/shop/HomePage';
@@ -50,10 +54,10 @@ export function App() {
             <Route index element={<SellerHome />} />
             <Route path="orders" element={<SellerOrders />} />
             <Route path="orders/:id" element={<SellerOrderDetail />} />
-            <Route path="returns" element={<ComingSoon title="Returns & refunds" />} />
-            <Route path="products" element={<ComingSoon title="Products" />} />
-            <Route path="vouchers" element={<ComingSoon title="Vouchers" />} />
-            <Route path="messages" element={<ComingSoon title="Messages" />} />
+            <Route path="returns" element={<SellerReturns />} />
+            <Route path="products" element={<SellerProducts />} />
+            <Route path="vouchers" element={<SellerVouchers />} />
+            <Route path="messages" element={<SellerMessages />} />
             <Route path="shop" element={<ComingSoon title="Shop" />} />
           </Route>
 

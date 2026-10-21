@@ -9,6 +9,7 @@ import { useSellerContext } from '@/layouts/SellerLayout';
 import { useAuth } from '@/lib/auth';
 import { getCatalog, getCoupons, getShop, listAftersale, listConversations, listOrders } from '@/lib/endpoints';
 import { compactCount, shopPrice } from '@/lib/format';
+import { OPEN_AFTERSALE } from '@/lib/sellerOrders';
 import type { Aftersale, Conversation, DemoSession, Order } from '@/lib/types';
 import { useAsync, type AsyncResult } from '@/lib/useAsync';
 import { cn } from '@/lib/utils';
@@ -16,8 +17,6 @@ import { mockBusinessOverview, type MockMetric } from '@/mocks';
 
 const POLL_MS = 30_000;
 const LOW_STOCK = 5;
-/** Aftersale statuses waiting for the seller (same list as src/features/aftersale.seller.tsx). */
-export const OPEN_AFTERSALE = ['RETURN_OR_REFUND_REQUEST_PENDING', 'BUYER_SHIPPED_ITEM', 'CANCELLATION_REQUEST_PENDING'];
 
 export function greeting(now: Date): string {
   const h = now.getHours();

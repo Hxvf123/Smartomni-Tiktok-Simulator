@@ -56,23 +56,41 @@ export interface StorefrontProduct {
   skus: Sku[];
 }
 
+/** Seller catalog SKU. `id` is the row id used by PATCH catalog/skus/{id}; `externalId` is the marketplace id. */
 export interface CatalogSku {
   id: string;
   externalId: string;
   sellerSku: string;
   name: string;
+  attributeName: string;
   priceVnd: number;
+  /** NORMAL or DEACTIVATED. */
   status: string;
+  stock: { warehouseId: string; warehouseName: string; quantity: number }[];
   totalStock: number;
 }
 
+/** Seller catalog product. `id` is the row id used by the catalog write endpoints. */
 export interface CatalogProduct {
   id: string;
   externalId: string;
   title: string;
+  description: string;
+  /** DRAFT, ACTIVATE, SELLER_DEACTIVATED, DELETED, ... */
   status: string;
   isNotForSale: boolean;
   skus: CatalogSku[];
+}
+
+export interface Catalog {
+  currency: string;
+  warehouses: { externalId: string; name: string; city?: string; isDefault?: boolean }[];
+  items: CatalogProduct[];
+}
+
+export interface InventoryHistory {
+  changes: { seq: number; sku: string; sellerSku: string; warehouse: string; warehouseName: string; before: number; after: number; source: string; noop: boolean; requestId: string | null; note: string | null; at: string }[];
+  attempts: { seq: number; product: string; outcome: string; itemsTotal: number; itemsApplied: number; itemsFailed: number; requestId: string | null; at: string }[];
 }
 
 export interface CartItem {
@@ -251,12 +269,31 @@ export interface Coupon {
   audience: string;
 }
 
+export interface ChatMessage {
+  id: string;
+  index: number;
+  type: string;
+  /** BUYER, SHOP, CUSTOMER_SERVICE or SYSTEM. */
+  role: string;
+  roleLabel: string;
+  nickname: string;
+  at: string;
+  text: string | null;
+  supported: boolean;
+}
+
 export interface Conversation {
   id: string;
   externalId: string;
   buyerNickname: string;
   unread: number;
   canSendMessage: boolean;
-  latest: { text: string | null; role: string; at: string } | null;
+  latest: ChatMessage | null;
   updatedAt: string;
+}
+
+export interface Conversations {
+  supportedTypes: string[];
+  unsupported: string;
+  items: Conversation[];
 }
