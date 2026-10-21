@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { Compass, Ellipsis, Search, ShoppingCart, Store, type LucideIcon } from 'lucide-react';
+import { Compass, Ellipsis, Package, Search, ShoppingCart, Store, type LucideIcon } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -167,10 +167,18 @@ function AccountPill() {
   const location = useLocation();
   return (
     <div className="flex h-10 shrink-0 items-center rounded-full border border-line bg-white text-sm font-semibold">
-      <Link to="/cart" className="flex h-full items-center gap-1.5 rounded-l-full pl-4 pr-3 hover:bg-surface-2">
-        <ShoppingCart className="size-4" />
-        Cart
-      </Link>
+      {/* on the cart page itself the pill links to My orders instead (board Cart) */}
+      {location.pathname === '/cart' ? (
+        <Link to="/account/orders" className="flex h-full items-center gap-1.5 rounded-l-full pl-4 pr-3 hover:bg-surface-2">
+          <Package className="size-4" />
+          My orders
+        </Link>
+      ) : (
+        <Link to="/cart" className="flex h-full items-center gap-1.5 rounded-l-full pl-4 pr-3 hover:bg-surface-2">
+          <ShoppingCart className="size-4" />
+          Cart
+        </Link>
+      )}
       <span className="h-5 w-px bg-line" aria-hidden />
       {buyer ? (
         <BuyerMenu buyer={buyer} />

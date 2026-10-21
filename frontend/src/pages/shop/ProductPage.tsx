@@ -1,10 +1,11 @@
 import { useState, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ChevronRight, Minus, Plus, Star, Truck } from 'lucide-react';
+import { ChevronRight, Star, Truck } from 'lucide-react';
 import { RadioGroup as RadioGroupPrimitive } from 'radix-ui';
 import { toast } from 'sonner';
 import { loginUrl } from '@/components/RequireRole';
 import { ProductImage } from '@/components/shop/ProductCard';
+import { QuantityStepper } from '@/components/shop/QuantityStepper';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import { DevMock } from '@/components/ui/mock-badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { MAX_PER_LINE, type CheckoutState } from '@/lib/checkout';
 import { getCart, getMe, getStorefrontProduct, setCartItem } from '@/lib/endpoints';
 import { compactCount, shopPrice } from '@/lib/format';
 import type { Sku } from '@/lib/types';
@@ -19,15 +21,7 @@ import { useAsync } from '@/lib/useAsync';
 import { cn } from '@/lib/utils';
 import { enrichProduct, imageBackgrounds, mockCatalog, mockReviewSummary, originalPrice, type EnrichedProduct, type MockReview } from '@/mocks';
 
-/** The cart API accepts 1..20 per line. */
-const MAX_PER_LINE = 20;
-
 const soldOut = (s: Sku) => !s.available || s.stock <= 0;
-
-/** State passed to /checkout by "Buy now" so checkout can preselect that line (Step 8). */
-export interface BuyNowState {
-  buyNow: { skuId: string; quantity: number };
-}
 
 function Breadcrumb({ shopName, title }: { shopName?: string; title: string }) {
   return (
@@ -186,31 +180,6 @@ function VariantTiles({ label, skus, value, onChange }: { label: string; skus: S
   );
 }
 
-function QuantityStepper({ value, max, onChange }: { value: number; max: number; onChange: (n: number) => void }) {
-  const clamp = (n: number) => Math.max(1, Math.min(max, n));
-  const disabled = max < 1;
-  return (
-    <div className="inline-flex h-10 items-center rounded-full border border-line">
-      <button type="button" aria-label="Decrease quantity" disabled={disabled || value <= 1} onClick={() => onChange(clamp(value - 1))} className="flex size-10 cursor-pointer items-center justify-center disabled:cursor-not-allowed disabled:text-muted-2">
-        <Minus className="size-4" />
-      </button>
-      <input
-        type="number"
-        aria-label="Quantity"
-        min={1}
-        max={Math.max(1, max)}
-        value={value}
-        disabled={disabled}
-        onChange={(e) => onChange(clamp(Number(e.target.value) || 1))}
-        className="h-full w-12 bg-transparent text-center text-sm font-semibold outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
-      />
-      <button type="button" aria-label="Increase quantity" disabled={disabled || value >= max} onClick={() => onChange(clamp(value + 1))} className="flex size-10 cursor-pointer items-center justify-center disabled:cursor-not-allowed disabled:text-muted-2">
-        <Plus className="size-4" />
-      </button>
-    </div>
-  );
-}
-
 function BuyBox({ product, shopName }: { product: EnrichedProduct; shopName?: string }) {
   const { buyer } = useAuth();
   const navigate = useNavigate();
@@ -294,7 +263,7 @@ function BuyBox({ product, shopName }: { product: EnrichedProduct; shopName?: st
           className="h-12 bg-buyer text-base text-white hover:bg-buyer/90"
           disabled={!sku || busy}
           onClick={async () => {
-            if (sku && (await addToCart())) navigate('/checkout', { state: { buyNow: { skuId: sku.id, quantity: qty } } satisfies BuyNowState });
+            if (sku && (await addToCart())) navigate('/checkout', { state: { items: [{ skuId: sku.id, quantity: qty }] } satisfies CheckoutState });
           }}
         >
           Buy now

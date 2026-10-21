@@ -127,7 +127,7 @@ describe('ProductPage', () => {
     fireEvent.click(await screen.findByRole('radio', { name: 'Đen / M' }));
     fireEvent.click(screen.getByRole('button', { name: 'Buy now' }));
     await waitFor(() => expect(screen.getByTestId('location').textContent).toBe('/checkout'));
-    expect(lastState).toEqual({ buyNow: { skuId: 'sku-bm', quantity: 1 } });
+    expect(lastState).toEqual({ items: [{ skuId: 'sku-bm', quantity: 1 }] });
   });
 
   it('shows a not-available message when the product is not in the buyer shop', async () => {
