@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Compass, Ellipsis, Search, ShoppingCart, Store, type LucideIcon } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -105,7 +105,10 @@ function Rail({ className }: { className?: string }) {
 function SearchPill() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const [q, setQ] = useState(params.get('q') ?? '');
+  const urlQ = params.get('q') ?? '';
+  const [q, setQ] = useState(urlQ);
+  // follow the URL (Clear search, back/forward)
+  useEffect(() => setQ(urlQ), [urlQ]);
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const term = q.trim();

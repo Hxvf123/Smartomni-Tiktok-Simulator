@@ -12,6 +12,7 @@ import { BuyerPage } from './pages/BuyerPage';
 import { ConsolePage } from './pages/ConsolePage';
 import { LoginPage } from './pages/LoginPage';
 import { SellerPage } from './pages/SellerPage';
+import { HomePage } from './pages/shop/HomePage';
 
 export function App() {
   return (
@@ -20,7 +21,7 @@ export function App() {
         <Routes>
           {/* Tiptop Shop (buyer) */}
           <Route element={<ShopLayout />}>
-            <Route index element={<ComingSoon title="Home" />} />
+            <Route index element={<HomePage />} />
             <Route path="product/:id" element={<ComingSoon title="Product" />} />
             <Route element={<RequireRole role="BUYER" />}>
               <Route path="cart" element={<ComingSoon title="Cart" />} />

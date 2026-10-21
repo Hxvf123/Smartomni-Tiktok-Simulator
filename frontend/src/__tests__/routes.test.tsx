@@ -39,8 +39,9 @@ describe('routes', () => {
     expect(await screen.findByText('Choose a demo seller')).toBeTruthy();
   });
 
-  it('renders the new shop layout without the legacy topbar', () => {
+  it('renders the new shop layout without the legacy topbar', async () => {
     renderAt('/');
+    expect(await screen.findByRole('region', { name: 'Best sellers' })).toBeTruthy();
     expect(screen.queryByText('TikTok Shop Simulator')).toBeNull();
     expect(screen.getByRole('search')).toBeTruthy();
     expect(screen.getByRole('link', { name: 'Sign in' }).getAttribute('href')).toBe('/login?next=%2F');
