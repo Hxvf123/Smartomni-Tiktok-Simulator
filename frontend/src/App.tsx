@@ -13,6 +13,8 @@ import { ConsolePage } from './pages/ConsolePage';
 import { LoginPage } from './pages/LoginPage';
 import { SellerPage } from './pages/SellerPage';
 import { SellerHome } from './pages/seller-center/SellerHome';
+import { SellerOrderDetail } from './pages/seller-center/SellerOrderDetail';
+import { SellerOrders } from './pages/seller-center/SellerOrders';
 import { CartPage } from './pages/shop/CartPage';
 import { CheckoutPage } from './pages/shop/CheckoutPage';
 import { HomePage } from './pages/shop/HomePage';
@@ -46,8 +48,8 @@ export function App() {
             }
           >
             <Route index element={<SellerHome />} />
-            <Route path="orders" element={<ComingSoon title="Manage orders" />} />
-            <Route path="orders/:id" element={<ComingSoon title="Order detail" />} />
+            <Route path="orders" element={<SellerOrders />} />
+            <Route path="orders/:id" element={<SellerOrderDetail />} />
             <Route path="returns" element={<ComingSoon title="Returns & refunds" />} />
             <Route path="products" element={<ComingSoon title="Products" />} />
             <Route path="vouchers" element={<ComingSoon title="Vouchers" />} />
