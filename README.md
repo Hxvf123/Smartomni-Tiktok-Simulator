@@ -113,6 +113,32 @@ What the `/demo` API does not provide yet comes from this folder only:
 
 Mock-driven UI is marked with `MockBadge` (`src/components/ui/mock-badge.tsx`, pink dashed frame + "MOCK"); `DevMock` shows the frame only in development builds. To remove the mocks once the backend has these fields: delete `frontend/src/mocks/`, run `npm run typecheck` in `frontend/`, and replace each import it reports with the real field (or drop the UI that only showed mock data).
 
+### Deploy the frontend to Vercel
+
+The API runs on Render (`render.yaml`, `https://smartomni-tiktok-simulator-api.onrender.com`); Vercel only serves the UI. `frontend/vercel.json` keeps every call same-origin, like nginx in Docker:
+
+| Path | Goes to |
+|---|---|
+| `/demo/*`, `/health/*` | rewritten straight to the Render API |
+| `/test-admin/*` | the Vercel Function `frontend/api/test-admin.ts`, which adds `x-test-admin-token` from its env and forwards method, query and body to `API_ORIGIN/test-admin/...`; status, body, `content-type` and `x-request-id` come back unchanged |
+| everything else | `/index.html` (SPA routes) |
+
+1. Vercel: **Add New Project**, import this repository, set **Root Directory** to `frontend`. Framework, build command (`npm run build`) and output (`dist`) come from `vercel.json`.
+2. Environment variables (Settings > Environment Variables, then redeploy):
+
+   | Name | Required | Value |
+   |---|---|---|
+   | `TEST_ADMIN_TOKEN` | yes | the same value as `TEST_ADMIN_TOKEN` of the Render service (Render > Environment). Without it `/test-admin/*` returns 500. |
+   | `API_ORIGIN` | no | API base URL for the function; default `https://smartomni-tiktok-simulator-api.onrender.com` |
+
+3. Check: `https://<project>.vercel.app/health/ready` answers, `/` lists products after signing in, and the Test Console (`/console`) loads its status.
+
+Notes:
+* Do not prefix these variables with `VITE_`: Vite would put them in the browser bundle. The token is only read by the function at request time.
+* The Render URL is written in `vercel.json` (rewrites cannot read env variables). If the API moves, change both `vercel.json` and `API_ORIGIN`.
+* Anyone who can open the Vercel site can call `/test-admin/*` through the function (reset, clock, faults), exactly like port 3090 in Docker. Keep the deployment for demos, or protect it with Vercel Deployment Protection.
+* The free Render plan sleeps when idle: the first request after a pause can take about a minute.
+
 ## API documentation (Swagger / OpenAPI)
 
 All 116 HTTP operations (TikTok-shaped, `/demo`, `/test-admin`, `/health`) are documented in OpenAPI 3.0.3.
